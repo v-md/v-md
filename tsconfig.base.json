@@ -1,0 +1,40 @@
+{
+  "compilerOptions": {
+    "target": "es2022",
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "baseUrl": ".",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "paths": {
+      "@v-md/shared": ["libs/shared/src/common"],
+      "@v-md/renderer": ["libs/renderer/src"],
+      "@v-md/core": ["libs/core/src"],
+      "@v-md/core/*": ["libs/core/src/*"],
+      "@v-md/app": ["libs/app/src"],
+      "@v-md/plugin-files-basic": ["plugins/files-basic/src"],
+      "@v-md/plugin-toolbar-basic": ["plugins/toolbar-basic/src"],
+      "@v-md/plugin-editor-theme": ["plugins/editor-theme/src"],
+      "@v-md/plugin-editor-volar": ["plugins/editor-volar/src"],
+      "@v-md/plugin-editor-volar/vue.worker": ["plugins/editor-volar/src/monaco/vue.worker"],
+      "@v-md/plugin-lang-vue": ["plugins/lang-vue/src"],
+      "@v-md/plugin-lang-vue-jsx": ["plugins/lang-vue-jsx/src"],
+      "@v-md/plugin-vue-md": ["plugins/vue-md/src"],
+      "@v-md/plugin-lang-css": ["plugins/lang-css/src"],
+      "@v-md/plugin-lang-json": ["plugins/lang-json/src"],
+      "@v-md/plugin-lang-js": ["plugins/lang-js/src"],
+      "@v-md/plugin-lang-ts": ["plugins/lang-ts/src"],
+      "@v-md/plugin-theme": ["plugins/theme/src"]
+    },
+    "resolveJsonModule": true,
+    "types": ["node"],
+    "allowJs": true,
+    "strict": true,
+    "noUnusedLocals": true,
+    "removeComments": false,
+    "sourceMap": false,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "skipLibCheck": true
+  }
+}
