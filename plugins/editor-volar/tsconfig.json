@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {},
+  "include": [
+    "src",
+    "*.config.ts",
+    "../../build",
+    "../../libs/shared/src",
+    "../../libs/core/src"
+  ]
+}

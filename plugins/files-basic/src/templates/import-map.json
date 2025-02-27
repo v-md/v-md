@@ -1,0 +1,6 @@
+{
+  "imports": {
+    "vue": "{{ CDN_URL }}/vue@latest/dist/vue.runtime.esm-browser.js"
+  },
+  "scopes": {}
+}

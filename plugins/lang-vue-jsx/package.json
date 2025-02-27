@@ -1,0 +1,37 @@
+{
+  "name": "@v-md/plugin-lang-vue-jsx",
+  "type": "module",
+  "version": "0.0.4",
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "import": "./dist/index.es.js"
+    }
+  },
+  "module": "dist/index.es.js",
+  "types": "dist/src/index.d.ts",
+  "files": [
+    "CHANGELOG.md",
+    "dist"
+  ],
+  "scripts": {
+    "tsc": "vue-tsc --noEmit --skipLibCheck -p tsconfig.json",
+    "build": "vite build"
+  },
+  "publishConfig": {
+    "registry": "https://cmc.centralrepo.rnd.huawei.com/artifactory/api/npm/product_npm/",
+    "access": "public"
+  },
+  "peerDependencies": {
+    "@v-md/core": "workspace:^"
+  },
+  "dependencies": {
+    "@babel/standalone": "^7.26.4",
+    "@types/babel__standalone": "^7.1.9",
+    "@v-md/shared": "workspace:^",
+    "@vue/babel-plugin-jsx": "^1.2.5"
+  },
+  "devDependencies": {
+    "@v-md/core": "workspace:^"
+  }
+}
