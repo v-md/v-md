@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {},
+  "include": [
+    "src",
+    "*.config.ts",
+    "../../libs/*/src",
+    "../../plugins/*/src"
+  ]
+}
