@@ -1,0 +1,58 @@
+{
+  "name": "@v-md/core",
+  "type": "module",
+  "version": "0.0.4",
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "import": "./dist/index.es.js"
+    },
+    "./renderer": {
+      "types": "./dist/src/renderer.d.ts",
+      "import": "./dist/renderer.es.js"
+    },
+    "./plugin": {
+      "types": "./dist/src/plugin.d.ts",
+      "import": "./dist/plugin.es.js"
+    },
+    "./dist/*": "./dist/*"
+  },
+  "module": "dist/index.es.js",
+  "types": "dist/src/index.d.ts",
+  "files": [
+    "CHANGELOG.md",
+    "dist"
+  ],
+  "scripts": {
+    "tsc": "vue-tsc --noEmit --skipLibCheck -p tsconfig.json",
+    "build": "vite build"
+  },
+  "publishConfig": {
+    "registry": "https://cmc.centralrepo.rnd.huawei.com/artifactory/api/npm/product_npm/",
+    "access": "public"
+  },
+  "peerDependencies": {
+    "monaco-editor-core": "catalog:peer",
+    "vue": "catalog:peer"
+  },
+  "peerDependenciesMeta": {
+    "monaco-editor-core": {
+      "optional": true
+    },
+    "vue": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "@babel/types": "^7.26.5",
+    "@v-md/renderer": "workspace:^",
+    "@v-md/shared": "workspace:^",
+    "@vueuse/core": "^12.3.0",
+    "tippy.js": "^6.3.7",
+    "vue-tippy": "^6.6.0"
+  },
+  "devDependencies": {
+    "monaco-editor-core": "catalog:",
+    "vue": "catalog:"
+  }
+}

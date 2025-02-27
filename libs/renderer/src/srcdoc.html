@@ -1,0 +1,20 @@
+<!doctype html>
+<html>
+  <head>
+    <!-- PREVIEW-OPTIONS-HEAD-HTML -->
+
+    <!-- ES Module Shims: Import maps polyfill for modules browsers without import maps support (all except Chrome 89+) -->
+    <script
+      async
+      src="{{ CDN_URL }}/es-module-shims@1.5.18/dist/es-module-shims.wasm.js"
+    ></script>
+    <script type="importmap">
+      <!--IMPORT_MAP-->
+    </script>
+    <script type="module" src="{{ SCRIPT_URL }}"></script>
+  </head>
+  
+  <body>
+    <div id="app"></div>
+  </body>
+</html>
