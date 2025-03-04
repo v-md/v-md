@@ -3,6 +3,7 @@ logs
 .cache
 vitest-output
 dist
+.npmrc
 
 .env.local
 .env.*.local
