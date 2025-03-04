@@ -1,0 +1,49 @@
+@use "tippy.js/dist/tippy";
+@use "tippy.js/themes/light";
+
+#vmd-app {
+  --vmd-primary-color: #409eff;
+  --vmd-primary-color-light: #ecf5ff;
+  --vmd-border-color: #e4e7ed;
+  --vmd-active-color: #e1e4e8;
+  --vmd-active-color-light: #f5f5f6;
+
+  box-sizing: border-box;
+  font-size: 14px;
+  border-style: solid;
+  border-width: 0;
+
+  *,
+  ::before,
+  ::after {
+    box-sizing: border-box;
+  }
+
+  ol,
+  ul,
+  menu {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  li,
+  ul {
+    list-style: none;
+  }
+
+  img,
+  video,
+  canvas,
+  audio,
+  iframe,
+  embed,
+  object {
+    display: block; /* 1 */
+    vertical-align: middle; /* 2 */
+  }
+
+  img {
+    display: inline-block;
+  }
+}

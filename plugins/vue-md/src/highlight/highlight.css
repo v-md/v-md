@@ -1,0 +1,9 @@
+.shiki,
+.shiki span {
+  /* 可选，用于定义字体样式 */
+  font-style: var(--shiki-highlight-font-style) !important;
+  font-weight: var(--shiki-highlight-font-weight) !important;
+  color: var(--shiki-highlight) !important;
+  text-decoration: var(--shiki-highlight-text-decoration) !important;
+  background-color: var(--shiki-highlight-bg) !important;
+}

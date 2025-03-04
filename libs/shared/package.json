@@ -1,0 +1,33 @@
+{
+  "name": "@v-md/shared",
+  "type": "module",
+  "version": "0.0.3",
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "module": "dist/index.js",
+  "types": "dist/src/index.d.ts",
+  "files": [
+    "CHANGELOG.md",
+    "dist"
+  ],
+  "scripts": {
+    "tsc": "vue-tsc --noEmit --skipLibCheck -p tsconfig.json",
+    "build": "vite build"
+  },
+  "publishConfig": {
+    "registry": "https://cmc.centralrepo.rnd.huawei.com/artifactory/api/npm/product_npm/",
+    "access": "public"
+  },
+  "dependencies": {
+    "@types/lodash-es": "^4.17.12",
+    "fflate": "^0.8.2",
+    "jsonc-parser": "^3.3.1",
+    "lodash-es": "^4.17.21",
+    "nanoid": "^5.0.9",
+    "type-fest": "^4.31.0"
+  }
+}

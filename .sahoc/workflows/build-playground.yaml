@@ -1,0 +1,117 @@
+name: build_playground
+timeout: 1200
+env:
+  # 执行前，必须确保 .changeset 目录下有 changeset-playground-xxx.md 变更文件，否则必然出错！！
+  project: v_md
+  code_repository: v_md
+  image_name: vmd_playground
+  docker_file: .sahoc/build-playground.Dockerfile
+  k8s_cluster_name: sahoc-common-cloud-1
+  setting_group: v_md
+  packages_path: websites/playground
+  OUTPUT_BUILD_SUCCESS: false
+  OUTPUT_TAG_VERSION: '@v-md/playground@0.0.1'
+  OUTPUT_FINAL_VERSION: 0.0.1
+runs-on: openx_executer_common
+jobs:
+  执行构建:
+    steps:
+      - name: 拉取代码
+        uses: checkout
+        with:
+          code_repository: '{{ code_repository }}'
+
+      - name: 打印环境变量
+        run: printenv
+
+      - name: 安装依赖
+        run: |
+          pnpm i
+
+      - name: 构建应用
+        run: |
+          pnpm -F @v-md/playground build
+
+      - name: 更新版本信息
+        run: |
+          pnpm run change-version {{ packages_path }}
+
+      - name: 提交更新信息
+        run: |
+          set -e
+
+          git config user.name p_openx
+          git config user.email openx1@huawei.com
+          git config http.sslVerify false
+          git config https.sslVerify false
+
+          git add .changeset/changeset-playground-*.md {{ packages_path }}/CHANGELOG.md {{ packages_path }}/package.json
+          git commit -m 'chore: update playground version {{ OUTPUT_TAG_VERSION }}'
+          git tag {{ OUTPUT_TAG_VERSION }}
+          git push origin {{ OUTPUT_TAG_VERSION }}
+          git push
+
+      - name: 构建 docker 镜像
+        uses: docker_build
+        with:
+          docker_file: '{{ docker_file }}'
+          image_name: '{{ image_name }}'
+          image_version: '{{ OUTPUT_FINAL_VERSION }}'
+
+      - name: 上传 docker 镜像
+        uses: image_upload
+        with:
+          image_name: '{{ image_name }}'
+          image_version: '{{ OUTPUT_FINAL_VERSION }}'
+          project: '{{ project }}'
+          code_repository: '{{ code_repository }}'
+
+      - name: 构建成功标记
+        run: echo '::set-output name=build_success::true'
+  执行部署:
+    needs: 执行构建
+    when: self.env.OUTPUT_BUILD_SUCCESS == 'true'
+    steps:
+      - name: 处理 Jinja2 依赖
+        run: |
+          pip install Jinja2 --break-system-packages
+      - name: 部署应用
+        uses: k8s_deploy@v2
+        with:
+          deploy_kind: service
+          config_data:
+            service_name: '{{ image_name }}'
+            load_balancer: ROUND_ROBIN
+            instances:
+              - name: '{{ image_name }}'
+                replicas: 3
+                containers:
+                  - name: '{{ image_name }}'
+                    image: 'sahoc-images.divista.huawei.com:80/k8s-dongguan-1/{{ image_name }}:{{ OUTPUT_FINAL_VERSION }}'
+                    resources:
+                      limits:
+                        cpu: 2000m
+                        memory: 1024Mi
+                      requests:
+                        cpu: 2000m
+                        memory: 1024Mi
+            routes:
+              - domain: vmd.openx.huawei.com
+                listen_protocol: https
+                target_port: 80
+                target_protocol: TCP
+                source_path: /playground/
+                destination_path: /
+                ca_name: openx_cicd--openx-ssl
+                domain_type: external
+                type: default
+              - domain: vmd.openx.huawei.com
+                listen_protocol: http
+                target_port: 80
+                target_protocol: TCP
+                source_path: /playground/
+                destination_path: /
+                domain_type: external
+                type: default
+          project: '{{ project }}'
+          k8s_cluster_name: '{{ k8s_cluster_name }}'

@@ -1,0 +1,49 @@
+name: publish
+timeout: 1200
+env:
+  project: v_md
+  code_repository: v_md
+  setting_group: v_md
+runs-on: openx_executer_common
+jobs:
+  执行构建:
+    steps:
+      - name: 拉取代码
+        uses: checkout
+        with:
+          code_repository: '{{ code_repository }}'
+
+      - name: 打印环境变量
+        run: printenv
+
+      - name: 替换配置文件
+        uses: settings_render
+        with:
+          configuration_file: .npmrc
+          project: '{{ project }}'
+          group: '{{ setting_group }}'
+
+      - name: 安装依赖
+        run: |
+          pnpm i
+
+      - name: 构件库
+        run: |
+          pnpm run build:libs
+
+      - name: 更新库版本信息
+        run: |
+          npx changeset version --ignore=@v-md/playground
+
+      - name: 发布库
+        run: |
+          set -e
+          git config user.name p_openx
+          git config user.email openx1@huawei.com
+          git config http.sslVerify false
+          git config https.sslVerify false
+
+          git add .changeset **/CHANGELOG.md **/package.json
+          git commit -m 'chore: update libs versions'
+          npx changeset publish
+          git push --follow-tags

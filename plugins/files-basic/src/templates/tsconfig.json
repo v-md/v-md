@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "jsx": "preserve",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "allowJs": true,
+    "checkJs": true
+  },
+  "vueCompilerOptions": {
+    "target": 3.5,
+    "vitePressExtensions": [".md"]
+  }
+}
