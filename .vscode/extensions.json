@@ -2,16 +2,6 @@
   "recommendations": [
     "vue.volar",
     "dbaeumer.vscode-eslint",
-    "stylelint.vscode-stylelint",
-    "mhutchie.git-graph",
-    "eamodio.gitlens",
-    "vscode-icons-team.vscode-icons",
-    "naumovs.color-highlight",
-    "pranaygp.vscode-css-peek",
-    "cipchk.cssrem",
-    "syler.sass-indented",
-    "mrmlnc.vscode-scss",
-    "mikestead.dotenv",
-    "antfu.unocss"
+    "stylelint.vscode-stylelint"
   ]
 }
