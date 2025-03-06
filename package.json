@@ -5,12 +5,11 @@
   "scripts": {
     "dev:play": "pnpm -F @v-md/playground run dev",
     "build:libs": "pnpm -F \"./libs/**\" -F \"./plugins/**\" run build",
-    "change": "tsx ./build/scripts/change.ts",
-    "change-version": "tsx ./build/scripts/change-version.ts",
-    "publish": "changeset publish"
+    "publish": "pnpm run build:libs && changeset publish"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^3.12.1",
+    "@changesets/changelog-github": "^0.5.1",
     "@changesets/cli": "^2.27.11",
     "@pnpm/find-workspace-packages": "^6.0.9",
     "@stylistic/stylelint-config": "^2.0.0",
