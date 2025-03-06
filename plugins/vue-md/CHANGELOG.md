@@ -1,1 +1,0 @@
-# @v-md/plugin-vue-md
