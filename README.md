@@ -1,5 +1,3 @@
-[toc]
-
 # v-md
 `v-md` 是一款基于 [Vue](https://vuejs.org/) 的在线 Markdown 编辑器。
 
