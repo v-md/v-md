@@ -32,7 +32,7 @@ export default defineConfig(async () => {
           chunkFileNames: 'chunks/[name].[hash].js',
           // Put chunk styles at <output>/assets
           assetFileNames: 'assets/[name][extname]',
-          entryFileNames: '[name].[format].js',
+          entryFileNames: '[name].js',
         },
       },
     },

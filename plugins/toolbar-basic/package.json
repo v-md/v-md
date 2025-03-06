@@ -1,14 +1,14 @@
 {
   "name": "@v-md/plugin-toolbar-basic",
   "type": "module",
-  "version": "0.0.4",
+  "version": "0.0.0",
   "exports": {
     ".": {
       "types": "./dist/src/index.d.ts",
-      "import": "./dist/index.es.js"
+      "import": "./dist/index.js"
     }
   },
-  "module": "dist/index.es.js",
+  "module": "dist/index.js",
   "types": "dist/src/index.d.ts",
   "files": [
     "CHANGELOG.md",
