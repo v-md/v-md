@@ -11,6 +11,7 @@
   "dependencies": {
     "@v-md/app": "workspace:^",
     "@v-md/plugin-editor-volar": "workspace:^",
+    "@v-md/shared": "workspace:^",
     "monaco-editor-core": "catalog:",
     "vue": "catalog:"
   }

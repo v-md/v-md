@@ -1,6 +1,7 @@
 /* eslint-disable no-alert */
 import { createEditor, createViewer } from '@v-md/app'
 import { editorVolarPlugin } from '@v-md/plugin-editor-volar'
+import { setOrCreate } from '@v-md/shared'
 // 产物测试时需要手动引入样式
 // import '@v-md/app/dist/assets/style.css'
 
@@ -88,7 +89,7 @@ else {
             tip: '禁用文件导航',
             value: noFilesNav,
             onTrigger: (app, value) => {
-              app.options.attrs.navVisible = !value
+              setOrCreate(app.options, 'attrs', 'navVisible', value)
             },
           },
         ],

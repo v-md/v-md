@@ -3,9 +3,14 @@
   "type": "module",
   "private": true,
   "scripts": {
+    "lint:script": "eslint . --fix",
+    "lint:style": "stylelint --fix ./**/*.{css,scss,vue}",
+    "tsc:libs": "pnpm -F @v-md/app -F @v-md/plugin-editor-volar tsc",
     "dev:play": "pnpm -F @v-md/playground run dev",
-    "build:libs": "pnpm -F \"./libs/**\" -F \"./plugins/**\" run build",
-    "publish": "pnpm run build:libs && changeset publish"
+    "build-check:libs": "pnpm -F \"./libs/**\" -F \"./plugins/**\" build-check",
+    "build:play": "pnpm -F @v-md/playground build",
+    "build:libs": "pnpm -F \"./libs/**\" -F \"./plugins/**\" build",
+    "release": "pnpm build:libs && changeset publish"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^3.12.1",

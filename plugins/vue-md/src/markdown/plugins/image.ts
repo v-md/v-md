@@ -15,7 +15,7 @@ const EXTERNAL_URL_RE = /^(?:[a-z]+:|\/\/)/i
 export function imagePlugin(md: MarkdownIt, editor: Editor) {
   const imageRule = md.renderer.rules.image!
   md.renderer.rules.image = (tokens, idx, options, env, self) => {
-    const { lazyLoading = false } = editor.options.markdownOptions.image || {}
+    const { lazyLoading = false } = editor.options.markdownOptions?.image || {}
     const token = tokens[idx]
     let url = token.attrGet('src')
     if (url && !EXTERNAL_URL_RE.test(url)) {

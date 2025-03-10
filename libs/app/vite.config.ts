@@ -1,8 +1,11 @@
-import type { UserConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
-import { defineConfig } from 'vite'
-import dts from 'vite-plugin-dts'
-import { getExternalDependencies } from '../../build/external'
+import type {
+  UserConfig,
+} from '../../build'
+import {
+  defineConfig,
+  dtsPlugin,
+  getExternalDependencies,
+} from '../../build'
 
 // 必须确保 @v-md/core 构建出产物后，才能构建成功
 
@@ -17,12 +20,7 @@ export default defineConfig(async () => {
 
   return {
     plugins: [
-      vue(),
-      dts({
-        entryRoot: __dirname,
-        pathsToAliases: false,
-        include: ['src'],
-      }),
+      dtsPlugin(),
       {
         transform: async (code, id) => {
           if (id.includes('libs/app/src/index.ts')) {

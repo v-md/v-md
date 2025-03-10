@@ -26,7 +26,7 @@ type ContainerArgs = [typeof container, string, { render: RenderRule }]
  * 代码参考：https://github.com/vuejs/vitepress/blob/main/src/node/markdown/plugins/containers.ts
  */
 export function customContainersPlugin(md: MarkdownIt, editor: Editor) {
-  const containerOptions = editor.options.markdownOptions.container
+  const { container: containerOptions } = editor.options.markdownOptions || {}
   const {
     tipLabel = 'TIP',
     infoLabel = 'INFO',

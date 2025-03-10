@@ -1,6 +1,6 @@
-import type { EditorOptionsResolved } from './types'
+import type { EditorOptions } from './types'
 
-export function defaultOptions(): EditorOptionsResolved {
+export function defaultOptions(): EditorOptions {
   return {
     value: '',
     plugins: () => {},

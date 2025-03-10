@@ -25,7 +25,7 @@ import {
 } from './plugins'
 
 export async function createMarkdownRenderer(editor: Editor) {
-  const options = editor.options.markdownOptions
+  const options = editor.options.markdownOptions || {}
 
   const markdownIt = createMarkdownItAsync({
     html: true,

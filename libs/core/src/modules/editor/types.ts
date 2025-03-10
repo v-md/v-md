@@ -58,5 +58,3 @@ export interface EditorOptions {
   /** 预览相关配置 */
   previewOptions?: ViewerOptions['previewOptions']
 }
-
-export type EditorOptionsResolved = Required<EditorOptions>

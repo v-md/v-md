@@ -1,8 +1,13 @@
-import type { UserConfig } from 'vite'
-import { defineConfig } from 'vite'
-import dts from 'vite-plugin-dts'
+import type {
+  UserConfig,
+} from '../../build'
+import { env } from 'node:process'
 import tsconfigPaths from 'vite-tsconfig-paths'
-import { getExternalDependencies } from '../../build/external'
+import {
+  defineConfig,
+  dtsPlugin,
+  getExternalDependencies,
+} from '../../build'
 
 /**
  * // https://vitejs.dev/config/
@@ -13,18 +18,13 @@ import { getExternalDependencies } from '../../build/external'
  */
 export default defineConfig(async ({ mode }) => {
   const isBuildAll = mode === 'all'
+  env.DISABLE_DTS = isBuildAll ? 'true' : 'false'
 
   const externals = await getExternalDependencies()
 
   return {
     plugins: [
-      isBuildAll ?
-        null :
-          dts({
-            entryRoot: __dirname,
-            pathsToAliases: false,
-            include: ['src'],
-          }),
+      dtsPlugin(),
       isBuildAll ? tsconfigPaths() : null,
     ],
     build: {

@@ -55,20 +55,21 @@ export function initMonacoLang(editorMonaco: Monaco) {
 async function loadVolar(editorMonaco: Monaco) {
   const { monaco } = editorMonaco
   const { files, options } = editorMonaco.editor
+  const { vueVersion = 'latest' } = options
 
   editorMonaco.disposeVolar?.()
 
   const dependencies: Record<string, string> = {
-    'vue': options.vueVersion,
-    '@vue/compiler-core': options.vueVersion,
-    '@vue/compiler-dom': options.vueVersion,
-    '@vue/compiler-sfc': options.vueVersion,
-    '@vue/compiler-ssr': options.vueVersion,
-    '@vue/reactivity': options.vueVersion,
-    '@vue/runtime-core': options.vueVersion,
-    '@vue/runtime-dom': options.vueVersion,
-    '@vue/shared': options.vueVersion,
-    'typescript': options.vueVersion,
+    'vue': vueVersion,
+    '@vue/compiler-core': vueVersion,
+    '@vue/compiler-dom': vueVersion,
+    '@vue/compiler-sfc': vueVersion,
+    '@vue/compiler-ssr': vueVersion,
+    '@vue/reactivity': vueVersion,
+    '@vue/runtime-core': vueVersion,
+    '@vue/runtime-dom': vueVersion,
+    '@vue/shared': vueVersion,
+    'typescript': vueVersion,
   }
 
   const worker = monaco.editor.createWebWorker<WorkerLanguageService>({

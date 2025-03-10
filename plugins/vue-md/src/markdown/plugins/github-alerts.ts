@@ -5,7 +5,7 @@ const markerRE =
   /^\[!(TIP|NOTE|INFO|IMPORTANT|WARNING|CAUTION|DANGER)\]([^\n\r]*)/i
 
 export function gitHubAlertsPlugin(md: MarkdownIt, editor: Editor) {
-  const containerOptions = editor.options.markdownOptions.container
+  const { container: containerOptions } = editor.options.markdownOptions || {}
   const {
     tipLabel = 'TIP',
     infoLabel = 'INFO',

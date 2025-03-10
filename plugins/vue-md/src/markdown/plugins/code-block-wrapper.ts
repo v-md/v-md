@@ -12,7 +12,7 @@ import { MarkdownItAsync } from '../markdown-it-async'
  * - 添加 v-pre 指令，默认情况下防止代码块中的内容被 Vue 解析
  */
 export function codeBlockWrapperPlugin(md: MarkdownItAsync, editor: Editor) {
-  const options = editor.options.markdownOptions
+  const options = editor.options.markdownOptions || {}
   const fence = md.renderer.rules.fence!
   md.renderer.rules.fence = (...args) => {
     const [tokens, idx] = args

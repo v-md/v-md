@@ -1,0 +1,67 @@
+name: Gate Check Libs
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'libs/**/*'
+      - '!libs/*/*.md'
+      - 'plugins/**/*'
+      - '!plugins/*/*.md'
+      - 'websites/**/*'
+      - '!websites/*/*.md'
+
+jobs:
+  buildcheck:
+    name: Buildcheck
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/ci-setup
+
+      - name: Buildcheck
+        run: pnpm build-check:libs
+
+  typecheck:
+    name: Typecheck
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/ci-setup
+
+      - name: Typecheck
+        run: pnpm tsc:libs
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/ci-setup
+
+      - name: ESLint
+        run: pnpm lint:script
+
+      - name: StyleLint
+        run: pnpm lint:style
+
+  ci-ok:
+    name: CI OK
+    runs-on: ubuntu-latest
+    if: always()
+    needs: [buildcheck, typecheck, lint]
+    env:
+      FAILURE: ${{ contains(join(needs.*.result, ','), 'failure') }}
+    steps:
+      - name: Check for failure
+        run: |
+          echo $FAILURE
+          if [ "$FAILURE" = "false" ]; then
+            exit 0
+          else
+            exit 1
+          fi

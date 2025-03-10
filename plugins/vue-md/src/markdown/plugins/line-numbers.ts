@@ -6,7 +6,7 @@ import { addClassToPre } from './code-block-wrapper'
 export function lineNumbersPlugin(md: MarkdownItAsync, editor: Editor) {
   const fence = md.renderer.rules.fence!
   md.renderer.rules.fence = (...args) => {
-    const { lineNumbers = false } = editor.options.markdownOptions
+    const { lineNumbers = false } = editor.options.markdownOptions || {}
 
     const rawCode = fence(...args)
 

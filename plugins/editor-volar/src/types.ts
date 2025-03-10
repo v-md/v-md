@@ -1,4 +1,4 @@
-import type { EditorOptionsResolved, FileNode } from '@v-md/core'
+import type { EditorOptions, FileNode } from '@v-md/core'
 import type { DynamicImportResolver } from '@v-md/shared'
 import type { VueCompilerOptions } from '@vue/language-service'
 import type { CompilerOptions } from 'typescript'
@@ -44,7 +44,7 @@ export interface EditorVolarOptions {
 }
 
 type WorkerMessageData = Pick<
-  EditorOptionsResolved,
+  EditorOptions,
   'cdnUrl' |
   'cdnType' |
   'cdnDataUrl' |

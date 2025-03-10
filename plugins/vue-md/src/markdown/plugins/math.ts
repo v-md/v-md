@@ -3,7 +3,7 @@ import type MarkdownIt from 'markdown-it'
 import type { PluginWithParams } from 'markdown-it'
 
 export function mathPlugin(md: MarkdownIt, editor: Editor, mathjaxPlugin: PluginWithParams) {
-  const options = editor.options.markdownOptions
+  const options = editor.options.markdownOptions || {}
   md.use(mathjaxPlugin, {
     ...(typeof options.math === 'boolean' ? {} : options.math),
   })

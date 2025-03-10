@@ -1,4 +1,5 @@
 import type { Toolbar } from '@v-md/core'
+import { setOrCreate } from '@v-md/shared'
 import { DEFAULT_HIGHLIGHT_THEME } from './markdown'
 
 const HIGHLIGHT_THEMES = [
@@ -13,14 +14,14 @@ export function resolveToolbarHighlight(toolbar: Toolbar) {
     type: 'select',
     name: 'highlight-theme',
     icon: import('../assets/highlight.svg').then(m => m.default),
-    value: options.markdownOptions.highlightTheme || DEFAULT_HIGHLIGHT_THEME,
+    value: options.markdownOptions?.highlightTheme || DEFAULT_HIGHLIGHT_THEME,
     tip: 'markdown 代码高亮主题',
     options: HIGHLIGHT_THEMES.map(item => ({
       label: item,
       value: item,
     })),
     onTrigger(editor, value) {
-      editor.options.markdownOptions.highlightTheme = value
+      setOrCreate(editor.options, 'markdownOptions', 'highlightTheme', value)
 
       // 重置所有活跃 md 文件的编译状态
       editor.files.preview.relativeFiles.forEach((_v, file) => {

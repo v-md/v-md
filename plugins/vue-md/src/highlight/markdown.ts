@@ -67,7 +67,7 @@ export type HighlightDispose = () => void
  * 参考：https://github.com/vuejs/vitepress/blob/main/src/node/markdown/plugins/highlight.ts
  */
 export async function highlight(editor: Editor): Promise<[HighlightHandler, HighlightDispose]> {
-  const options = editor.options.markdownOptions
+  const options = editor.options.markdownOptions || {}
 
   const highlighter = await createHighlighter({
     themes: [],

@@ -25,6 +25,7 @@
   ],
   "scripts": {
     "tsc": "vue-tsc --noEmit --skipLibCheck -p tsconfig.json",
+    "build-check": "cross-env BUILD_CHECK=true vite build",
     "build": "vite build"
   },
   "publishConfig": {

@@ -6,10 +6,7 @@ import type {
   PluginScanResult,
 } from '../plugin'
 import type { ToolbarType } from '../toolbar'
-import type {
-  EditorOptions,
-  EditorOptionsResolved,
-} from './types'
+import type { EditorOptions } from './types'
 import {
   EventEmitter,
   isFunction,
@@ -50,7 +47,7 @@ export class Editor extends EventEmitter<PluginHooks> {
    * 编辑器的选项
    * @reactive
    */
-  options: EditorOptionsResolved
+  options: EditorOptions
 
   /** Monaco Editor 管理对象 */
   monaco: Monaco

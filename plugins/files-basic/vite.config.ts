@@ -1,7 +1,11 @@
-import type { UserConfig } from 'vite'
-import { defineConfig } from 'vite'
-import dts from 'vite-plugin-dts'
-import { getExternalDependencies } from '../../build/external'
+import type {
+  UserConfig,
+} from '../../build'
+import {
+  defineConfig,
+  dtsPlugin,
+  getExternalDependencies,
+} from '../../build'
 
 /**
  * // https://vitejs.dev/config/
@@ -11,12 +15,7 @@ export default defineConfig(async () => {
 
   return {
     plugins: [
-      dts({
-        entryRoot: __dirname,
-        pathsToAliases: false,
-        include: ['src'],
-        exclude: ['**/templates'],
-      }),
+      dtsPlugin(),
     ],
     build: {
       lib: {

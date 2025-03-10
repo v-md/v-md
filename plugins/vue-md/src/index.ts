@@ -3,7 +3,7 @@ import type {
   HighlightHandler,
 } from './highlight'
 import { definePlugin } from '@v-md/core'
-import { pushOrCreate } from '@v-md/shared'
+import { pushOrCreate, setOrCreate } from '@v-md/shared'
 import { compileVueMd } from './compile'
 import {
   highlight as createHighlighter,
@@ -30,12 +30,12 @@ export function vueMdPlugin() {
     },
 
     onOptionsResolved: async (editor) => {
-      if (editor.options.markdownOptions.highlight) {
+      if (editor.options.markdownOptions?.highlight) {
         return
       }
 
       [highlight, disposeHighlight] = await createHighlighter(editor)
-      editor.options.markdownOptions.highlight = highlight
+      setOrCreate(editor.options, 'markdownOptions', 'highlight', highlight)
     },
 
     onDestroy: () => {
@@ -79,7 +79,7 @@ export function vueMdPlugin() {
       const {
         baseScripts = true,
         baseStyles = true,
-      } = options.markdownOptions
+      } = options.markdownOptions || {}
 
       if (baseStyles) {
         mainFile.compiler.cssExtra.set(

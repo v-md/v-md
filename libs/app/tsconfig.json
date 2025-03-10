@@ -4,6 +4,7 @@
   "include": [
     "src",
     "*.config.ts",
-    "../core/src"
+    "../core/src",
+    "../../plugins/*/src"
   ]
 }

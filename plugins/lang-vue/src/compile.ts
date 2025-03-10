@@ -236,7 +236,7 @@ async function compileSfcStyle(context: VueCompileContext) {
     hashId,
   } = context
   const { editor, file } = compiler
-  const { sfcOptions } = editor.options
+  const { sfcOptions = {} } = editor.options
 
   const hasScoped = descriptor.styles.some(s => s.scoped)
   if (hasScoped) {

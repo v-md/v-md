@@ -208,7 +208,9 @@ export class Monaco extends EventEmitter<MonacoEvents> {
 
     this.on('onMounted', () => {
       stopOptionsWatcher = watch(() => this.editor.options.monacoOptions, (options) => {
-        this.editorInstance.value?.updateOptions(options)
+        if (options) {
+          this.editorInstance.value?.updateOptions(options)
+        }
       })
     })
   }

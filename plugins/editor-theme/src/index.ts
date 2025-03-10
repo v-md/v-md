@@ -1,7 +1,7 @@
 import type { ToolbarItemOptions } from '@v-md/core'
 import { shikiToMonaco } from '@shikijs/monaco'
 import { definePlugin } from '@v-md/core'
-import { pushOrCreate } from '@v-md/shared'
+import { pushOrCreate, setOrCreate } from '@v-md/shared'
 import { createHighlighter } from 'shiki'
 
 declare module '@v-md/core' {
@@ -41,9 +41,7 @@ export function editorThemePlugin() {
       shikiToMonaco(highlighter, monaco.monaco)
 
       // 若用户没有设置初始主题，设为默认主题
-      if (!monaco.editor.options.monacoOptions.theme) {
-        monaco.editor.options.monacoOptions.theme = DEFAULT_THEME
-      }
+      setOrCreate(monaco.editor.options, 'monacoOptions', 'theme', DEFAULT_THEME)
     },
 
     onToolbarInit: (toolbar) => {
@@ -57,7 +55,7 @@ export function editorThemePlugin() {
         type: 'select',
         name: 'editor-theme',
         icon: import('./theme.svg').then(m => m.default),
-        value: editor.options.monacoOptions.theme || DEFAULT_THEME,
+        value: editor.options.monacoOptions?.theme || DEFAULT_THEME,
         tip: '编辑器主题',
         options: THEME_OPTIONS,
         onTrigger(editor, value) {

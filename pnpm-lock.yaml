@@ -421,6 +421,9 @@ importers:
       '@v-md/plugin-editor-volar':
         specifier: workspace:^
         version: link:../../plugins/editor-volar
+      '@v-md/shared':
+        specifier: workspace:^
+        version: link:../../libs/shared
       monaco-editor-core:
         specifier: 'catalog:'
         version: 0.52.2

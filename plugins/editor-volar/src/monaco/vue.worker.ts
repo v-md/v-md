@@ -34,10 +34,10 @@ self.onmessage = async (msg: MessageEvent<WorkerMessage>) => {
   }
 
   const {
-    cdnUrl,
+    cdnUrl = '',
     cdnDataUrl,
     cdnType,
-    tsVersion,
+    tsVersion = 'latest',
     locale,
   } = msg.data
   const ts = await importTsFromCdn(cdnUrl, tsVersion)

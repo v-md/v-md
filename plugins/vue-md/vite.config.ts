@@ -1,8 +1,12 @@
-import type { UserConfig } from 'vite'
-import { defineConfig } from 'vite'
-import dts from 'vite-plugin-dts'
+import type {
+  UserConfig,
+} from '../../build'
 import { nodePolyfills } from 'vite-plugin-node-polyfills'
-import { getExternalDependencies } from '../../build/external'
+import {
+  defineConfig,
+  dtsPlugin,
+  getExternalDependencies,
+} from '../../build'
 
 /**
  * // https://vitejs.dev/config/
@@ -15,11 +19,7 @@ export default defineConfig(async () => {
 
   return {
     plugins: [
-      dts({
-        entryRoot: __dirname,
-        pathsToAliases: false,
-        include: ['src'],
-      }),
+      dtsPlugin(),
       nodePolyfills({
         include: [],
         globals: {

@@ -71,7 +71,7 @@ export class Toolbar {
     const {
       visible = true,
       items = cloneDeep(this.presetItems),
-    } = this.editor.options.toolbars[this.type] || {}
+    } = this.editor.options.toolbars?.[this.type] || {}
 
     this.props.visible = visible
     this.props.items = items
