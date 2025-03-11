@@ -1,3 +1,5 @@
+[English](./README.md) | 简体中文
+
 # v-md
 `v-md` 是一款基于 [Vue](https://vuejs.org/) 的在线 Markdown 编辑器。
 
