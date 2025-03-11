@@ -45,7 +45,7 @@ export interface EditorOptions {
 
   /**
    * npm 依赖资源的类型。Monaco Editor 的语言服务需要设置此字段
-   * @default 'unpkg'
+   * @default 'jsdelivr'
    */
   cdnType?: 'unpkg' | 'jsdelivr'
 

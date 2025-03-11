@@ -7,11 +7,9 @@ env:
   image_name: vmd_playground
   docker_file: .sahoc/build-playground.Dockerfile
   k8s_cluster_name: sahoc-common-cloud-1
-  setting_group: v_md
-  packages_path: websites/playground
   OUTPUT_BUILD_SUCCESS: false
   OUTPUT_TAG_VERSION: '@v-md/playground@0.0.1'
-  OUTPUT_FINAL_VERSION: 0.0.1
+  OUTPUT_AUTO_VERSION: 0.0.1
 runs-on: openx_executer_common
 jobs:
   执行构建:
@@ -21,6 +19,11 @@ jobs:
         with:
           code_repository: '{{ code_repository }}'
 
+      - name: 自动生成版本号
+        uses: auto_version
+        with:
+          base_version: vmd
+
       - name: 打印环境变量
         run: printenv
 
@@ -29,40 +32,24 @@ jobs:
           pnpm i
 
       - name: 构建应用
+        env:
+          CDN_URL: https://unpkg.openx.huawei.com
+          CDN_TYPE: unpkg
         run: |
           pnpm -F @v-md/playground build
-
-      - name: 更新版本信息
-        run: |
-          pnpm run change-version {{ packages_path }}
-
-      - name: 提交更新信息
-        run: |
-          set -e
-
-          git config user.name p_openx
-          git config user.email openx1@huawei.com
-          git config http.sslVerify false
-          git config https.sslVerify false
-
-          git add .changeset/changeset-playground-*.md {{ packages_path }}/CHANGELOG.md {{ packages_path }}/package.json
-          git commit -m 'chore: update playground version {{ OUTPUT_TAG_VERSION }}'
-          git tag {{ OUTPUT_TAG_VERSION }}
-          git push origin {{ OUTPUT_TAG_VERSION }}
-          git push
 
       - name: 构建 docker 镜像
         uses: docker_build
         with:
           docker_file: '{{ docker_file }}'
           image_name: '{{ image_name }}'
-          image_version: '{{ OUTPUT_FINAL_VERSION }}'
+          image_version: '{{ OUTPUT_AUTO_VERSION }}'
 
       - name: 上传 docker 镜像
         uses: image_upload
         with:
           image_name: '{{ image_name }}'
-          image_version: '{{ OUTPUT_FINAL_VERSION }}'
+          image_version: '{{ OUTPUT_AUTO_VERSION }}'
           project: '{{ project }}'
           code_repository: '{{ code_repository }}'
 
@@ -87,7 +74,7 @@ jobs:
                 replicas: 3
                 containers:
                   - name: '{{ image_name }}'
-                    image: 'sahoc-images.divista.huawei.com:80/k8s-dongguan-1/{{ image_name }}:{{ OUTPUT_FINAL_VERSION }}'
+                    image: 'sahoc-images.divista.huawei.com:80/k8s-dongguan-1/{{ image_name }}:{{ OUTPUT_AUTO_VERSION }}'
                     resources:
                       limits:
                         cpu: 2000m
@@ -100,7 +87,7 @@ jobs:
                 listen_protocol: https
                 target_port: 80
                 target_protocol: TCP
-                source_path: /playground/
+                source_path: /v-md/
                 destination_path: /
                 ca_name: openx_cicd--openx-ssl
                 domain_type: external
@@ -109,7 +96,7 @@ jobs:
                 listen_protocol: http
                 target_port: 80
                 target_protocol: TCP
-                source_path: /playground/
+                source_path: /v-md/
                 destination_path: /
                 domain_type: external
                 type: default

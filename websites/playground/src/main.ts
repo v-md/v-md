@@ -17,7 +17,7 @@ const noFilesNav = /files=false/.test(search)
 
 if (pathname.endsWith('/view') || pathname.endsWith('/view/')) {
   createViewer('#app', {
-    cdnUrl: 'https://unpkg.openx.huawei.com',
+    cdnUrl: CDN_URL,
     value: hash.slice(1),
   })
 }
@@ -29,8 +29,8 @@ else {
       },
       navVisible: !noFilesNav,
     },
-    cdnUrl: 'https://unpkg.openx.huawei.com',
-    cdnType: 'unpkg',
+    cdnUrl: CDN_URL,
+    cdnType: CDN_TYPE,
     value: hash.slice(1),
     plugins: (editor) => {
       editor.use(editorVolarPlugin({

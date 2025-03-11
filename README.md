@@ -1,7 +1,7 @@
 # v-md
-`v-md` 是一款基于 [Vue](https://vuejs.org/) 的在线 Markdown 编辑器。
+`v-md` is an online Markdown editor based on [Vue](https://vuejs.org/).
 
-不同于主流的 Markdown 编辑器，它是由编译器驱动的，因此你可以在 Markdown 中混用 Vue 语法，进行更加灵活的内容展示：
+Unlike mainstream Markdown editors, it is driven by a compiler. Therefore, you can mix Vue syntax in Markdown for more flexible content display:
 
 ````md
 <script setup>
@@ -27,65 +27,60 @@ h1 {
 </style>
 ````
 
-[点击前往演练场查看 Demo 效果](https://vmd.openx.huawei.com/playground/)
+[Click here to go to the playground to view the Demo effect](https://v-md.github.io/v-md/)
 
-## 快速上手
-`v-md` 是以 npm 包的形式发布的，你可以将它集成到自己的 Web 应用中。
+## Quick Start
+`v-md` is released as an npm package, and you can integrate it into your own web application.
 
-### 安装依赖
-首先在你的项目中创建 `.npmrc` 文件，在其中添加以下内容：
-```ini
-@v-md:registry=https://cmc.centralrepo.rnd.huawei.com/artifactory/api/npm/product_npm/
-```
-
-接着使用自己的包管理工具(`npm/yarn/pnpm`)安装必要的依赖：
+### Install Dependencies
+Use your own package management tool (`npm/yarn/pnpm`) to install the necessary dependencies:
 ```sh
 npm install -S @v-md/app monaco-editor-core vue
 ```
 
-依赖说明如下：
-- `@v-md/app`: 编辑器应用。
-- `monaco-editor-core`: 编辑器核心依赖 [Monaco Editor](https://microsoft.github.io/monaco-editor/)。
-- `vue`: 编辑器核心依赖 [Vue](https://vuejs.org/)。
+Dependency descriptions are as follows:
+- `@v-md/app`: Editor application.
+- `monaco-editor-core`: The core dependency of the editor is [Monaco Editor](https://microsoft.github.io/monaco-editor/).
+- `vue`: The core dependency of the editor is [Vue](https://vuejs.org/).
 
-### 在代码中集成
-在你的 Web 应用代码中引入编辑器：
+### Integrate in the Code
+Import the editor in your web application code:
 ```js
 import { createEditor } from '@v-md/app'
 
 const editor = createEditor({
-  // 设置编辑器挂载 DOM 节点的属性与样式
+  // Set the attributes and styles of the DOM node where the editor is mounted
   attrs: {
     style: { height: '100vh' },
   },
-  // npm 中心仓资源地址
-  cdnUrl: 'https://unpkg.openx.huawei.com',
-  // npm 中心仓的类型，支持 unpkg 或 jsdelivr
-  cdnType: 'unpkg',
-  // 编辑器初始内容。不传则展示初始模板
+  // The resource address of the npm central repository. By default, it is the npm address of jsdelivr
+  cdnUrl: 'https://cdn.jsdelivr.net/npm',
+  // The type of the npm central repository, supporting unpkg or jsdelivr. By default, it is jsdelivr
+  cdnType: 'jsdelivr',
+  // The initial content of the editor. If not passed, the initial template will be displayed
   value: '',
-  // 更多选项 ...
+  // More options ...
 })
 
-// 挂载到指定的 DOM 节点
+// Mount to the specified DOM node
 editor.mount('#app')
 ```
 
-你也可以参考 [Demo 的代码](./websites/playground/src/main.ts)，了解编辑器的基础使用。
+You can also refer to the [Demo's code](./websites/playground/src/main.ts) to understand the basic usage of the editor.
 
-**注意：** 编辑器的 API 文档当前正在建设中，但是我们发布的 npm 包提供了完整的 `.d.ts` 类型提示，你可以借助 IDE 的智能提示功能了解编辑器的 API，目前也可以自行查找源码中的类型声明：
-- [createEditor 创建编辑器实例](./libs/core/src/modules/editor/types.ts)
-- [createViewer 渲染内容](./libs/renderer/src/types.ts)
+**Note:** The API documentation of the editor is currently under construction. However, the npm package we released provides complete `.d.ts` type hints. You can use the intelligent prompt function of the IDE to understand the API of the editor. Currently, you can also find the type declarations in the source code by yourself:
+- [createEditor Create an editor instance](./libs/core/src/modules/editor/types.ts)
+- [createViewer Render content](./libs/renderer/src/types.ts)
 
-### (可选)安装 Vue 语言服务
-为了解决 `Web Worker` 在不同构建工具中的兼容性问题，`0.0.3` 版本开始，编辑器默认不再集成语言服务功能。
+### (Optional) Install Vue Language Service
+To solve the compatibility issues of `Web Worker` in different build tools, the editor does not integrate the language service function by default.
 
-如果需要在编辑时获得 `Vue`、`Javascript`、`TypeScript` 的语言服务，需要单独安装插件：
+If you need to obtain the language services of `Vue`, `Javascript`, and `TypeScript` during editing, you need to install the plugin separately:
 ```sh
 npm i -S @v-md/plugin-editor-volar
 ```
 
-然后在使用时引入插件，传入必要的两个 `Web Worker`，语言服务方可正常工作(下面的例子仅在构建工具为 `Vite` 时有效，`Webpack` 等其他构建工具需要根据 `Web Worker` 的用法自行调整)。
+Then import the plugin when using it and pass in the necessary two `Web Worker` so that the language service can work properly (the following example is only valid when the build tool is `Vite`. Other build tools such as `Webpack` need to be adjusted according to the usage of `Web Worker` by yourself).
 ```js
 import { createEditor } from '@v-md/app'
 import { editorVolarPlugin } from '@v-md/plugin-editor-volar'
@@ -99,57 +94,54 @@ const editor = createEditor({
       editorWorker: new EditorWorker()
     }))
   },
-  // 更多选项 ...
+  // More options ...
 })
 
-// 挂载到指定的 DOM 节点
+// Mount to the specified DOM node
 editor.mount('#app')
 ```
 
-## 功能特性
-`v-md` 不仅仅是一个单纯的 Markdown 编辑器，由于其编译器驱动的特点，可以支持更复杂、更灵活的编辑场景。
+## Functional Features
+`v-md` is not just a simple Markdown editor. Due to its compiler-driven characteristics, it can support more complex and flexible editing scenarios.
 
-### 支持 Vitepress 的 Markdown 拓展语法
-编辑器本身的 Markdown 语法支持已经比较完善，在此基础上，`v-md` 还支持 [Vitepress 的 Markdown 拓展语法](https://vitepress.dev/zh/guide/markdown)。
+### Support Vitepress's Markdown Extended Syntax
+The Markdown syntax support of the editor itself is relatively complete. On this basis, `v-md` also supports [Vitepress's Markdown extended syntax](https://vitepress.dev/guide/markdown).
 
-[点此查看 DEMO 示例](https://vmd.openx.huawei.com/playground/?files=false#eNqlV3tTG0cS/yrjtauECVoB9l1d7WFXKIrEXJXB5SiXP1hXsdKOxNqrWdXuLODIVInEHA9j49yR8wsHE4eHz2XJjhMbBJjvkmhWq7/uK1zPzkpaHYlDKiq9prun+9eP6ekdLUhEy2FJkYxc3rJpPKfl5auORaQuyXA+skwd25KS0UwHd0lpi1BMKAgXVIKQGu5xVElBAYXTJlzM16o0TmneURIJl+SvZWUrj8mUPO5qk9iQ01YuAXIfmhrFDk3oBnzBWrZdQo0clrGTi6dsa9LBNoBRJa57ukvYdNKgSpicVgm8Aek1fD15Pd/y4qKWl6a7Wq4RHU/JOf39Pp08ify5/7DSw+ruAnv1jVfcQgWHXjfxubRlWrZiYx2sdXbW9g79he/9N7Psuy3v33Psxb3OzjbBrI0x+WsGFMcd43Os/KU7PwU7VcItrG97T/ZZebd+cFcl9b37fuk79mqWvd387/6St1L2lmZgWd158XOR/2HLr1VyAyW1lIkdHl/+uiF++m3cXA9YlolucNF49AUsJbJUYB3+clFAi84gI9R7A9lGdpzGNdPIEqzD+lTPn7u7W6K9EVGE0hA0DCFprE/19ArRz3HK1pBDbQPSFLA0AEqwRpvYT/Vw0SAegznrqqEShWq6piClp7tb4Rz/8EF9boktl6t7G97COzb/ctRbKHqrCyJEtYc3EeY7EZu/ByG90tEotqxBx91UUGA5zb6mW5MkbtDo/3iwMZEyrRSQHXAiYRqphK5RLZFxTVPOXXVOh+hqj0rs4GswgDqSIwNAHRsdpVb6ypUxVN1/WN2piATWFt94xZnqzi0g8hJa3AZWtbJUq2yx5UVwAVgA2XsyV//2fm1lzZu/29TMLYVKGyXSLMLSLnsAAoqiIINkLJUkxyEF8NZIQEApa0oO+HwrF6NGPiIllhH2pGYTg2SjIiGpXY2ukSy20SfJkUtRWUG2XOdXdmGqGaaDal/sevNfeWsbtdVb1b2ntSczELixMTjIBE6bY5lYNq1sR+wCNk2rC/3doPiSjR3nRIxHeGysqRSC8bFBL7gpVH96B44NxNB/sektbqjkPBo9MTySHISgnUdsv+K//LK2su3Nv2Wr2+zweb245v247G/NwwH11p96995Ud9eqO7dZZYUdHtS+3gBV9bnb/uZM9XDdmyn/XPyCG+Rak0OXAqVQbGzxWbVyR+j1Hv1QX6+w+Wf+u3cif5BO0ML2Kn6pBM3iiKKhi5dGLif7h5MCY3lXKIru9+des9nXAgjoOqLis/7Lw0PDHwsFj55AVcGR8L88YC/ug58QlPqDZ7xvLBShyOqrRa4mMFJ7fovd5rq919scJBhZKbF/zEJJRdQP9H+aHBoZDtT760st9Tub3mMeIv+Htfrjb9nBK/av2+E+yInIKXt8r5lWPMW7LhRARnNNKu4C3nsVFLt4fcCCnkygXcSCDp5IIFmGwoGOGOQavsZpzlRJn2ue5wJ9poEm4hnLPqdK1NItKHXEf6HnIwU6fUiWDV2Vgg0IFQqBhEzxFEXToBm0wKkGbl8i0BpY4uBPIghc0wHos6z0Te3OS/C+/vx+tVIKXSqcBSW/5BVvE6jjdOO6szF1bdJYIZRzsuDzBWik0EXHKdZPxAQrwCTuqwiWKBB/5mHt5uZ7Q3os4x9ZadfhhnmkR0+kLR2jDKdBmo+HhHdX3chk/jiWy9BrJ7AehRKPhzgaMv263i7xwQfHQyoS9lNxtb7ywC+Xfyo+Zv9cgiW0CPbVIiz/OP5B27bsWFcEHOaU//PgM9EMoz6E/fF4jkDxseW3AY86imkQHCduLoVtBxV6YA+oZXfLcLAbgryLUsQFe9E5FGs0aE5AvVBwLf6ZI/wzwA9BHLV3rrdpUdhib78XpqHLsN031b07MAaw/SLbuvXbZlr8s0f4Z1swgkNZ3mezGyIitYU5r/QjHN2+PiTDFW0QGUbMtqDV9m6KK4cHO56FKwnuuTDdaBTsZowsDI4Q/kRnJwS/E31IYT5EBTEedsQm4M7J8zsndlr+FKbMgWALz1NnogFcqAHkQVFE2taRghKS7XFtwqAchrCLBAjUsoimUca2cigCiGuIAlCi4r8fTHiVtg/JfB6ODshhkN8/H4c+FFDahmEO9+fzLfQuBtyhAGcIcqIxeAunGts64HNazlkw7HfETmr5PL/32wByPFF8FIb+MKfHfDKBATBvmNgeyVMDgtn2hEI1O4upeEgZ/GQY7gxVCq4mzrzqTAkOzwa2J+BhpsnLWbprhk83RzYK5mUM843LbQqxlEt0gBGR02DomRwKQgUdIukMTgFypwGS2i5uF/3bUXp6HKevtejRpyPIBL9vf9v1M/Kfmvp48QUTWDuWUVWC3KlS0MV+4VmrkRVp+sr/AI3+yZc=)
+[Click here to view the DEMO example](https://v-md.github.io/v-md/?files=false#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)
 
-**注意：** 由于目前暂未实现 Markdown 主题 CSS，所以 Markdown 内容看不出样式，但是渲染出的 HTML 结构是完全符合预期的。
-我们可以在入口文件中引入样式，或者等待后续 Markdown 主题功能完成
+### Support Using Vue in Markdown
+Similar to [VitePress](https://vitepress.dev/guide/using-vue), the editor supports directly using Vue syntax in Markdown, including:
+- Support declaring variables in `<script setup>` and performing template binding.
+- Support declaring styles in `<style>`.
 
-### 支持在 Markdown 中使用 Vue
-和 [VitePress](https://vitepress.dev/zh/guide/using-vue) 一样，编辑器支持在 Markdown 中直接使用 Vue 语法，包括：
-- 支持在 `<script setup>` 中声明变量，并进行模板绑定
-- 支持在 `<style>` 中声明样式
+[Click here to view the DEMO example](https://v-md.github.io/v-md/?files=false#eNqNVG1qGzEQvYqq/LBD7N2EUgquE1JCSltIW9pAKVEg8u7YVrwrCX34A7PQ/z1BL9AzhP7oaVJ6jY603sSOIQRsg+Y9ad7Mm/HFkkpeAu1RUWplXLfkOrm2StIOFfaNKnIwtDfkhYUOzZR0IB2Sl0wSwlZ3LKM9EiMhNvUQzoyOndO2l6Ze6skoURrkPBl7PgORZKpMkXdccAfWpbnAHzwnxksnSkjAlt2BUTMLBsUwGt6uOnVOm+FTdcqKSfyg0gkszhf6voozrmnVuS9N5jBPyvzxmvo2M0I7YsF5fcRk/RRZEgNDUpGhUSVpocoWk0ziNetIaUfkMODt1lsoCkW+KlPkz1q7DSFTWNGKso9RJodeZk4oSXiet3frtkVWMuWFh729WFM/rcWgDCZ3yHIZU1WIICak9o5Mu6XKoThkFCFGSRq5/YF3Dl8/zgqRTRDENIwenYQTOYN+WuOR+015MuZTIJELeUhTC64qEnywZJmUi66DuYuZL/79/PP396/bm++3Nz8u243Bs9ksGXCR++BrLPLq6gqnYtUDjvUfxFgUaN2iAMw/PmiKL5TpYYfyV7F0JpucG/jO/v5LPhzWHGzP6pVN84PP68aXXMjE2cd9v/M5M4Dz+FrrB26vCAGow2kzUPUoNNfa+N1NytDBdmuHax3mYENg0LOuz+Ewy6EYPX3jsMNaFGA+6jBEm5vnuBmBq5fv9MsH7CCjcWkCeG3nNaIN4FpNcUnvMBwkX6y2dutiDX4Gqwofcta0gZc5yljjcZz/2bvYKiFH5/Z0jsptI9IZD5vU99vxbAzZ5D6+vvXoxMmTSn+evLh7byocfMJyH2i5YBS9Y/QyJtj+D2lcodXlf3K4w98=)
 
-[点此查看 DEMO 示例](https://vmd.openx.huawei.com/playground/?files=false#eNqNVG1qGzEQvYqq/LBD7N2EUgquE1JCSltIW9pAKVEg8u7YVrwrCX34A7PQ/z1BL9AzhP7oaVJ6jY603sSOIQRsg+Y9ad7Mm/HFkkpeAu1RUWplXLfkOrm2StIOFfaNKnIwtDfkhYUOzZR0IB2Sl0wSwlZ3LKM9EiMhNvUQzoyOndO2l6Ze6skoURrkPBl7PgORZKpMkXdccAfWpbnAHzwnxksnSkjAlt2BUTMLBsUwGt6uOnVOm+FTdcqKSfyg0gkszhf6voozrmnVuS9N5jBPyvzxmvo2M0I7YsF5fcRk/RRZEgNDUpGhUSVpocoWk0ziNetIaUfkMODt1lsoCkW+KlPkz1q7DSFTWNGKso9RJodeZk4oSXiet3frtkVWMuWFh729WFM/rcWgDCZ3yHIZU1WIICak9o5Mu6XKoThkFCFGSRq5/YF3Dl8/zgqRTRDENIwenYQTOYN+WuOR+015MuZTIJELeUhTC64qEnywZJmUi66DuYuZL/79/PP396/bm++3Nz8u243Bs9ksGXCR++BrLPLq6gqnYtUDjvUfxFgUaN2iAMw/PmiKL5TpYYfyV7F0JpucG/jO/v5LPhzWHGzP6pVN84PP68aXXMjE2cd9v/M5M4Dz+FrrB26vCAGow2kzUPUoNNfa+N1NytDBdmuHax3mYENg0LOuz+Ewy6EYPX3jsMNaFGA+6jBEm5vnuBmBq5fv9MsH7CCjcWkCeG3nNaIN4FpNcUnvMBwkX6y2dutiDX4Gqwofcta0gZc5yljjcZz/2bvYKiFH5/Z0jsptI9IZD5vU99vxbAzZ5D6+vvXoxMmTSn+evLh7byocfMJyH2i5YBS9Y/QyJtj+D2lcodXlf3K4w98=)
+### Complete Vue Playground
+The editor itself is also a very complete **Vue playground**, supporting `vue`, `js`, `ts`, `css`, `json` files and the mutual import between files.
 
-### 完整的 Vue 演练场
-编辑器本身也是非常完整的**Vue 演练场**，支持 `vue`、`js`、`ts`、`css`、`json` 文件以及文件之间的互相导入。
+[Click here to view the DEMO example](https://v-md.github.io/v-md/#eNqVVctu00AU/ZWRWSSVElu0FJBJoyJUJJB4CLqrK9Wxb5JpPA/NjBNXkRewYYn4CfgGBL9TwY5f4M7YsWMiWlgkk5lzH2fOvXdytvZ4zMALPa0Sb+BR/VRkKSgvNCqHgZcIboAbxBFM5jRLFXAvbN2eCCb9ZQ4d32mc6Y7zSCeKSkM0mFySLOazo8gzOvLGkYo42mlDpBJSkyOSwpRyeG13o7WFCbG5QqKNonxmT8pxf8+uo6CK66K4AwNMZrEBd0LIKKXL+idu5Hi9drFIWQ61iZUZBbKF0ZYkWaw1cmNXw5WKpQRVc7QWaKMzYcaY1i6NY/D3LMDTNkdrOAoaol45aMSkPIXCT7S+WU2/ZUdqhSZCoW1I7sqCaJHRlChIH1WYjNMUhQvJQ1m4o3I7Z25opn1zS0oopFCGTHOeGCo46kSTRX9vkz7OQJl+78f7r9cfvv388vn646df39/1XJEw2/n2HZmNNGSx9C+14DenXdvgUe2D7RJiQqdy5GHP2X3kzY2ROgyCnMvFzBcSeOHP83gF1E8EC9Du2AqtDaqPX7j3Vc4NZeCDZsOJEisNCslEno1dDqqcOsFQVcoSLxFZpgu4Or2S7S1exHK3fCz9j1kYR7wKRewgkakSjPT8AIcx2ExWrzGpgaZLWmRdFYSUnQiutK2RlbvBDd6PT+nMFQFt2lHiuHFk7K2qUUAdpeBI3w4D4kNyd//ALvsH9+xyeP+Bc5vkxmCOY0cGXd2KPqeKzmagRkFl4GJcXFzY1ENbR44T49iVqDMCLpgTAE27utu7b2vOYspv7d5WJQXYCo+lbJTqCGyB6rgWmaUI4gO1cevjZ89nAvun37uDE4gt3iVo+Wzz6+j8T81uxaY4T6+knbRu0+ObNQOsgu37k7cvocDfrl8teKmLCpEKsKOXOB8NxkSaZ/XA7DhW4BvAhwNbRvDKbJLzFGls2cVZJlbPnFT4npzqkwKZ6w1J94fRMX2+e57MIVm059sDh5WwFb/96gf+YRNvSQ3+VYD+g8tZhI9kGnnnLsHu+G6qgk/Tb5s6Z7M=)
 
-[点此查看 DEMO 示例](https://vmd.openx.huawei.com/playground/#eNqVVctu00AU/ZWRWSSVElu0FJBJoyJUJJB4CLqrK9Wxb5JpPA/NjBNXkRewYYn4CfgGBL9TwY5f4M7YsWMiWlgkk5lzH2fOvXdytvZ4zMALPa0Sb+BR/VRkKSgvNCqHgZcIboAbxBFM5jRLFXAvbN2eCCb9ZQ4d32mc6Y7zSCeKSkM0mFySLOazo8gzOvLGkYo42mlDpBJSkyOSwpRyeG13o7WFCbG5QqKNonxmT8pxf8+uo6CK66K4AwNMZrEBd0LIKKXL+idu5Hi9drFIWQ61iZUZBbKF0ZYkWaw1cmNXw5WKpQRVc7QWaKMzYcaY1i6NY/D3LMDTNkdrOAoaol45aMSkPIXCT7S+WU2/ZUdqhSZCoW1I7sqCaJHRlChIH1WYjNMUhQvJQ1m4o3I7Z25opn1zS0oopFCGTHOeGCo46kSTRX9vkz7OQJl+78f7r9cfvv388vn646df39/1XJEw2/n2HZmNNGSx9C+14DenXdvgUe2D7RJiQqdy5GHP2X3kzY2ROgyCnMvFzBcSeOHP83gF1E8EC9Du2AqtDaqPX7j3Vc4NZeCDZsOJEisNCslEno1dDqqcOsFQVcoSLxFZpgu4Or2S7S1exHK3fCz9j1kYR7wKRewgkakSjPT8AIcx2ExWrzGpgaZLWmRdFYSUnQiutK2RlbvBDd6PT+nMFQFt2lHiuHFk7K2qUUAdpeBI3w4D4kNyd//ALvsH9+xyeP+Bc5vkxmCOY0cGXd2KPqeKzmagRkFl4GJcXFzY1ENbR44T49iVqDMCLpgTAE27utu7b2vOYspv7d5WJQXYCo+lbJTqCGyB6rgWmaUI4gO1cevjZ89nAvun37uDE4gt3iVo+Wzz6+j8T81uxaY4T6+knbRu0+ObNQOsgu37k7cvocDfrl8teKmLCpEKsKOXOB8NxkSaZ/XA7DhW4BvAhwNbRvDKbJLzFGls2cVZJlbPnFT4npzqkwKZ6w1J94fRMX2+e57MIVm059sDh5WwFb/96gf+YRNvSQ3+VYD+g8tZhI9kGnnnLsHu+G6qgk/Tb5s6Z7M=)
+### Support Directly Importing Dependencies in `ESM` Format from the `npm` Central Repository
+If an npm artifact repository provides scripts in `esm` format, we can directly import these dependencies in the code by declaring the mapping between the dependency names (paths) and resource addresses in the `/import-map.json` file, without having to install them locally via methods like `npm install`.
 
-### 支持直接引入 `npm` 中心仓中 `ESM` 格式的依赖
-如果一个 npm 制品仓提供了 `esm` 格式的脚本，我们可以通过在 `/import-map.json` 文件中声明依赖名称(路径)与资源地址的对应关系，来直接在代码中引入这些依赖，而不需要通过 `npm install` 等方式安装到本地。
+Regarding `/import-map.json`, it follows the native mechanism of the browser's `<script type="importmap">`. For specific details, please refer to the [MDN documentation](https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/script/type/importmap).
 
-关于 `/import-map.json`，它遵循浏览器 `<script type="importmap">` 的原生机制，具体可以参考 [MDN 文档](https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/script/type/importmap)。
-
-当然，`v-md` 还进行了拓展，支持了 `css`、`json` 等非脚本格式的远程依赖导入。
+Of course, `v-md` has also been extended to support the import of remote dependencies in non - script formats such as `css` and `json`.
 
 ```json
 {
   "imports": {
-    "vue": "https://unpkg.openx.huawei.com/vue@latest/dist/vue.runtime.esm-browser.js",
-    "element-plus": "https://unpkg.openx.huawei.com/element-plus@latest/dist/index.full.min.mjs",
-    "element-plus/": "https://unpkg.openx.huawei.com/element-plus@latest/",
-    "@element-plus/icons-vue": "https://unpkg.openx.huawei.com/@element-plus/icons-vue@2/dist/index.min.js"
+    "vue": "https://cdn.jsdelivr.net/npm/vue@latest/dist/vue.runtime.esm-browser.js",
+    "element-plus": "https://cdn.jsdelivr.net/npm/element-plus@latest/dist/index.full.min.mjs",
+    "element-plus/": "https://cdn.jsdelivr.net/npm/element-plus@latest/",
+    "@element-plus/icons-vue": "https://cdn.jsdelivr.net/npm/@element-plus/icons-vue@2/dist/index.min.js"
   },
   "scopes": {}
 }
 ```
 
 ```ts
-// 除了 ESM 脚本，css、json 也支持远端导入
+// In addition to ESM scripts, css and json also support remote import
 import {
   Check,
   Delete,
@@ -164,25 +156,27 @@ import { ref } from 'vue'
 import 'element-plus/dist/index.css'
 ```
 
-[点此查看 DEMO 示例](https://vmd.openx.huawei.com/playground/#eNqlVl1uGzcQvgrLPMgBrBXcnxdVEdzGLpoAaY04QB68BkztjiTGXJIguZIMQUDfe4JeoGcI8pDTJMg1MiR3pVUce70JIK0ocr75+WaWMxdrKlkBdEh5oZVx/YLp5I1Vkh5Sbv9QIgdDh1MmLBzSTEkH0qHwOpWEpBXGpnRIwo7fW5Tg/6d07py2w8GglPp6ligNcpXMS7YEnmSqGKDcsWAOrBvkHB/4PzGldLyABGzRnxi1tGDQmZQe1spBQIEe9LUog9VWK03Anjkuc1gl01KIpOAyKe40M/hmOw2Fx3saORJp+w8l6g7s8Y/NQHwMPgRvcBPMptRmqCsmZ5NK/GBOr+Hm1Y3e5fsF03RzuCuCqCy/P/sjmxmuHbHgSj1OZVRF1sTAlGzI1KiC9NDFXuPoVPxeOqfk9rwZ1U5wb7sZYGYbUqHYns4huw6hniDIQVie5tyFxQuwls3i5jkwk83j0jGDi9qJO7jdWcKMPMe34Ss+DzTLrtFCeFsQkEqPdqSwM/LEM3HQ+xOEUOS1MiL/offYi4wGkTokLZWPyHodxDeYGzzjUpeOLPqFykE8SSkepZQMguzFp//ef3z3/4e3/3x4++/lQV0yy+UymTCel75SgoWrqyt8IStfGHpyFPaqI+9rKDyJpuvYvPlKZJTzBckEs9bbn/R/TimaJ2QEoj8J+RufwJSVwo2w5OutfQnisMAQrg0vmLlBDWdx1Q6xZZZh3hByHlftEC6nCuWf4U+78JIZySWyOn4dV+2QnMkZGESchMU+YIQVugj5aSeOaMG4HJ/5ZwfyalhnCitgRyIrVEc6K1RnUivcd1NrVCnz8Uv/7EJthH0DtRHYldqI6kptRHWnNuLaqf1Sz9DfgqgoXpqoKOMmExDuofvprJH+Dm7H7disceFCbwdWbNao6qJvx+0o3YaIzaAdt2W0hsV2sw9scGrdjQBczo9in8qUUGaIHSH/NXThFKcNrOJ4iNTNuOxPFFoshuTIQBGlsFNUeva7tm+GzY5d4AuUOHt/w9524cwAzia/af31Nu0P4nY9VuSxs9WwA/w+TgosLXfQe8S09m1tz0HvT9M/h1OInPLZw4dK7GSaCzB/a8exi+0Nl5iwGWBx+bHp9PwvWOF6O2S9sat4og3g5LjAFG3PsKeWopq3bgHj4UuwSpTeZhSb4PuDbjTkGLbz5bNAFRbSK3u6Qs9t7aQzZRw3tqLPb+9nvsZ3+81xDTPx9EGh/5T8stW34A7OMNwvfLlIKeYupZfBwO3hr84K3Vx+BhqJMQ0=)
+[Click here to view the DEMO example](https://v-md.github.io/v-md/#eNqlVl1uGzcQvgrLPMgBrBXcnxdVEdzGLpoAaY04QB68BkztjiTGXJIguZIMQUDfe4JeoGcI8pDTJMg1MiR3pVUce70JIK0ocr75+WaWMxdrKlkBdEh5oZVx/YLp5I1Vkh5Sbv9QIgdDh1MmLBzSTEkH0qHwOpWEpBXGpnRIwo7fW5Tg/6d07py2w8GglPp6ligNcpXMS7YEnmSqGKDcsWAOrBvkHB/4PzGldLyABGzRnxi1tGDQmZQe1spBQIEe9LUog9VWK03Anjkuc1gl01KIpOAyKe40M/hmOw2Fx3saORJp+w8l6g7s8Y/NQHwMPgRvcBPMptRmqCsmZ5NK/GBOr+Hm1Y3e5fsF03RzuCuCqCy/P/sjmxmuHbHgSj1OZVRF1sTAlGzI1KiC9NDFXuPoVPxeOqfk9rwZ1U5wb7sZYGYbUqHYns4huw6hniDIQVie5tyFxQuwls3i5jkwk83j0jGDi9qJO7jdWcKMPMe34Ss+DzTLrtFCeFsQkEqPdqSwM/LEM3HQ+xOEUOS1MiL/offYi4wGkTokLZWPyHodxDeYGzzjUpeOLPqFykE8SSkepZQMguzFp//ef3z3/4e3/3x4++/lQV0yy+UymTCel75SgoWrqyt8IStfGHpyFPaqI+9rKDyJpuvYvPlKZJTzBckEs9bbn/R/TimaJ2QEoj8J+RufwJSVwo2w5OutfQnisMAQrg0vmLlBDWdx1Q6xZZZh3hByHlftEC6nCuWf4U+78JIZySWyOn4dV+2QnMkZGESchMU+YIQVugj5aSeOaMG4HJ/5ZwfyalhnCitgRyIrVEc6K1RnUivcd1NrVCnz8Uv/7EJthH0DtRHYldqI6kptRHWnNuLaqf1Sz9DfgqgoXpqoKOMmExDuofvprJH+Dm7H7disceFCbwdWbNao6qJvx+0o3YaIzaAdt2W0hsV2sw9scGrdjQBczo9in8qUUGaIHSH/NXThFKcNrOJ4iNTNuOxPFFoshuTIQBGlsFNUeva7tm+GzY5d4AuUOHt/w9524cwAzia/af31Nu0P4nY9VuSxs9WwA/w+TgosLXfQe8S09m1tz0HvT9M/h1OInPLZw4dK7GSaCzB/a8exi+0Nl5iwGWBx+bHp9PwvWOF6O2S9sat4og3g5LjAFG3PsKeWopq3bgHj4UuwSpTeZhSb4PuDbjTkGLbz5bNAFRbSK3u6Qs9t7aQzZRw3tqLPb+9nvsZ3+81xDTPx9EGh/5T8stW34A7OMNwvfLlIKeYupZfBwO3hr84K3Vx+BhqJMQ0=)
 
-通过这种方式，我们可以在编辑器中使用 `npm` 生态中的大部分工具了。我们也可以将自己的组件发布到 npm 上，通过部署 unpkg 的方式获得资源分发地址([UNPKG 的私有化部署参考](https://openx.huawei.com/unpkg-inhuawei/overview))，从而在编辑器中使用。
+In this way, we can use most of the tools in the `npm` ecosystem in the editor.
 
-### 基于已有内容继续编辑
-可以通过编辑器实例对象的属性 `editor.files.value.value` 获取编辑内容。编辑内容是将当前文件系统的 `json` 对象进行 `base64` 编码后的字符串。
+You can also publish your own components to a private npm repository and obtain the resource distribution address by deploying unpkg (refer to [Private Deployment of UNPKG](https://juejin.cn/post/7199962962630099002)) for use in the editor.
+
+### Continue Editing Based on Existing Content
+You can obtain the edited content through the `editor.files.value.value` property of the editor instance object. The edited content is a string obtained by `gzip` encoding the `json` object of the current file system.
 ```ts
 import { createEditor } from '@v-md/app'
 
 const editor = createEditor({
-  // 选项 ...
+  // Options ...
 })
 editor.mount('#app')
 
-// 获取编辑内容
+// Get the edited content
 console.log(editor.files.value.value)
 ```
 
-在编辑场景，可以通过 `createEditor` 的 `value` 选项传入初始内容，编辑器会以传入的内容展示。
+In the editing scenario, you can pass in the initial content through the `value` option of `createEditor`, and the editor will display the passed - in content.
 ```ts
 import { createEditor } from '@v-md/app'
 
@@ -193,33 +187,33 @@ const editor = createEditor({
 })
 ```
 
-### 渲染编辑内容
-可以通过编辑器实例对象的属性 `editor.files.compiledValue.value` 获取渲染内容。渲染内容是将当前的编译产物代码进行 `base64` 编码后的字符串。
+### Render the Edited Content
+You can obtain the rendered content through the `editor.files.compiledValue.value` property of the editor instance object. The rendered content is a string obtained by `gzip` encoding the current compiled product code.
 ```ts
 import { createEditor } from '@v-md/app'
 
 const editor = createEditor({
-  // 选项 ...
+  // Options ...
 })
 editor.mount('#app')
 
-// 获取渲染内容
+// Get the rendered content
 console.log(editor.files.compiledValue.value)
 ```
 
-之后可以通过 `renderer` 组件渲染内容，渲染内容会放在一个 `iframe` 容器中，与主应用的样式、脚本都是隔离的。
+After that, you can render the content through the `renderer` component. The rendered content will be placed in an `iframe` container, isolated from the styles and scripts of the main application.
 ```ts
 import { createViewer } from '@v-md/app'
 
 const value = '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'
 
 createViewer('#app', {
-  cdnUrl: 'https://unpkg.openx.huawei.com',
+  cdnUrl: 'https://cdn.jsdelivr.net/npm',
   value,
 })
 ```
 
-当然，如果应用不需要编辑，仅仅需求内容渲染，推荐安装 `@v-md/renderer` 组件，它只包含渲染部分代码，体积更小，安装更快。
+Of course, if your application doesn't require editing and only needs content rendering, it is recommended to install the `@v-md/renderer` component. It only contains the rendering code, has a smaller size, and can be installed more quickly.
 ```sh
 npm install -S @v-md/renderer
 ```
@@ -227,12 +221,12 @@ npm install -S @v-md/renderer
 ```ts
 import { createViewer } from '@v-md/renderer'
 
-// 使用内容渲染
+// Use content rendering
 ```
 
-`@v-md/renderer` 更是提供了 `umd` 产物，支持直接在浏览器脚本中引用：
+`@v-md/renderer` also provides a `umd` build, which supports direct reference in browser scripts:
 ```html
-<script src="https://unpkg-openx.openx.huawei.com/@v-md/renderer@latest/dist/index.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@v-md/renderer@latest/dist/index.umd.js"></script>
 <script>
   window.VmdRenderer.createViewer('#app', {
     // ...
@@ -240,27 +234,27 @@ import { createViewer } from '@v-md/renderer'
 </script>
 ```
 
-## 插件
-`v-md` 实现了较为完善的插件系统，可以很大程度上对于编辑器进行扩展。当前编辑器的大部分功能都是通过插件实现的，`@v-md/app` 本质上是 `@v-md/core` 的编辑器核心集成了所有官方插件的一套预设。当前所有官方插件如下：
-- [@v-md/plugin-editor-theme](./plugins/editor-theme/README.md): 编辑区代码高亮，编辑器主题样式。
-- [@v-md/plugin-editor-volar](./plugins/editor-volar/README.md): 集成 [Volar](https://github.com/vuejs/language-tools) 插件，提供 Vue/JS/TS 语言服务。
-- [@v-md/plugin-files-basic](./plugins/files-basic/README.md): 编辑器初始内容预设。
-- [@v-md/plugin-toolbar-basic](./plugins/toolbar-basic/README.md): 编辑器顶部工具栏预设(架构已实现，但是尚未实装具体的工具类选项)。
-- [@v-md/plugin-lang-css](./plugins/lang-css/README.md): CSS 语言能力。
-- [@v-md/plugin-lang-js](./plugins/lang-js/README.md): JavaScript 语言能力。
-- [@v-md/plugin-lang-json](./plugins/lang-json/README.md): JSON 语言能力。
-- [@v-md/plugin-lang-ts](./plugins/lang-ts/README.md): TypeScript 语言能力。
-- [@v-md/plugin-lang-vue](./plugins/lang-vue/README.md): Vue 语言能力。
-- [@v-md/plugin-lang-vue-jsx](./plugins/lang-vue-jsx/README.md): 支持使用 JSX 语法。
-- [@v-md/plugin-vue-md](./plugins/lang-vue-md/README.md): 支持 `VitePress` 的 Vue Markdown 语法，以及 Markdown 渲染区的相关的代码高亮能力。
-- [@v-md/plugin-theme](./plugins/theme/README.md): 内容区基础主题设置。
+## Plugins
+`v-md` has implemented a relatively complete plugin system, which can greatly extend the functionality of the editor. Most of the current editor's features are implemented through plugins. Essentially, `@v-md/app` is a preset that integrates all official plugins into the editor core of `@v-md/core`. The current official plugins are as follows:
+- [@v-md/plugin-editor-theme](./plugins/editor-theme/README.md): Code highlighting in the editing area and editor theme styles.
+- [@v-md/plugin-editor-volar](./plugins/editor-volar/README.md): Integrates the [Volar](https://github.com/vuejs/language-tools) plugin to provide Vue/JS/TS language services.
+- [@v-md/plugin-files-basic](./plugins/files-basic/README.md): Presets for the initial content of the editor.
+- [@v-md/plugin-toolbar-basic](./plugins/toolbar-basic/README.md): Preset for the editor's top toolbar (the architecture has been implemented, but specific tool options have not been implemented yet).
+- [@v-md/plugin-lang-css](./plugins/lang-css/README.md): CSS language capabilities.
+- [@v-md/plugin-lang-js](./plugins/lang-js/README.md): JavaScript language capabilities.
+- [@v-md/plugin-lang-json](./plugins/lang-json/README.md): JSON language capabilities.
+- [@v-md/plugin-lang-ts](./plugins/lang-ts/README.md): TypeScript language capabilities.
+- [@v-md/plugin-lang-vue](./plugins/lang-vue/README.md): Vue language capabilities.
+- [@v-md/plugin-lang-vue-jsx](./plugins/lang-vue-jsx/README.md): Supports the use of JSX syntax.
+- [@v-md/plugin-vue-md](./plugins/lang-vue-md/README.md): Supports the Vue Markdown syntax of `VitePress` and the relevant code highlighting capabilities in the Markdown rendering area.
+- [@v-md/plugin-theme](./plugins/theme/README.md): Basic theme settings for the content area.
 
-**如果你不想使用全部插件，** 希望在更细的粒度自行控制编辑器的能力，那就在集成编辑器时不要使用 `@v-md/app`，改为安装核心库 `@v-md/core` 以及你需要的插件即可。例如你只需要 vue 编辑器，不需要 markdown 的编辑能力，并且不需要 `ts`、`jsx` 拓展的脚本能力，那么可以按照以下方式安装：
+**If you don't want to use all the plugins,** and hope to have more fine - grained control over the editor's capabilities, then don't use `@v-md/app` when integrating the editor. Instead, install the core library `@v-md/core` and the plugins you need. For example, if you only need a Vue editor, don't need Markdown editing capabilities, and don't need the extended scripting capabilities of `ts` and `jsx`, you can install them as follows:
 ```sh
 npm i -S @v-md/core @v-md/plugin-editor-highlight @v-md/plugin-editor-volar @v-md/plugin-lang-css @v-md/plugin-lang-js @v-md/plugin-lang-vue
 ```
 
-集成时需要手动注册插件
+You need to manually register the plugins during integration.
 ```ts
 import { Editor } from '@v-md/core'
 import { editorThemePlugin } from '@v-md/plugin-editor-theme'
@@ -288,12 +282,12 @@ const editor = Editor.init({
 editor.mount('#app')
 ```
 
-### 使用插件
-`createEditor` 的选项 `plugin` 支持传入一个函数，函数中能够获取到编辑器实例。
+### Using Plugins
+The `plugin` option of `createEditor` supports passing in a function, through which you can obtain the editor instance.
 
-此时可以通过 `editor.use(plugin: Plugin): Editor` 方法注册插件，通过 `editor.eject(pluginName: string): Editor` 方法传入插件名称卸载插件。
+At this time, you can register a plugin using the `editor.use(plugin: Plugin): Editor` method and uninstall a plugin by passing in the plugin name using the `editor.eject(pluginName: string): Editor` method.
 
-**相同名称的插件只能注册一次，重复注册会提示错误。**
+**Plugins with the same name can only be registered once. Repeated registration will prompt an error.**
 
 ```ts
 import { createEditor } from '@v-md/app'
@@ -301,37 +295,28 @@ import { createEditor } from '@v-md/app'
 const myPlugin = {
   name: 'my-plugin',
 
-  // 插件逻辑 ...
+  // Plugin logic ...
 }
 
 const editor = createEditor({
   plugin: (editor) => {
-    // 注册插件
+    // Register the plugin
     editor.use(myPlugin)
 
-    // 卸载插件
+    // Uninstall the plugin
     editor.eject('my-plugin')
 
-    // 默认注册的官方插件也可在此处卸载。此处卸载的是 @v-md/plugin-editor-theme 插件
+    // You can also uninstall the default registered official plugins here. Here, the @v-md/plugin-editor-theme plugin is uninstalled.
     editor.eject('editor-theme')
   },
 })
 ```
 
-### 插件开发
-插件本质上是一种发布订阅模式。它是一个对象，需要我们实现其中的生命周期方法。被注册插件的生命周期方法会在编辑器执行特定行为时触发，从而允许我们自定义编辑器各个阶段的行为。
+### Plugin Development
+A plugin is essentially a publish - subscribe pattern. It is an object, and we need to implement its lifecycle methods. The lifecycle methods of the registered plugins will be triggered when the editor performs specific actions, allowing us to customize the behavior of the editor at various stages.
 
-[点击查看插件对象的接口定义](./libs/core/src/modules/plugin/types.ts)
+[Click to view the interface definition of the plugin object](./libs/core/src/modules/plugin/types.ts)
 
-插件的生命周期流程如下：
-
-![](./assets/plugin-lifecycle.png)
-
-开发参考：
-- 如何为编辑器新增一种语言支持。([参考 @v-md/plugin-lang-vue](./plugins/lang-vue/src/index.ts))
-- 如何拓展编辑器顶部标题栏功能。([参考 @v-md/plugin-toolbar-basic](./plugins/toolbar-basic/src/index.ts))
-
-## 如何贡献
-
-- 问题、建议反馈：[前往提交 Issue](https://open.codehub.huawei.com/innersource/openx/openx-fe/vue-md/issues)
-- 代码贡献：参考 [CONTRIBUTING.md]
+Development references:
+- How to add support for a new language to the editor. ([Refer to @v-md/plugin-lang-vue](./plugins/lang-vue/src/index.ts))
+- How to extend the functionality of the editor's top title bar. ([Refer to @v-md/plugin-toolbar-basic](./plugins/toolbar-basic/src/index.ts))

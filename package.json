@@ -21,6 +21,7 @@
     "@types/node": "^22.10.2",
     "@vitejs/plugin-vue": "^5.2.1",
     "cross-env": "^7.0.3",
+    "dotenv": "^16.4.7",
     "eslint": "^9.17.0",
     "glob": "^11.0.1",
     "read-pkg": "^9.0.1",
