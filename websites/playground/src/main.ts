@@ -14,8 +14,9 @@ const {
 } = url
 
 const noFilesNav = /files=false/.test(search)
+const isView = /view=true/.test(search)
 
-if (pathname.endsWith('/view') || pathname.endsWith('/view/')) {
+if (isView) {
   createViewer('#app', {
     cdnUrl: CDN_URL,
     value: hash.slice(1),
@@ -53,7 +54,7 @@ else {
             icon: import('./assets/eye.svg').then(m => m.default),
             tip: '查看预览效果',
             onTrigger: (app) => {
-              window.open(`${origin}${pathname}/view#${app.files.compiledValue.value}`, '_blank')
+              window.open(`${origin}${pathname}?view=true#${app.files.compiledValue.value}`, '_blank')
             },
           },
           {
