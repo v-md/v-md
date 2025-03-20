@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import type { TippyComponent, TippyOptions } from 'vue-tippy'
-import type { FileNode } from '../../modules/file'
-import { computed, useTemplateRef } from 'vue'
+import type { FileNavMenuConfirmOptions, FileNode } from '../../modules/file'
+import { reactive, ref } from 'vue'
 import { Tippy } from 'vue-tippy'
 
 const props = withDefaults(
@@ -13,78 +12,61 @@ const props = withDefaults(
 )
 
 const {
-  name,
-  isFolder,
-  keyType,
+  view,
 } = props.file
 
-const tippyRef = useTemplateRef<TippyComponent>('tippyEl')
-const deleteTippyRef = useTemplateRef<TippyComponent>('deleteTippyEl')
-const contextMenuRef = useTemplateRef<HTMLUListElement>('contextMenuEl')
-const disableRemove = computed(() => Boolean(keyType.value))
+const {
+  menuEl,
+  menuItems,
+  confirmEl,
+} = view
+
+const confirmOptions = reactive<Required<FileNavMenuConfirmOptions>>({
+  message: '',
+  confirmLabel: '',
+  cancelLabel: '',
+  onConfirm: () => {},
+  onCancel: () => {},
+})
+
+function confirmHandler(options?: FileNavMenuConfirmOptions) {
+  const opts = {
+    ...defaultConfirmOptions(),
+    ...options,
+  }
+  Object.assign(confirmOptions, opts)
+  confirmEl.value?.show()
+}
+
+function defaultConfirmOptions(): Required<FileNavMenuConfirmOptions> {
+  return {
+    message: '确认删除？',
+    confirmLabel: '是',
+    cancelLabel: '否',
+    onConfirm: () => { confirmEl.value?.hide() },
+    onCancel: () => { confirmEl.value?.hide() },
+  }
+}
+
+view.showConfirm = confirmHandler
+
+const contextMenuEl = ref<HTMLUListElement>()
 
 function showHandler() {
-  if (!contextMenuRef.value) {
+  if (!contextMenuEl.value) {
     return
   }
 
-  const target = contextMenuRef.value.parentElement?.parentElement
+  const target = contextMenuEl.value.parentElement?.parentElement
   if (target) {
     target.style.padding = '0'
   }
 }
-
-function show() {
-  tippyRef.value?.show()
-}
-
-function hide() {
-  tippyRef.value?.hide()
-}
-
-function setProps(options: TippyOptions) {
-  tippyRef.value?.setProps(options)
-}
-
-function createFileHandler() {
-  props.file.onCreateFile()
-  hide()
-}
-
-function createFolderHandler() {
-  props.file.onCreateFolder()
-  hide()
-}
-
-function renameHandler() {
-  props.file.onRename()
-  hide()
-}
-
-function deleteHandler() {
-  hide()
-  deleteTippyRef.value?.show()
-}
-
-function deleteCancelHandler() {
-  deleteTippyRef.value?.hide()
-}
-
-function deleteConfirmHandler() {
-  props.file.onDelete()
-  deleteTippyRef.value?.hide()
-}
-
-defineExpose({
-  show,
-  hide,
-  setProps,
-})
 </script>
 
 <template>
   <Tippy
-    ref="tippyEl"
+    ref="menuEl"
     placement="bottom-start"
     trigger="manual"
     interactive
@@ -95,48 +77,36 @@ defineExpose({
     @show="showHandler">
     <template #content>
       <ul ref="contextMenuEl" class="vmd-file-contextmenu">
-        <li v-if="isFolder" class="vmd-context-menu-item" @click.stop="createFileHandler">
-          新建文件
-        </li>
-        <li v-if="isFolder" class="vmd-context-menu-item" @click.stop="createFolderHandler">
-          新建目录
-        </li>
-        <li v-if="!disableRemove" class="vmd-context-menu-item">
-          剪切
-        </li>
-        <li class="vmd-context-menu-item">
-          复制
-        </li>
-        <li v-if="isFolder" class="vmd-context-menu-item">
-          粘贴
-        </li>
-        <li v-if="!disableRemove" class="vmd-context-menu-item" @click.stop="deleteHandler">
-          删除
-        </li>
-        <li v-if="!disableRemove" class="vmd-context-menu-item" @click.stop="renameHandler">
-          重命名
-        </li>
+        <template v-for="(item, index) in menuItems" :key="index">
+          <div v-if="typeof item === 'string'" class="vmd-context-menu-split" />
+          <li
+            v-else
+            class="vmd-context-menu-item"
+            @click.stop="item.onTrigger?.(file)"
+            @contextmenu.prevent.stop>
+            <span>{{ item.label }}</span>
+            <span v-if="item.keyboard?.length && item.keyboardLabel">{{ item.keyboardLabel }}</span>
+          </li>
+        </template>
       </ul>
     </template>
   </Tippy>
   <Tippy
-    ref="deleteTippyEl"
+    ref="confirmEl"
     placement="bottom-end"
     trigger="manual"
     interactive
     theme="light"
     to="parent">
     <template #content>
-      <div class="vmd-nav-delete">
-        <p class="vmd-nav-delete-tip">
-          是否删除{{ isFolder ? '目录' : '文件' }}：{{ name }}？删除后不可恢复。
-        </p>
-        <div class="vmd-nav-delete-operations">
-          <button class="btn-cancel" @click.stop="deleteCancelHandler">
-            否
+      <div class="vmd-nav-confirm">
+        <div class="vmd-nav-confirm-tip" v-html="confirmOptions.message" />
+        <div class="vmd-nav-confirm-operations">
+          <button class="btn-cancel" @click.stop="confirmOptions.onCancel()">
+            {{ confirmOptions.cancelLabel }}
           </button>
-          <button class="btn-confirm" @click.stop="deleteConfirmHandler">
-            是
+          <button class="btn-confirm" @click.stop="confirmOptions.onConfirm()">
+            {{ confirmOptions.confirmLabel }}
           </button>
         </div>
       </div>
@@ -146,14 +116,23 @@ defineExpose({
 
 <style lang="scss">
 .vmd-file-contextmenu {
-  min-width: 100px;
-  max-width: 250px;
   padding: 4px 0 !important;
   overflow-y: auto;
+  user-select: none;
+}
+
+.vmd-context-menu-split {
+  height: 1px;
+  margin: 4px 0;
+  background-color: var(--vmd-border-color);
 }
 
 .vmd-context-menu-item {
-  padding: 4px 8px;
+  display: flex;
+  justify-content: space-between;
+  width: 200px;
+  padding: 4px 16px;
+  font-size: 12px;
   list-style: none;
   cursor: pointer;
 
@@ -162,16 +141,16 @@ defineExpose({
   }
 }
 
-.vmd-nav-delete {
+.vmd-nav-confirm {
   width: 200px;
 }
 
-.vmd-nav-delete-tip {
+.vmd-nav-confirm-tip {
   margin-top: 4px !important;
   margin-bottom: 8px !important;
 }
 
-.vmd-nav-delete-operations {
+.vmd-nav-confirm-operations {
   display: flex;
   gap: 8px;
   justify-content: center;

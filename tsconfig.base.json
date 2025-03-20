@@ -6,7 +6,8 @@
     "module": "esnext",
     "moduleResolution": "node",
     "paths": {
-      "@v-md/shared": ["libs/shared/src/common"],
+      "@v-md/shared": ["libs/shared/src"],
+      "@v-md/shared/*": ["libs/shared/src/*"],
       "@v-md/renderer": ["libs/renderer/src"],
       "@v-md/core": ["libs/core/src"],
       "@v-md/core/*": ["libs/core/src/*"],

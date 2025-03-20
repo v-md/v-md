@@ -6,6 +6,10 @@
     ".": {
       "types": "./dist/src/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./browser": {
+      "types": "./dist/src/browser/index.d.ts",
+      "import": "./dist/browser.js"
     }
   },
   "module": "dist/index.js",

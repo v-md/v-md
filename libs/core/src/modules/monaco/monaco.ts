@@ -84,7 +84,6 @@ export class Monaco extends EventEmitter<MonacoEvents> {
         file.editorViewState = this.editorInstance.value.saveViewState()
         this.editorInstance.value.setModel(model)
         this.editorInstance.value.restoreViewState(file.editorViewState)
-        this.editorInstance.value.focus()
       }
 
       const oldPath = `${file.dirPath.value}/${oldName}`
@@ -314,7 +313,6 @@ export class Monaco extends EventEmitter<MonacoEvents> {
       // 恢复编辑状态
       if (file.editorViewState) {
         instance.restoreViewState(file.editorViewState)
-        instance.focus()
       }
 
       // 内容改变，同步编辑器

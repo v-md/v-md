@@ -102,20 +102,20 @@ export type PluginScanResult = {
 
 export interface PluginInsertOptions {
   /**
-   * 插入到指定名称插件之前。
+   * 插入到指定名称对象之前。
    *
    * 若与 after 同时指定，则只有 before 生效。
    *
-   * 若与 after 都不指定，则插件将插入到列表末尾。
+   * 若与 after 都不指定，则插入到列表末尾。
    */
   before?: string
 
   /**
-   * 插入到指定名称插件之后。
+   * 插入到指定名称对象之后。
    *
    * 若与 before 同时指定，则只有 before 生效。
    *
-   * 若与 before 都不指定，则插件将插入到列表末尾。
+   * 若与 before 都不指定，则插入到列表末尾。
    */
   after?: string
 }

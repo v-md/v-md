@@ -12,15 +12,15 @@ import {
 } from '@v-md/shared'
 import {
   computed,
-  shallowReactive,
   shallowRef,
 } from 'vue'
 import { Preview } from '../preview'
-import { FileNode } from './file'
 import {
   defaultFileExtToIcon,
   defaultFileExtToLang,
-} from './file-ext'
+} from './default-file-ext'
+import { FileNode } from './file'
+import { FileManagerView } from './manager-view'
 
 export class FileManager extends EventEmitter<FileEvents> {
   /** 编辑器对象 */
@@ -31,7 +31,10 @@ export class FileManager extends EventEmitter<FileEvents> {
   }
 
   /** 预览管理对象 */
-  preview = new Preview(this)
+  preview: Preview
+
+  /** 对应的 UI model */
+  view: FileManagerView
 
   /** 文件后缀名和语言标签的对应关系 */
   fileExtToLang = defaultFileExtToLang()
@@ -56,7 +59,14 @@ export class FileManager extends EventEmitter<FileEvents> {
 
     this.editor = editor
 
-    this.root = new FileNode(this, { name: '', isFolder: true })
+    this.preview = new Preview(this)
+    this.view = new FileManagerView(this)
+
+    this.root = new FileNode(this, {
+      name: '',
+      isFolder: true,
+      keyType: 'root',
+    })
     this.nodeModules = this.root.create({
       name: 'node_modules',
       isFolder: true,
@@ -77,6 +87,9 @@ export class FileManager extends EventEmitter<FileEvents> {
       }
 
       this.currentFile.value = this.keyFiles.index || null
+      if (this.currentFile.value) {
+        this.view.activeFiles.add(this.currentFile.value)
+      }
       await this.editor.emit('onFilesInitted', this)
     })
   }
@@ -202,26 +215,7 @@ export class FileManager extends EventEmitter<FileEvents> {
   destroy() {
     this.root.destroy()
     this.preview.destroy()
+    this.view.destroy()
     this.clearAllEvents()
   }
-
-  /**
-   * 记录所有激活的文件节点
-   * @reactive
-   */
-  activeFiles = shallowReactive(new Set<FileNode>())
-
-  /**
-   * 记录当前聚焦的文件节点
-   */
-  focusFile = shallowRef<FileNode | null>(null)
-
-  /** 当前正在创建目录的文件节点 */
-  creatingFolderFile = shallowRef<FileNode | null>(null)
-
-  /** 当前正在创建文件的文件节点 */
-  creatingFile = shallowRef<FileNode | null>(null)
-
-  /** 当前正在重命名的文件节点 */
-  renamingFile = shallowRef<FileNode | null>(null)
 }
