@@ -1,5 +1,12 @@
 # @v-md/shared
 
+## 0.0.2
+
+### Patch Changes
+
+- [#5](https://github.com/v-md/v-md/pull/5) [`2d14f09`](https://github.com/v-md/v-md/commit/2d14f09f14e9d1bd14f4a40e1b11a7beb6e4eca6) Thanks [@gkn1234](https://github.com/gkn1234)! - - Add `readFileAsText` function to get text from `File` object in browser-only environment.
+  - Add esm entry `@v-md/shared/browser` to get functions in browser-only environment.
+
 ## 0.0.1
 
 ### Patch Changes

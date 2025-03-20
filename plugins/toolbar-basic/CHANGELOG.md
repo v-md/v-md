@@ -1,5 +1,12 @@
 # @v-md/plugin-toolbar-basic
 
+## 0.0.2
+
+### Patch Changes
+
+- Updated dependencies [[`2d14f09`](https://github.com/v-md/v-md/commit/2d14f09f14e9d1bd14f4a40e1b11a7beb6e4eca6)]:
+  - @v-md/core@0.0.2
+
 ## 0.0.1
 
 ### Patch Changes

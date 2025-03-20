@@ -1,5 +1,16 @@
 # @v-md/playground
 
+## 0.0.2
+
+### Patch Changes
+
+- [#5](https://github.com/v-md/v-md/pull/5) [`0db5e8a`](https://github.com/v-md/v-md/commit/0db5e8a4a65cc209c5363a33037f4c237b8872f9) Thanks [@gkn1234](https://github.com/gkn1234)! - Change the preview address of the `playground` from `/v-md/view` to `/v-md/?view=true`. This ensures that the preview URL will not return a 404 error in the `Github Pages` scenario.
+
+- Updated dependencies [[`2d14f09`](https://github.com/v-md/v-md/commit/2d14f09f14e9d1bd14f4a40e1b11a7beb6e4eca6)]:
+  - @v-md/shared@0.0.2
+  - @v-md/plugin-editor-volar@0.0.2
+  - @v-md/app@0.0.2
+
 ## 0.0.1
 
 ### Patch Changes
