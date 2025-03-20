@@ -3,7 +3,7 @@ name: Gate Check Libs
 on:
   pull_request:
     branches:
-      - main
+      - master
     paths:
       - 'libs/**/*'
       - '!libs/*/*.md'
