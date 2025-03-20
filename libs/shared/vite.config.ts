@@ -19,7 +19,10 @@ export default defineConfig(async () => {
     ],
     build: {
       lib: {
-        entry: 'src',
+        entry: {
+          index: 'src',
+          browser: 'src/browser',
+        },
         formats: ['es'],
       },
       minify: false,

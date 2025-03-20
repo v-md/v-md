@@ -2,7 +2,6 @@
 import type { FileNode } from '../../modules/file'
 import {
   ref,
-  useTemplateRef,
   watch,
 } from 'vue'
 import FilesNavItemInput from './files-nav-item-input.vue'
@@ -18,14 +17,19 @@ const props = withDefaults(
 
 const {
   name,
-  active,
-  focus,
+  view,
   isFolder,
-  expanded,
   path,
-  renaming,
   iconStyles,
 } = props.file
+
+const {
+  active,
+  focus,
+  cutting,
+  expanded,
+  renaming,
+} = view
 
 const renameInput = ref('')
 watch(renaming, () => {
@@ -33,28 +37,6 @@ watch(renaming, () => {
     renameInput.value = name.value
   }
 })
-
-const menuRef = useTemplateRef<InstanceType<typeof FilesNavItemMenu>>('menuEl')
-
-function contextMenuHandler(e: MouseEvent) {
-  e.preventDefault()
-  e.stopPropagation()
-
-  props.file.onRightClick()
-
-  menuRef.value?.setProps({
-    getReferenceClientRect: () => ({
-      width: 0,
-      height: 0,
-      top: e.clientY,
-      bottom: e.clientY,
-      left: e.clientX,
-      right: e.clientX,
-    }),
-  })
-
-  menuRef.value?.show()
-}
 </script>
 
 <template>
@@ -64,11 +46,12 @@ function contextMenuHandler(e: MouseEvent) {
       :class="{
         'is-active': active,
         'is-focus': focus,
+        'is-cutting': cutting,
       }"
       :title="path"
-      @click.exact="file.onClick"
-      @click.ctrl.exact="file.onCtrlClick"
-      @contextmenu="contextMenuHandler">
+      @click.exact="view.onClick"
+      @click.ctrl.exact="view.onCtrlClick"
+      @contextmenu="view.onRightClick">
       <i
         class="vmd-files-nav-item-icon"
         :class="{
@@ -82,14 +65,14 @@ function contextMenuHandler(e: MouseEvent) {
       <FilesNavItemInput
         v-if="renaming"
         v-model="renameInput"
-        :validate="(v) => file.onRenameValidate(v)"
-        @confirm="(name, valid) => file.onRenameConfirm(name, valid)" />
+        :validate="(v) => view.onRenameValidate(v)"
+        @confirm="(name, valid) => view.onRenameConfirm(name, valid)" />
       <div v-else class="vmd-files-nav-item-text">
         {{ name }}
       </div>
     </div>
     <slot v-if="isFolder && expanded" />
-    <FilesNavItemMenu ref="menuEl" :file="file" />
+    <FilesNavItemMenu :file="file" />
   </li>
 </template>
 
@@ -128,6 +111,10 @@ function contextMenuHandler(e: MouseEvent) {
   &.is-focus {
     outline: 1px solid var(--vmd-primary-color);
     outline-offset: -1px;
+  }
+
+  &.is-cutting {
+    opacity: 0.5;
   }
 
   span[data-v-tippy] {

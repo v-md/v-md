@@ -26,6 +26,9 @@ export interface FileOptions {
 }
 
 export interface KeyFileSet {
+  /** 工程根目录 */
+  root?: FileNode
+
   /** 主文件，作为应用编译入口 */
   main?: FileNode
 

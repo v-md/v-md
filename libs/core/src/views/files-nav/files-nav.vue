@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { FileNode } from '../../modules/file'
-import { useTemplateRef } from 'vue'
+import { onBeforeUnmount, ref } from 'vue'
 import FilesNavItemInput from './files-nav-item-input.vue'
 import FilesNavItemMenu from './files-nav-item-menu.vue'
 import FilesNavItem from './files-nav-item.vue'
@@ -22,47 +22,49 @@ const {
   childFolders,
   childFiles,
   isFolder,
-  creatingFolder,
-  creatingFile,
+  view,
 } = props.root
 
-const menuRef = useTemplateRef<InstanceType<typeof FilesNavItemMenu>>('menuEl')
+const {
+  creatingFolder,
+  creatingFile,
+} = view
 
-function contextMenuHandler(e: MouseEvent) {
-  e.preventDefault()
-  e.stopPropagation()
+const navEl = ref<HTMLElement>()
 
-  props.root.onRightClick()
+// 外部点击检测
+document.addEventListener('click', outsideClickHandler)
+onBeforeUnmount(() => {
+  document.removeEventListener('click', outsideClickHandler)
+})
 
-  menuRef.value?.setProps({
-    getReferenceClientRect: () => ({
-      width: 0,
-      height: 0,
-      top: e.clientY,
-      bottom: e.clientY,
-      left: e.clientX,
-      right: e.clientX,
-    }),
-  })
+function outsideClickHandler(e: MouseEvent) {
+  const el = e.target as HTMLElement
+  if (!navEl.value) {
+    return
+  }
 
-  menuRef.value?.show()
+  if (!navEl.value.contains(el)) {
+    view.managerView.onClickOutside()
+  }
 }
 </script>
 
 <template>
   <ul
+    ref="navEl"
     :class="{
       'vmd-files-nav': isRoot,
       'vmd-files-nav-sub': !isRoot,
     }"
-    @click.exact="root.onClick"
-    @contextmenu="contextMenuHandler">
+    @click.exact="view.onClick"
+    @contextmenu="view.onRightClick">
     <li v-if="isFolder && creatingFolder" class="vmd-files-nav-creator">
       <i class="arrow-right" />
       <i class="folder-icon" />
       <FilesNavItemInput
-        :validate="(v) => root.onCreateValidate(v, true)"
-        @confirm="(name, valid) => root.onCreateConfirm(name, true, valid)" />
+        :validate="(v) => view.onCreateValidate(v, true)"
+        @confirm="(name, valid) => view.onCreateConfirm(name, true, valid)" />
     </li>
     <FilesNavItem
       v-for="item in childFolders"
@@ -74,16 +76,14 @@ function contextMenuHandler(e: MouseEvent) {
       <i class="empty-icon" />
       <i class="file-icon" />
       <FilesNavItemInput
-        :validate="(v) => root.onCreateValidate(v, false)"
-        @confirm="(name, valid) => root.onCreateConfirm(name, false, valid)" />
+        :validate="(v) => view.onCreateValidate(v, false)"
+        @confirm="(name, valid) => view.onCreateConfirm(name, false, valid)" />
     </li>
     <FilesNavItem
       v-for="item in childFiles"
       :key="`file-${item.name.value}`"
-      :file="item">
-      <FilesNav :root="item" />
-    </FilesNavItem>
-    <FilesNavItemMenu ref="menuEl" :file="root" />
+      :file="item" />
+    <FilesNavItemMenu v-if="isRoot" :file="root" />
   </ul>
 </template>
 

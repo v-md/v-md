@@ -28,6 +28,7 @@ import {
   watch,
 } from 'vue'
 import { Compiler } from '../compiler'
+import { FileView } from './file-view'
 
 export class FileNode {
   /** 文件管理对象 */
@@ -40,8 +41,18 @@ export class FileNode {
   /** 对应的编译器 */
   compiler: Compiler
 
+  /** 对应的 UI model */
+  view: FileView
+
   /** 文件 / 目录名 */
   name = ref('')
+
+  /**
+   * 重命名文件。会触发 onRename
+   */
+  rename(name: string) {
+    this.name.value = name
+  }
 
   /** 是否为目录 */
   isFolder = ref(false)
@@ -65,7 +76,7 @@ export class FileNode {
     }
 
     if (this.children.length) {
-      // node_modules 不可编辑，被计入值
+      // node_modules 不可编辑，不被计入值
       res.children = this.children
         .filter(item => item.keyType.value !== 'nodeModules')
         .map(item => item.value.value)
@@ -88,10 +99,11 @@ export class FileNode {
     this.content.value = content
 
     this.keyType.value = keyType
-    if (keyType) {
+    if (keyType && !this.manager.keyFiles[keyType]) {
       this.manager.keyFiles[keyType] = this
     }
 
+    this.view = new FileView(this)
     this.compiler = new Compiler(this)
 
     this._initFileChange()
@@ -110,11 +122,6 @@ export class FileNode {
       this.manager.emit('onChange', this, val, prevVal)
     }, 300))
     this._stopWatchHandlers.push(contentHandler)
-
-    const nameHandler = watch(this.name, (val, prevVal) => {
-      this.manager.emit('onRename', this, val, prevVal)
-    })
-    this._stopWatchHandlers.push(nameHandler)
   }
 
   /** 文件在浏览面板中，小图标的样式 */
@@ -156,7 +163,7 @@ export class FileNode {
   }
 
   /** 进行操作节点是否为目录的检查，非目录的场景下抛出错误 */
-  private _checkFolder() {
+  checkFolder() {
     if (!this.isFolder.value) {
       throw new Error(`Target ${this.name.value} must be a folder`)
     }
@@ -219,14 +226,18 @@ export class FileNode {
   })
 
   /**
-   * 新建文件
+   * 新建文件。会触发 onMove 事件
+   *
+   * 若发生重名，则新文件的名称会自动加上序号
    * @param options 新文件选项
    * @returns 新建的文件节点
    */
   create(options?: FileOptions) {
-    this._checkFolder()
+    this.checkFolder()
 
     const file = new FileNode(this.manager, options)
+    const fileName = this.getUniqueNameInFolder(file.name.value, file.isFolder.value)
+    file.name.value = fileName
     this.add(file)
 
     // 使用 nextTick，确保 path、dirPath 等属性已经更新
@@ -237,9 +248,21 @@ export class FileNode {
     return file
   }
 
+  /**
+   * 复制本文件到另一个目录下
+   * @param to 目标目录
+   */
+  copyTo(to: FileNode) {
+    to.checkFolder()
+    to.create({
+      ...this.value.value,
+      keyType: false,
+    })
+  }
+
   /** 添加文件节点 */
   add(file: FileNode) {
-    this._checkFolder()
+    this.checkFolder()
 
     let added = false
     if (file.isFolder.value) {
@@ -281,12 +304,12 @@ export class FileNode {
   }
 
   /**
-   * 移除文件
+   * 移除文件。在销毁场景会触发 onMove 事件
    * @param file 待删除的文件
    * @param destroy 是否销毁。某些场景(例如移动文件)调用此方法时，需要设为 false(不销毁节点)
    */
   remove(file: FileNode, destroy: boolean = true) {
-    this._checkFolder()
+    this.checkFolder()
 
     const index = this.children.findIndex(cur => cur === file)
     if (index < 0) {
@@ -306,20 +329,34 @@ export class FileNode {
   }
 
   /**
-   * 移动文件
-   * @param file 待移动的文件
-   * @param moveTo 移动到的目标文件夹
+   * 移动本文件到另一目录下。会触发 onMove 事件
+   * @param to 目标目录
    */
-  move(file: FileNode, moveTo: FileNode) {
-    this._checkFolder()
-    moveTo._checkFolder()
+  moveTo(to: FileNode) {
+    to.checkFolder()
 
-    this.remove(file, false)
-    moveTo.add(file)
+    if (!this.parent.value) {
+      throw new Error('Cannot move root node!')
+    }
 
-    // 使用 nextTick，确保 path、dirPath 等属性已经更新
+    const oldParent = this.parent.value
+    if (oldParent === to) {
+      return
+    }
+
+    this.parent.value.remove(this, false)
+    to.add(this)
+
+    const emitMove = (node: FileNode) => {
+      this.manager.emit('onMove', node, node.parent.value, oldParent)
+      node.children.forEach((child) => {
+        emitMove(child)
+      })
+    }
+
+    // 使用 nextTick，确保触发时 path、dirPath 等属性已经更新
     nextTick(() => {
-      this.manager.emit('onMove', file, moveTo, this)
+      emitMove(this)
     })
   }
 
@@ -424,7 +461,7 @@ export class FileNode {
   })
 
   /** 文件名后缀 */
-  ext = computed(() => extname(this.name.value, this.isFolder.value))
+  ext = computed(() => extname(this.name.value, this.isFolder.value).toLocaleLowerCase())
 
   /** 文件相关语言 */
   lang = computed(() => this.manager.getLang(this.ext.value))
@@ -472,123 +509,35 @@ export class FileNode {
     this.content.value = applyJsonEdits(this.content.value, diff)
   }
 
-  /** 是否在文件树中被选中 */
-  active = computed(() => this.manager.activeFiles.has(this))
-
-  /** 是否在文件树中聚焦 */
-  focus = computed(() => this.manager.focusFile.value === this)
-
-  /** 是否处于创建目录状态 */
-  creatingFolder = computed(() => this.manager.creatingFolderFile.value === this)
-
-  /** 是否处于创建文件状态 */
-  creatingFile = computed(() => this.manager.creatingFile.value === this)
-
-  /** 是否处于重命名状态 */
-  renaming = computed(() => this.manager.renamingFile.value === this)
-
-  /** 是否展开 */
-  expanded = ref(false)
-
-  onClick(e: MouseEvent) {
-    e.stopPropagation()
-    this.manager.activeFiles.clear()
-    this.manager.activeFiles.add(this)
-    this.manager.focusFile.value = this
-
-    if (this.isFolder.value) {
-      this.expanded.value = !this.expanded.value
-    }
-    else if (this.manager.currentFile.value !== this) {
-      this.manager.currentFile.value = this
-    }
-  }
-
-  onCtrlClick(e: MouseEvent) {
-    e.stopPropagation()
-    this.manager.activeFiles.add(this)
-    this.manager.focusFile.value = this
-  }
-
-  onRightClick() {
-    this.manager.focusFile.value = this
-  }
-
-  onCreateFile() {
+  /**
+   * 获取该目录下不重复的 文件/目录 名
+   * @param originName 原始 文件/目录 名
+   * @param isFolder 重复判定范围是文件还是目录
+   */
+  getUniqueNameInFolder(originName: string, isFolder: boolean = false) {
     if (!this.isFolder.value) {
-      return
+      throw new Error('File is not a folder!')
     }
 
-    this.expanded.value = true
-    this.manager.creatingFolderFile.value = null
-    this.manager.creatingFile.value = this
-  }
-
-  onCreateFolder() {
-    if (!this.isFolder.value) {
-      return
+    let originFile: FileNode | null = null
+    let curName = originName
+    let isUnique = false
+    let index = 1
+    while (!isUnique) {
+      const res = this.getChildByName(curName, isFolder)
+      if (!res) {
+        isUnique = true
+      }
+      else {
+        if (!originFile) {
+          originFile = res
+        }
+        const ext = res.ext.value ? `.${res.ext.value}` : ''
+        curName = `${originFile.basename.value}-${index}${ext}`
+        index++
+      }
     }
 
-    this.expanded.value = true
-    this.manager.creatingFile.value = null
-    this.manager.creatingFolderFile.value = this
-  }
-
-  onCreateValidate(name: string, isFolder: boolean = false) {
-    if (!name) {
-      return `${isFolder ? '目录' : '文件'}名称不得为空`
-    }
-
-    const res = this.getChildByName(name, isFolder)
-    return res ? `${isFolder ? '目录' : '文件'} ${name} 已存在` : true
-  }
-
-  onCreateConfirm(name: string, isFolder: boolean = false, isValid: boolean = false) {
-    this.manager.creatingFile.value = null
-    this.manager.creatingFolderFile.value = null
-
-    if (!isValid) {
-      return
-    }
-
-    this.create({
-      name,
-      isFolder,
-    })
-  }
-
-  onRename() {
-    this.manager.renamingFile.value = this
-  }
-
-  onRenameValidate(name: string) {
-    if (!this.parent.value) {
-      return true
-    }
-
-    if (!name) {
-      return `${this.isFolder.value ? '目录' : '文件'}名称不得为空`
-    }
-
-    const res = this.parent.value.getChildByName(name, this.isFolder.value)
-    return res && res !== this ? `${this.isFolder.value ? '目录' : '文件'} ${name} 已存在` : true
-  }
-
-  onRenameConfirm(name: string, isValid: boolean = false) {
-    this.manager.renamingFile.value = null
-
-    if (!isValid) {
-      return
-    }
-
-    this.name.value = name
-  }
-
-  onDelete() {
-    if (!this.parent.value) {
-      return
-    }
-
-    this.parent.value.remove(this)
+    return curName
   }
 }
