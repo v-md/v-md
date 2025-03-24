@@ -1,6 +1,5 @@
 import type {
   JSONPath,
-  ValueOf,
 } from '@v-md/shared'
 import type { editor } from 'monaco-editor-core'
 import type {
@@ -133,16 +132,9 @@ export class FileNode {
       this.isFolder,
       this.ext,
     ], ([isFolder, ext]) => {
-      let target: ValueOf<FileManager['fileExtToIcon']>
-      if (isFolder) {
-        target = this.manager.fileExtToIcon.folder
-      }
-      else {
-        target = this.manager.fileExtToIcon[ext] || this.manager.fileExtToIcon.file
-      }
-
-      const { icon, color } = target
-      this.iconStyles.value.color = color
+      const icon = this.manager.getFileExtInfo(ext, 'icon', isFolder)
+      const iconColor = this.manager.getFileExtInfo(ext, 'iconColor', isFolder)
+      this.iconStyles.value.color = iconColor
       resolveDynamicImport(icon).then((res) => {
         this.iconStyles.value['--vmd-icon'] = `url("${res}")`
       })
@@ -464,7 +456,10 @@ export class FileNode {
   ext = computed(() => extname(this.name.value, this.isFolder.value).toLocaleLowerCase())
 
   /** 文件相关语言 */
-  lang = computed(() => this.manager.getLang(this.ext.value))
+  lang = computed(() => this.manager.getFileExtInfo(this.ext.value, 'lang'))
+
+  /** 展示文件内容的组件 */
+  editorComponent = computed(() => this.manager.getFileExtInfo(this.ext.value, 'editorComponent'))
 
   /** 编辑器中的编辑状态 */
   editorViewState: editor.ICodeEditorViewState | null = null

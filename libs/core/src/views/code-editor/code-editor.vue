@@ -2,6 +2,8 @@
 import { onMounted } from 'vue'
 import { Editor } from '../../modules/editor'
 
+defineOptions({ name: 'CodeEditor' })
+
 const editor = Editor.use()
 const { monaco } = editor
 const {

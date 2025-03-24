@@ -42,10 +42,10 @@ export function langVuePlugin() {
     },
 
     onFilesInit: (files) => {
-      files.fileExtToLang.vue = 'vue'
-      files.fileExtToIcon.vue = {
+      files.fileExtMap.vue = {
         icon: import('./vuejs.svg').then(m => m.default),
-        color: '',
+        iconColor: '',
+        lang: 'vue',
       }
 
       pushOrCreate(files, 'sfcStyleSupportLangs', ['css'])

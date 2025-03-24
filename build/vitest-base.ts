@@ -8,6 +8,7 @@ export function vitestBaseConfig(config: UserWorkspaceConfig['test']) {
     {
       environment: 'jsdom',
       alias: [
+        // 处理 monaco-editor-core 在 vitest 中无法正确解析的问题。https://github.com/vitest-dev/vitest/discussions/1806
         {
           find: 'monaco-editor-core',
           replacement: 'monaco-editor-core/esm/vs/editor/editor.main',

@@ -1,3 +1,4 @@
+import type { DynamicImportResolver } from '@v-md/shared'
 import type { FileNode } from './file'
 
 export interface FileOptions {
@@ -40,6 +41,27 @@ export interface KeyFileSet {
 
   /** 存放远程资源的文件目录 */
   nodeModules?: FileNode
+}
+
+/** 根据文件拓展名获取的文件信息 */
+export interface FileExtInfo {
+  /** 在文件管理页面展示的小图标 */
+  icon?: DynamicImportResolver
+
+  /** 小图标的颜色 */
+  iconColor?: string
+
+  /**
+   * 对应 Monaco Editor 的语言标识
+   * @default 'plaintext'
+   */
+  lang?: string
+
+  /**
+   * 对应在 Editor 主区域展示的组件名称
+   * @default 'CodeEditor'
+   */
+  editorComponent?: string
 }
 
 export type FileEvents = {

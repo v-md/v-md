@@ -15,10 +15,10 @@ export function langCssPlugin() {
     },
 
     onFilesInit: (files) => {
-      files.fileExtToLang.css = 'css'
-      files.fileExtToIcon.css = {
+      files.fileExtMap.css = {
         icon: import('./css.svg').then(m => m.default),
-        color: '',
+        iconColor: '',
+        lang: 'css',
       }
     },
 
