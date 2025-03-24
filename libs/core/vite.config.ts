@@ -1,3 +1,4 @@
+/// <reference types="vitest" />
 import type {
   UserConfig,
 } from '../../build'
@@ -5,6 +6,7 @@ import {
   defineConfig,
   dtsPlugin,
   getExternalDependencies,
+  vitestBaseConfig,
   vue,
 } from '../../build'
 
@@ -22,6 +24,7 @@ export default defineConfig(async () => {
       vue(),
       dtsPlugin(),
     ],
+    test: vitestBaseConfig({ name: 'core' }),
     build: {
       lib: {
         entry: {

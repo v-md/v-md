@@ -10,6 +10,9 @@
     "build-check:libs": "pnpm -F \"./libs/**\" -F \"./plugins/**\" build-check",
     "build:play": "pnpm -F @v-md/playground build",
     "build:libs": "pnpm -F \"./libs/**\" -F \"./plugins/**\" build",
+    "test": "vitest",
+    "test:coverage": "vitest run --coverage.enabled",
+    "test:preview": "vite preview --outDir vitest-output/html",
     "release": "pnpm build:libs && changeset publish"
   },
   "devDependencies": {
@@ -20,10 +23,13 @@
     "@stylistic/stylelint-config": "^2.0.0",
     "@types/node": "^22.10.2",
     "@vitejs/plugin-vue": "^5.2.1",
+    "@vitest/coverage-v8": "^3.0.9",
+    "@vitest/ui": "^3.0.9",
     "cross-env": "^7.0.3",
     "dotenv": "^16.4.7",
     "eslint": "^9.17.0",
     "glob": "^11.0.1",
+    "jsdom": "^26.0.0",
     "read-pkg": "^9.0.1",
     "sass": "^1.83.1",
     "simple-git": "^3.27.0",
@@ -37,6 +43,7 @@
     "vite-plugin-dts": "^4.5.0",
     "vite-plugin-node-polyfills": "^0.22.0",
     "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "^3.0.9",
     "vue-tsc": "^2.2.0",
     "zx": "^8.3.0"
   }

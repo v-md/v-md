@@ -3,6 +3,7 @@
   "compilerOptions": {},
   "include": [
     "src",
+    "__tests__",
     "*.config.ts",
     "../../build",
     "../shared/src"
