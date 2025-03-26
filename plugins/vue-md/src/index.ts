@@ -57,6 +57,7 @@ export function vueMdPlugin() {
         icon: import('./assets/markdown.svg').then(m => m.default),
         iconColor: '',
         lang: 'markdown',
+        mime: 'text/markdown',
       }
 
       // markdown 渲染器初始化

@@ -2,6 +2,7 @@
 import { createEditor, createViewer } from '@v-md/app'
 import { editorVolarPlugin } from '@v-md/plugin-editor-volar'
 import { setOrCreate } from '@v-md/shared'
+import { toFormData } from '@v-md/shared/browser'
 // 产物测试时需要手动引入样式
 // import '@v-md/app/dist/assets/style.css'
 
@@ -45,6 +46,20 @@ else {
         },
       }))
     },
+    assetsUpload: !UPLOAD_URL ?
+      undefined :
+      async (file) => {
+        const form = toFormData({
+          multipartFile: file,
+        })
+        const res = await fetch(`${UPLOAD_URL}/upload`, {
+          method: 'POST',
+          body: form,
+        })
+        const data = await res.json()
+        console.log(data)
+        return data.data
+      },
     toolbars: {
       preview: {
         items: [

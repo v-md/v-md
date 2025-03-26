@@ -1,9 +1,9 @@
 /* eslint-disable regexp/no-super-linear-backtracking */
 /* eslint-disable regexp/strict */
 /* eslint-disable prefer-regex-literals */
-import type { languages } from 'monaco-editor-core'
 
-export const css: languages.LanguageConfiguration = {
+// https://github.com/vuejs/repl/blob/main/src/monaco/language-configs.ts
+export const css = {
   comments: {
     blockComment: ['/*', '*/'],
   },

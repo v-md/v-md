@@ -11,7 +11,7 @@ export function langCssPlugin() {
 
       pushOrCreate(editorMonaco, 'highlightLanguages', ['css'])
       monaco.languages.register({ id: 'css', extensions: ['.css'] })
-      monaco.languages.setLanguageConfiguration('css', css)
+      monaco.languages.setLanguageConfiguration('css', css as any)
     },
 
     onFilesInit: (files) => {
@@ -19,6 +19,7 @@ export function langCssPlugin() {
         icon: import('./css.svg').then(m => m.default),
         iconColor: '',
         lang: 'css',
+        mime: 'text/css',
       }
     },
 

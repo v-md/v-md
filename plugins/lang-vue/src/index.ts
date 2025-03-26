@@ -46,6 +46,7 @@ export function langVuePlugin() {
         icon: import('./vuejs.svg').then(m => m.default),
         iconColor: '',
         lang: 'vue',
+        mime: 'text/plain',
       }
 
       pushOrCreate(files, 'sfcStyleSupportLangs', ['css'])

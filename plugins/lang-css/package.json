@@ -24,14 +24,12 @@
     "access": "public"
   },
   "peerDependencies": {
-    "@v-md/core": "workspace:^",
-    "monaco-editor-core": "catalog:peer"
+    "@v-md/core": "workspace:^"
   },
   "dependencies": {
     "@v-md/shared": "workspace:^"
   },
   "devDependencies": {
-    "@v-md/core": "workspace:^",
-    "monaco-editor-core": "catalog:"
+    "@v-md/core": "workspace:^"
   }
 }

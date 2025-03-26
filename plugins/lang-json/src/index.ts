@@ -18,6 +18,7 @@ export function langJsonPlugin() {
         icon: import('./json.svg').then(m => m.default),
         iconColor: '',
         lang: 'json',
+        mime: 'text/json',
       }
     },
 

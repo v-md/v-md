@@ -146,6 +146,9 @@ importers:
       '@v-md/plugin-lang-vue-jsx':
         specifier: workspace:^
         version: link:../../plugins/lang-vue-jsx
+      '@v-md/plugin-static-assets-basic':
+        specifier: workspace:^
+        version: link:../../plugins/static-assets-basic
       '@v-md/plugin-theme':
         specifier: workspace:^
         version: link:../../plugins/theme
@@ -270,9 +273,6 @@ importers:
       '@v-md/core':
         specifier: workspace:^
         version: link:../../libs/core
-      monaco-editor-core:
-        specifier: 'catalog:'
-        version: 0.52.2
 
   plugins/lang-js:
     dependencies:
@@ -344,6 +344,19 @@ importers:
       '@v-md/core':
         specifier: workspace:^
         version: link:../../libs/core
+
+  plugins/static-assets-basic:
+    dependencies:
+      '@v-md/shared':
+        specifier: workspace:^
+        version: link:../../libs/shared
+    devDependencies:
+      '@v-md/core':
+        specifier: workspace:^
+        version: link:../../libs/core
+      vue:
+        specifier: 'catalog:'
+        version: 3.5.13(typescript@5.7.3)
 
   plugins/theme:
     dependencies:

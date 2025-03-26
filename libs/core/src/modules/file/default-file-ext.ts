@@ -12,5 +12,6 @@ export function defaultFileExtInfo(isFolder: boolean = false): Required<FileExtI
     iconColor: '',
     lang: 'plaintext',
     editorComponent: 'CodeEditor',
+    mime: 'application/octet-stream',
   }
 }

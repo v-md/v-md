@@ -1,7 +1,7 @@
 {
-  "name": "@v-md/plugin-theme",
+  "name": "@v-md/plugin-static-assets-basic",
   "type": "module",
-  "version": "0.0.2",
+  "version": "0.0.0",
   "exports": {
     ".": {
       "types": "./dist/src/index.d.ts",
@@ -24,12 +24,14 @@
     "access": "public"
   },
   "peerDependencies": {
-    "@v-md/core": "workspace:^"
+    "@v-md/core": "workspace:^",
+    "vue": "catalog:peer"
   },
   "dependencies": {
     "@v-md/shared": "workspace:^"
   },
   "devDependencies": {
-    "@v-md/core": "workspace:^"
+    "@v-md/core": "workspace:^",
+    "vue": "catalog:"
   }
 }

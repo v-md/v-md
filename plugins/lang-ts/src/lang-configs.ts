@@ -8,6 +8,8 @@
 /* eslint-disable regexp/prefer-character-class */
 /* eslint-disable regexp/no-useless-character-class */
 /* eslint-disable regexp/no-useless-assertions */
+
+// https://github.com/vuejs/repl/blob/main/src/monaco/language-configs.ts
 export const ts = {
   comments: {
     lineComment: '//',

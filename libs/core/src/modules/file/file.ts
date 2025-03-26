@@ -7,7 +7,11 @@ import type {
   WatchHandle,
 } from 'vue'
 import type { FileManager } from './manager'
-import type { FileOptions } from './types'
+import type {
+  FileEditorComponentValue,
+  FileMeta,
+  FileOptions,
+} from './types'
 import {
   applyJsonEdits,
   compareFileNames,
@@ -50,7 +54,9 @@ export class FileNode {
    * 重命名文件。会触发 onRename
    */
   rename(name: string) {
+    const oldName = this.name.value
     this.name.value = name
+    this.manager.emit('onRename', this, name, oldName)
   }
 
   /** 是否为目录 */
@@ -62,12 +68,16 @@ export class FileNode {
   /** 文件内容。若为目录，则内容为空 */
   content = ref('')
 
+  /** 文件元数据 */
+  meta = ref<FileMeta>({})
+
   /** 文件值的对象 */
   value = computed(() => {
     const res: FileOptions = {
       name: this.name.value,
       isFolder: this.isFolder.value,
       content: this.content.value,
+      meta: this.meta.value,
     }
 
     if (this.keyType.value) {
@@ -90,12 +100,14 @@ export class FileNode {
       keyType = false,
       content = '',
       children = [],
+      meta = {},
     } = options || {}
 
     this.manager = manager
     this.name.value = name
     this.isFolder.value = isFolder
     this.content.value = content
+    this.meta.value = meta
 
     this.keyType.value = keyType
     if (keyType && !this.manager.keyFiles[keyType]) {
@@ -107,6 +119,7 @@ export class FileNode {
 
     this._initFileChange()
     this._initFileNavStyle()
+    this._initFileEditorComponent()
 
     if (children.length) {
       children.forEach(item => this.create(item))
@@ -141,6 +154,32 @@ export class FileNode {
     }, { immediate: true })
 
     this._stopWatchHandlers.push(styleHandler)
+  }
+
+  /** 展示文件内容的组件 */
+  editorComponent = shallowRef<FileEditorComponentValue>('CodeEditor')
+
+  /** Monaco Editor 编辑区是否可用 */
+  editorEnabled = computed(() => this.editorComponent.value === 'CodeEditor')
+
+  /** 初始化文件在主面板中展示的组件 */
+  private _initFileEditorComponent() {
+    const editorCompHandler = watch([
+      this.isFolder,
+      this.ext,
+    ], ([isFolder, ext]) => {
+      const editorComponent = this.manager.getFileExtInfo(ext, 'editorComponent', isFolder)
+      if (typeof editorComponent === 'string') {
+        this.editorComponent.value = editorComponent
+      }
+      else {
+        resolveDynamicImport(editorComponent).then((res) => {
+          this.editorComponent.value = res
+        })
+      }
+    }, { immediate: true })
+
+    this._stopWatchHandlers.push(editorCompHandler)
   }
 
   /** 销毁文件 */
@@ -458,8 +497,8 @@ export class FileNode {
   /** 文件相关语言 */
   lang = computed(() => this.manager.getFileExtInfo(this.ext.value, 'lang'))
 
-  /** 展示文件内容的组件 */
-  editorComponent = computed(() => this.manager.getFileExtInfo(this.ext.value, 'editorComponent'))
+  /** 文件的 MIME 类型 */
+  mime = computed(() => this.manager.getFileExtInfo(this.ext.value, 'mime'))
 
   /** 编辑器中的编辑状态 */
   editorViewState: editor.ICodeEditorViewState | null = null

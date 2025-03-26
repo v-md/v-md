@@ -1,5 +1,9 @@
 name: build_playground
 timeout: 1200
+on:
+  push:
+    branches:
+      - dev
 env:
   # 执行前，必须确保 .changeset 目录下有 changeset-playground-xxx.md 变更文件，否则必然出错！！
   project: v_md
@@ -8,8 +12,8 @@ env:
   docker_file: .sahoc/build-playground.Dockerfile
   k8s_cluster_name: sahoc-common-cloud-1
   OUTPUT_BUILD_SUCCESS: false
-  OUTPUT_TAG_VERSION: '@v-md/playground@0.0.1'
   OUTPUT_AUTO_VERSION: 0.0.1
+  REVISION: master
 runs-on: openx_executer_common
 jobs:
   执行构建:
@@ -18,6 +22,7 @@ jobs:
         uses: checkout
         with:
           code_repository: '{{ code_repository }}'
+          branch: '{{ REVISION }}'
 
       - name: 自动生成版本号
         uses: auto_version

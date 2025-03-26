@@ -20,11 +20,13 @@ export function langJsPlugin() {
         icon: import('./javascript.svg').then(m => m.default),
         iconColor: '',
         lang: 'javascript',
+        mime: 'text/javascript',
       }
       files.fileExtMap.jsx = {
         icon: import('./javascript.svg').then(m => m.default),
         iconColor: '',
         lang: 'javascript',
+        mime: 'text/javascript',
       }
     },
 

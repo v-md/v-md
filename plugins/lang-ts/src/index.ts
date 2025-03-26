@@ -20,11 +20,13 @@ export function langTsPlugin() {
         icon: import('./typescript.svg').then(m => m.default),
         iconColor: '',
         lang: 'typescript',
+        mime: 'text/javascript',
       }
       files.fileExtMap.tsx = {
         icon: import('./typescript.svg').then(m => m.default),
         iconColor: '',
         lang: 'typescript',
+        mime: 'text/javascript',
       }
     },
 

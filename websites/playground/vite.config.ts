@@ -9,11 +9,13 @@ import {
 
 delete env.CDN_URL
 delete env.CDN_TYPE
+delete env.UPLOAD_URL
 
 readEnv()
 
 const cdnUrl = env.CDN_URL || 'https://cdn.jsdelivr.net/npm'
 const cdnType = env.CDN_TYPE || 'jsdelivr'
+const uploadUrl = env.UPLOAD_URL || ''
 
 export default defineConfig({
   plugins: [
@@ -31,6 +33,7 @@ export default defineConfig({
   define: {
     CDN_URL: `${JSON.stringify(cdnUrl)}`,
     CDN_TYPE: `${JSON.stringify(cdnType)}`,
+    UPLOAD_URL: `${JSON.stringify(uploadUrl)}`,
   },
   base: '/v-md/',
   resolve: {
