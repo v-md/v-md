@@ -1,5 +1,35 @@
 # @v-md/plugin-lang-vue
 
+## 0.0.3
+
+### Patch Changes
+
+- [#7](https://github.com/v-md/v-md/pull/7) [`41668f3`](https://github.com/v-md/v-md/commit/41668f3dc06b23a061a7a811c9c14e5926f64ed6) Thanks [@gkn1234](https://github.com/gkn1234)! - The interface for obtaining relevant information based on the file suffix has been changed. Taking a `.css` file as an example, the previous extension method was:
+
+  ```ts
+  manager.fileExtToLang.css = "css";
+  manager.fileExtToIcon.css = {
+    icon: import("./css.svg").then((m) => m.default),
+    color: "",
+  };
+  ```
+
+  The new extension method is:
+
+  ```ts
+  files.fileExtMap.css = {
+    icon: import("./css.svg").then((m) => m.default),
+    iconColor: "",
+    lang: "css",
+  };
+  ```
+
+  For the interface definition of the file suffix associated information, please refer to: [FileExtInfo Interface Definition](/libs/core/src/modules/file/types.ts)
+
+- Updated dependencies [[`f6385e0`](https://github.com/v-md/v-md/commit/f6385e0a49dfa8370be876cc953fbfa8d5711b20), [`41668f3`](https://github.com/v-md/v-md/commit/41668f3dc06b23a061a7a811c9c14e5926f64ed6), [`f6385e0`](https://github.com/v-md/v-md/commit/f6385e0a49dfa8370be876cc953fbfa8d5711b20)]:
+  - @v-md/shared@0.0.3
+  - @v-md/core@0.0.3
+
 ## 0.0.2
 
 ### Patch Changes

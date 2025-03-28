@@ -1,5 +1,13 @@
 # @v-md/plugin-editor-volar
 
+## 0.0.3
+
+### Patch Changes
+
+- Updated dependencies [[`f6385e0`](https://github.com/v-md/v-md/commit/f6385e0a49dfa8370be876cc953fbfa8d5711b20), [`41668f3`](https://github.com/v-md/v-md/commit/41668f3dc06b23a061a7a811c9c14e5926f64ed6), [`f6385e0`](https://github.com/v-md/v-md/commit/f6385e0a49dfa8370be876cc953fbfa8d5711b20)]:
+  - @v-md/shared@0.0.3
+  - @v-md/core@0.0.3
+
 ## 0.0.2
 
 ### Patch Changes
