@@ -5,6 +5,7 @@ import {
   defineConfig,
   dtsPlugin,
   getExternalDependencies,
+  vue,
 } from '../../build'
 
 /**
@@ -16,11 +17,13 @@ export default defineConfig(async () => {
   return {
     plugins: [
       dtsPlugin(),
+      vue(),
     ],
     build: {
       lib: {
         entry: 'src',
         formats: ['es'],
+        cssFileName: 'style',
       },
       minify: false,
       sourcemap: false,

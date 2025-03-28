@@ -6,7 +6,8 @@
     ".": {
       "types": "./dist/src/index.d.ts",
       "import": "./dist/index.js"
-    }
+    },
+    "./dist/*": "./dist/*"
   },
   "module": "dist/index.js",
   "types": "dist/src/index.d.ts",
