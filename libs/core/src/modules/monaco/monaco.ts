@@ -11,6 +11,7 @@ import {
   extname,
 } from '@v-md/shared'
 import {
+  computed,
   onBeforeUnmount,
   ref,
   shallowRef,
@@ -88,7 +89,7 @@ export class Monaco extends EventEmitter<MonacoEvents> {
 
       const oldPath = `${file.dirPath.value}/${oldName}`
       const oldExt = extname(oldName)
-      const oldLang = files.getLang(oldExt)
+      const oldLang = files.getFileExtInfo(oldExt, 'lang')
       const oldModel = this.getOrCreateMonacoModel(oldPath, oldLang, null)
       oldModel?.dispose()
     }
@@ -172,6 +173,16 @@ export class Monaco extends EventEmitter<MonacoEvents> {
 
   /** 编辑器实例 */
   editorInstance = shallowRef<MonacoRaw.editor.IStandaloneCodeEditor>()
+
+  /** 编辑器是否显示 */
+  editorVisible = computed(() => {
+    const { currentFile } = this.editor.files
+    if (!currentFile.value) {
+      return false
+    }
+
+    return currentFile.value.editorEnabled.value
+  })
 
   /** 组件内挂载 Monaco Editor */
   setup() {

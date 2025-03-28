@@ -53,10 +53,11 @@ export function vueMdPlugin() {
     },
 
     onFilesInit: async (files) => {
-      files.fileExtToLang.md = 'markdown'
-      files.fileExtToIcon.md = {
+      files.fileExtMap.md = {
         icon: import('./assets/markdown.svg').then(m => m.default),
-        color: '',
+        iconColor: '',
+        lang: 'markdown',
+        mime: 'text/markdown',
       }
 
       // markdown 渲染器初始化

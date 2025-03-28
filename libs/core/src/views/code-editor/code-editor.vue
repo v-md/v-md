@@ -2,10 +2,13 @@
 import { onMounted } from 'vue'
 import { Editor } from '../../modules/editor'
 
+defineOptions({ name: 'CodeEditor' })
+
 const editor = Editor.use()
 const { monaco } = editor
 const {
   editorRef,
+  editorVisible,
 } = monaco
 
 monaco.setup()
@@ -25,5 +28,5 @@ Promise.all([
 </script>
 
 <template>
-  <div ref="editorRef" class="vmd-code-editor" />
+  <div v-show="editorVisible" ref="editorRef" class="vmd-code-editor" />
 </template>

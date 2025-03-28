@@ -16,16 +16,17 @@ export function langJsPlugin() {
     },
 
     onFilesInit: (files) => {
-      files.fileExtToLang.js = 'javascript'
-      files.fileExtToLang.jsx = 'javascript'
-
-      files.fileExtToIcon.js = {
+      files.fileExtMap.js = {
         icon: import('./javascript.svg').then(m => m.default),
-        color: '',
+        iconColor: '',
+        lang: 'javascript',
+        mime: 'text/javascript',
       }
-      files.fileExtToIcon.jsx = {
+      files.fileExtMap.jsx = {
         icon: import('./javascript.svg').then(m => m.default),
-        color: '',
+        iconColor: '',
+        lang: 'javascript',
+        mime: 'text/javascript',
       }
     },
 

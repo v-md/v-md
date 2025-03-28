@@ -66,7 +66,7 @@ export interface Plugin {
    * 多步编译时，需要指定编译语言与编译内容，继续触发本钩子。
    * @param compiler 文件编译器
    * @param result 本轮编译结果将存入此对象。
-   * @param lang 编译语言。必须指定，首轮编译时设置为文件后缀。
+   * @param lang 编译语言，一般为文件后缀，注意不是 Monaco Editor 的语言标识。必须指定，**首轮编译时设置为文件后缀**。
    * @param code 编译内容。若不指定，首轮编译时设置为文件内容。
    */
   onFileCompile?: (

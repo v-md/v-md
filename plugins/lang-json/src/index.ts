@@ -14,10 +14,11 @@ export function langJsonPlugin() {
     },
 
     onFilesInit: (files) => {
-      files.fileExtToLang.json = 'json'
-      files.fileExtToIcon.json = {
+      files.fileExtMap.json = {
         icon: import('./json.svg').then(m => m.default),
-        color: '',
+        iconColor: '',
+        lang: 'json',
+        mime: 'text/json',
       }
     },
 

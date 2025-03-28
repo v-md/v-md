@@ -3,7 +3,12 @@ import type {
 } from '@v-md/renderer'
 import type * as CompilerSfc from 'vue/compiler-sfc'
 import type { Editor } from '../editor'
-import type { FileEvents, FileOptions, KeyFileSet } from './types'
+import type {
+  FileEvents,
+  FileExtInfo,
+  FileOptions,
+  KeyFileSet,
+} from './types'
 import {
   atou,
   EventEmitter,
@@ -16,8 +21,8 @@ import {
 } from 'vue'
 import { Preview } from '../preview'
 import {
-  defaultFileExtToIcon,
-  defaultFileExtToLang,
+  defaultFileExtInfo,
+  defaultFileExtMap,
 } from './default-file-ext'
 import { FileNode } from './file'
 import { FileManagerView } from './manager-view'
@@ -37,10 +42,7 @@ export class FileManager extends EventEmitter<FileEvents> {
   view: FileManagerView
 
   /** 文件后缀名和语言标签的对应关系 */
-  fileExtToLang = defaultFileExtToLang()
-
-  /** 文件后缀名和图标、颜色的对应关系 */
-  fileExtToIcon = defaultFileExtToIcon()
+  fileExtMap = defaultFileExtMap()
 
   /**
    * 当前编辑器展示的文件节点。为 null 表示不展示文件
@@ -204,12 +206,21 @@ export class FileManager extends EventEmitter<FileEvents> {
   }
 
   /**
-   * 给定文件后缀，获取文件语言
+   * 根据文件后缀，获取相关信息
    * @param ext 文件后缀
-   * @returns 文件语言
+   * @param infoKey 要获取的信息的键
+   * @param isFolder 是否是目录
    */
-  getLang(ext: string) {
-    return this.fileExtToLang[ext] || this.fileExtToLang.others
+  getFileExtInfo<K extends keyof FileExtInfo = keyof FileExtInfo>(
+    ext: string,
+    infoKey: K,
+    isFolder: boolean = false,
+  ) {
+    const info = {
+      ...defaultFileExtInfo(isFolder),
+      ...this.fileExtMap[ext],
+    }
+    return info[infoKey]
   }
 
   destroy() {

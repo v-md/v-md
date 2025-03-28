@@ -1,6 +1,8 @@
 /* eslint-disable regexp/optimal-lookaround-quantifier */
 /* eslint-disable regexp/no-super-linear-backtracking */
 /* eslint-disable regexp/no-useless-assertions */
+
+// https://github.com/vuejs/repl/blob/main/src/monaco/language-configs.ts
 export const js = {
   comments: {
     lineComment: '//',

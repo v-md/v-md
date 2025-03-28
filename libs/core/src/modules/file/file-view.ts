@@ -4,8 +4,14 @@ import type {
   FileNavMenuConfirmOptions,
   FileNavMenuItem,
 } from './file-view.types'
-import { isObjectLike } from '@v-md/shared'
-import { readFileAsText } from '@v-md/shared/browser'
+import {
+  extname,
+  isObjectLike,
+} from '@v-md/shared'
+import {
+  readFileAsDataURL,
+  readFileAsText,
+} from '@v-md/shared/browser'
 import {
   computed,
   ref,
@@ -198,7 +204,16 @@ export class FileView {
     fileInput.click()
 
     const resolveFile = async (file: File) => {
-      const content = await readFileAsText(file)
+      const ext = extname(file.name)
+      const mime = this.manager.getFileExtInfo(ext, 'mime')
+
+      let content = ''
+      if (mime.startsWith('text/')) {
+        content = await readFileAsText(file)
+      }
+      else {
+        content = await readFileAsDataURL(file)
+      }
       this.raw.create({
         name: file.name,
         content,

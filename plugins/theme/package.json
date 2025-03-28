@@ -24,10 +24,11 @@
     "access": "public"
   },
   "peerDependencies": {
-    "@v-md/core": "workspace:^",
+    "@v-md/core": "workspace:^"
+  },
+  "dependencies": {
     "@v-md/shared": "workspace:^"
   },
-  "dependencies": {},
   "devDependencies": {
     "@v-md/core": "workspace:^"
   }

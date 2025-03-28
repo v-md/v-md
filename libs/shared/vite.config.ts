@@ -5,6 +5,7 @@ import {
   defineConfig,
   dtsPlugin,
   getExternalDependencies,
+  vitestBaseConfig,
 } from '../../build'
 
 /**
@@ -17,6 +18,7 @@ export default defineConfig(async () => {
     plugins: [
       dtsPlugin(),
     ],
+    test: vitestBaseConfig({ name: 'shared' }),
     build: {
       lib: {
         entry: {

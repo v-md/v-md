@@ -7,7 +7,7 @@ import {
   getExternalDependencies,
 } from '../../build'
 
-// 必须确保 @v-md/core 构建出产物后，才能构建成功
+// 必须确保其他 @v-md 依赖构建出产物后，才能构建成功
 
 /**
  * // https://vitejs.dev/config/

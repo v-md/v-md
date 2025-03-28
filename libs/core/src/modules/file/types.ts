@@ -1,3 +1,5 @@
+import type { DynamicImportResolver } from '@v-md/shared'
+import type { Component } from 'vue'
 import type { FileNode } from './file'
 
 export interface FileOptions {
@@ -23,7 +25,12 @@ export interface FileOptions {
 
   /** isFolder = true 时，子文件选项 */
   children?: FileOptions[]
+
+  /** 文件其他元数据 */
+  meta?: FileMeta
 }
+
+export interface FileMeta extends Record<string, any> {}
 
 export interface KeyFileSet {
   /** 工程根目录 */
@@ -41,6 +48,45 @@ export interface KeyFileSet {
   /** 存放远程资源的文件目录 */
   nodeModules?: FileNode
 }
+
+/** 根据文件拓展名获取的文件信息 */
+export interface FileExtInfo {
+  /** 在文件管理页面展示的小图标 */
+  icon?: DynamicImportResolver
+
+  /** 小图标的颜色 */
+  iconColor?: string
+
+  /**
+   * 对应 Monaco Editor 的语言标识
+   * @default 'plaintext'
+   */
+  lang?: string
+
+  /**
+   * MIME 类型。参考：https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Guides/MIME_types
+   *
+   * 根据所配置的 MIME 类型的不同，编辑器会在文件上传场景时，采取不同的处理方式：
+   * - text/*: 使用 `FileReader.readAsText` 读取文件内容
+   * - 其他: 视为静态资源，使用 `FileReader.readAsDataURL` 读取文件内容，将读取到的 `dataURL` 作为文件的 content
+   *
+   * @default 'application/octet-stream'
+   */
+  mime?: string
+
+  /**
+   * 对应在 Editor 主区域展示的组件。取值规则如下：
+   * - 'CodeEditor' - 使用默认的编辑器展示。当取值不为此时，切换到对应的文件，Monaco Editor 实例不会更新当前的 Model。
+   * - Vue 组件 - 隐藏默认的编辑器，用对应的 Vue 组件展示
+   * - null - 隐藏默认的编辑器，不展示任何内容，提示编辑器不支持该类型文件
+   * @default 'CodeEditor'
+   */
+  editorComponent?: FileEditorComponentSetting
+}
+
+export type FileEditorComponentName = 'CodeEditor'
+export type FileEditorComponentSetting = FileEditorComponentName | DynamicImportResolver<Component> | null
+export type FileEditorComponentValue = FileEditorComponentName | Component | null
 
 export type FileEvents = {
   /**

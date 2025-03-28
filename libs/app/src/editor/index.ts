@@ -8,6 +8,7 @@ import { langJsonPlugin } from '@v-md/plugin-lang-json'
 import { langTsPlugin } from '@v-md/plugin-lang-ts'
 import { langVuePlugin } from '@v-md/plugin-lang-vue'
 import { langVueJsxPlugin } from '@v-md/plugin-lang-vue-jsx'
+import { staticAssetsPlugin } from '@v-md/plugin-static-assets-basic'
 import { themePlugin } from '@v-md/plugin-theme'
 import { toolbarBasicPlugin } from '@v-md/plugin-toolbar-basic'
 import { vueMdPlugin } from '@v-md/plugin-vue-md'
@@ -19,6 +20,7 @@ export function createEditor(options?: EditorOptions) {
       editor.use(filesBasicPlugin())
         .use(toolbarBasicPlugin())
         .use(editorThemePlugin())
+        .use(staticAssetsPlugin())
         .use(langCssPlugin())
         .use(langJsonPlugin())
         .use(langJsPlugin())

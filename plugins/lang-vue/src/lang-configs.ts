@@ -10,6 +10,7 @@
 
 /* eslint-disable regexp/no-useless-assertions */
 
+// https://github.com/vuejs/repl/blob/main/src/monaco/language-configs.ts
 export const vue = {
   comments: {
     blockComment: ['<!--', '-->'],

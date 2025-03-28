@@ -1,1 +1,2 @@
-@use "@v-md/core/dist/assets/style.css";
+@use "@v-md/core/dist/assets/style.css" as core-style;
+@use "@v-md/plugin-static-assets-basic/dist/assets/style.css" as plugin-static-assets-basic-style;

@@ -16,16 +16,17 @@ export function langTsPlugin() {
     },
 
     onFilesInit: (files) => {
-      files.fileExtToLang.ts = 'typescript'
-      files.fileExtToLang.tsx = 'typescript'
-
-      files.fileExtToIcon.ts = {
+      files.fileExtMap.ts = {
         icon: import('./typescript.svg').then(m => m.default),
-        color: '',
+        iconColor: '',
+        lang: 'typescript',
+        mime: 'text/javascript',
       }
-      files.fileExtToIcon.tsx = {
+      files.fileExtMap.tsx = {
         icon: import('./typescript.svg').then(m => m.default),
-        color: '',
+        iconColor: '',
+        lang: 'typescript',
+        mime: 'text/javascript',
       }
     },
 

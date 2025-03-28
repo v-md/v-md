@@ -1,20 +1,17 @@
-import type { DynamicImportResolver } from '@v-md/shared'
+import type { FileExtInfo } from './types'
 
-export function defaultFileExtToIcon(): Record<string, { icon: DynamicImportResolver, color: string }> {
-  return {
-    folder: {
-      icon: import('../../assets/icons/folder.svg').then(m => m.default),
-      color: '',
-    },
-    file: {
-      icon: import('../../assets/icons/file.svg').then(m => m.default),
-      color: '',
-    },
-  }
+export function defaultFileExtMap(): Record<string, FileExtInfo> {
+  return {}
 }
 
-export function defaultFileExtToLang(): Record<string, string> {
+export function defaultFileExtInfo(isFolder: boolean = false): Required<FileExtInfo> {
   return {
-    others: 'plaintext',
+    icon: isFolder ?
+        import('../../assets/icons/folder.svg').then(m => m.default) :
+        import('../../assets/icons/file.svg').then(m => m.default),
+    iconColor: '',
+    lang: 'plaintext',
+    editorComponent: 'CodeEditor',
+    mime: 'application/octet-stream',
   }
 }

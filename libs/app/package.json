@@ -42,6 +42,7 @@
     "@v-md/plugin-lang-ts": "workspace:^",
     "@v-md/plugin-lang-vue": "workspace:^",
     "@v-md/plugin-lang-vue-jsx": "workspace:^",
+    "@v-md/plugin-static-assets-basic": "workspace:^",
     "@v-md/plugin-theme": "workspace:^",
     "@v-md/plugin-toolbar-basic": "workspace:^",
     "@v-md/plugin-vue-md": "workspace:^"

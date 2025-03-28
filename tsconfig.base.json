@@ -24,7 +24,8 @@
       "@v-md/plugin-lang-json": ["plugins/lang-json/src"],
       "@v-md/plugin-lang-js": ["plugins/lang-js/src"],
       "@v-md/plugin-lang-ts": ["plugins/lang-ts/src"],
-      "@v-md/plugin-theme": ["plugins/theme/src"]
+      "@v-md/plugin-theme": ["plugins/theme/src"],
+      "@v-md/plugin-static-assets-basic": ["plugins/static-assets-basic/src"]
     },
     "resolveJsonModule": true,
     "types": ["node"],
