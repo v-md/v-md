@@ -57,7 +57,6 @@ else {
           body: form,
         })
         const data = await res.json()
-        console.log(data)
         return data.data
       },
     toolbars: {
