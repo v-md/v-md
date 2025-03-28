@@ -1,5 +1,12 @@
 # @v-md/renderer
 
+## 0.0.3
+
+### Patch Changes
+
+- Updated dependencies [[`f6385e0`](https://github.com/v-md/v-md/commit/f6385e0a49dfa8370be876cc953fbfa8d5711b20)]:
+  - @v-md/shared@0.0.3
+
 ## 0.0.2
 
 ### Patch Changes
