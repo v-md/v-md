@@ -1,5 +1,12 @@
 # @v-md/plugin-lang-js
 
+## 0.0.4
+
+### Patch Changes
+
+- Updated dependencies [[`6b56ce3`](https://github.com/v-md/v-md/commit/6b56ce333618034279d2a5bd28ddc5688de753e3)]:
+  - @v-md/core@0.0.4
+
 ## 0.0.3
 
 ### Patch Changes
