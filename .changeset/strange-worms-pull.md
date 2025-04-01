@@ -1,9 +1,18 @@
 ---
 "@v-md/plugin-static-assets-basic": patch
 "@v-md/core": patch
+"@v-md/app": patch
 ---
 
-- 插件 `@v-md/plugin-static-assets-basic` 为编辑器核心配置拓展了 `EditorOptions.assetsUploadAuto` 选项，当此选项为 true 时，文件上传时将自动调用上传方法 `EditorOptions.assetsUpload` 完成 HTTP 上传，不再需要手动上传
-- `@v-md/plugin-static-assets-basic` 为文件菜单拓展了 `下载为 dataURL` 选项：仅当二进制资源文件已经完成上传，获取到 url 地址后才可用，触发后会从 url 下载到文件，转为 `dataURL` 作为文件内容
-- `@v-md/plugin-static-assets-basic` 为文件菜单拓展了 `复制 URL` 选项，触发后可以复制到该二进制资源文件的 URL 地址
-- `@v-md/plugin-static-assets-basic` 的图片预览组件，下方添加了文本域，用于展示图片的资源地址
+- A new hook `onFileUpload` has been added to the plugin system, allowing you to customize the file upload process.
+```ts
+export interface Plugin {
+  // ...
+  onFileUpload?: (file: File, files: FileManager, result: FileOptions) => Promisable<void>
+}
+```
+- The plugin `@v-md/plugin-static-assets-basic` has extended the `EditorOptions.assetsUploadAuto` option for the editor core configuration. When this option is set to `true`, the upload method `EditorOptions.assetsUpload` will be automatically called to complete the HTTP upload when a file is uploaded, eliminating the need for manual upload.
+- The plugin `@v-md/plugin-static-assets-basic` has extended the file menu with the option "Download as dataURL". This option is only available after the binary resource file has been uploaded and its URL address has been obtained. Once triggered, the file will be downloaded from the URL and converted to `dataURL` as the file content.
+- The plugin `@v-md/plugin-static-assets-basic` has extended the file menu with the option "Copy URL". Once triggered, you can copy the URL address of the binary resource file.
+- In the image preview component of the `@v-md/plugin-static-assets-basic` plugin, a text field has been added at the bottom to display the resource address of the image.
+- Fixed problem: `EditorOptions` interface in `@v-md/app` package lacks the plugin extension type.
