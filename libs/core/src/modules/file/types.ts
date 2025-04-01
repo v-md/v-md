@@ -79,7 +79,7 @@ export interface FileExtInfo {
    * - 'CodeEditor' - 使用默认的编辑器展示。当取值不为此时，切换到对应的文件，Monaco Editor 实例不会更新当前的 Model。
    * - Vue 组件 - 隐藏默认的编辑器，用对应的 Vue 组件展示
    * - null - 隐藏默认的编辑器，不展示任何内容，提示编辑器不支持该类型文件
-   * @default 'CodeEditor'
+   * @default null
    */
   editorComponent?: FileEditorComponentSetting
 }

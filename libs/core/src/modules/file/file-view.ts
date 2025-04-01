@@ -4,23 +4,27 @@ import type {
   FileNavMenuConfirmOptions,
   FileNavMenuItem,
 } from './file-view.types'
+import type { FileOptions } from './types'
 import {
-  extname,
   isObjectLike,
 } from '@v-md/shared'
 import {
-  readFileAsDataURL,
   readFileAsText,
 } from '@v-md/shared/browser'
 import {
   computed,
   ref,
+  shallowRef,
 } from 'vue'
 import { excludeRelativeLeafFiles } from './utils'
 
 export class FileView {
   /** 文件原始节点 */
   raw: FileNode
+
+  get editor() {
+    return this.raw.manager.editor
+  }
 
   get manager() {
     return this.raw.manager
@@ -33,28 +37,29 @@ export class FileView {
 
   constructor(file: FileNode) {
     this.raw = file
-    this._initMenuItems()
+    this.reloadMenuItems()
   }
 
   /** 有效的菜单项 */
-  menuItems: FileNavMenuItem[] = []
+  menuItems = shallowRef<FileNavMenuItem[]>([])
 
-  private _initMenuItems() {
-    this.menuItems = this.managerView.menuItems.filter((item) => {
+  /** 文件状态发生变化时调用，可以重置菜单项 */
+  reloadMenuItems() {
+    this.menuItems.value = this.managerView.menuItems.filter((item) => {
       if (typeof item === 'string') {
         return true
       }
       return item.enable ? item.enable(this.raw) : true
     })
 
-    for (let i = 0; i < this.menuItems.length; i++) {
-      const item = this.menuItems[i]
+    for (let i = 0; i < this.menuItems.value.length; i++) {
+      const item = this.menuItems.value[i]
       if (typeof item === 'string') {
-        const prevItem = this.menuItems[i - 1]
-        const nextItem = this.menuItems[i + 1]
+        const prevItem = this.menuItems.value[i - 1]
+        const nextItem = this.menuItems.value[i + 1]
 
         if (!isObjectLike(prevItem) || !isObjectLike(nextItem)) {
-          this.menuItems.splice(i, 1)
+          this.menuItems.value.splice(i, 1)
           i--
         }
       }
@@ -137,7 +142,7 @@ export class FileView {
       this.managerView.activeFiles.clear()
     }
 
-    if (this.menuItems.length <= 0) {
+    if (this.menuItems.value.length <= 0) {
       return
     }
 
@@ -204,20 +209,15 @@ export class FileView {
     fileInput.click()
 
     const resolveFile = async (file: File) => {
-      const ext = extname(file.name)
-      const mime = this.manager.getFileExtInfo(ext, 'mime')
+      const fileCreateOptions: FileOptions = {}
+      await this.editor.emit('onFileUpload', file, this.manager, fileCreateOptions)
 
-      let content = ''
-      if (mime.startsWith('text/')) {
-        content = await readFileAsText(file)
+      // 配置项未正确设置，按默认配置创建文件
+      if (!fileCreateOptions.name) {
+        fileCreateOptions.name = file.name
+        fileCreateOptions.content = await readFileAsText(file)
       }
-      else {
-        content = await readFileAsDataURL(file)
-      }
-      this.raw.create({
-        name: file.name,
-        content,
-      })
+      this.raw.create(fileCreateOptions)
     }
 
     const handler = () => {
