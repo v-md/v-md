@@ -30,14 +30,20 @@ export default defineConfig({
       },
     }),
   ],
+  resolve: {
+    alias: {
+      '@sass': 'node_modules/sass/sass.default.js',
+    },
+  },
+  optimizeDeps: {
+    exclude: ['sass'],
+  },
   define: {
     CDN_URL: `${JSON.stringify(cdnUrl)}`,
     CDN_TYPE: `${JSON.stringify(cdnType)}`,
     UPLOAD_URL: `${JSON.stringify(uploadUrl)}`,
   },
   base: '/v-md/',
-  resolve: {
-  },
   build: {
     // minify: false,
     sourcemap: true,

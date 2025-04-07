@@ -4,13 +4,9 @@ import type {
   FileNavMenuConfirmOptions,
   FileNavMenuItem,
 } from './file-view.types'
-import type { FileOptions } from './types'
 import {
   isObjectLike,
 } from '@v-md/shared'
-import {
-  readFileAsText,
-} from '@v-md/shared/browser'
 import {
   computed,
   ref,
@@ -209,15 +205,7 @@ export class FileView {
     fileInput.click()
 
     const resolveFile = async (file: File) => {
-      const fileCreateOptions: FileOptions = {}
-      await this.editor.emit('onFileUpload', file, this.manager, fileCreateOptions)
-
-      // 配置项未正确设置，按默认配置创建文件
-      if (!fileCreateOptions.name) {
-        fileCreateOptions.name = file.name
-        fileCreateOptions.content = await readFileAsText(file)
-      }
-      this.raw.create(fileCreateOptions)
+      await this.raw.createFileByStream(file)
     }
 
     const handler = () => {

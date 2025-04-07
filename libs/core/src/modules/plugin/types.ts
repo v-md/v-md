@@ -60,13 +60,14 @@ export interface Plugin {
   onFilesInitted?: (files: FileManager) => Promisable<void>
 
   /**
-   * 文件的上传过程。使用上传文件时触发，可自定义文件读取行为
+   * 文件通过二进制流传输过程。
    *
-   * @param file 上传的文件对象，注意是浏览器的文件对象
+   * 上传文件、下载文件时会触发，可自定义文件读取行为
+   * @param file 二进制数据流，浏览器的文件对象
    * @param files 文件管理对象
-   * @param result 完成上传后，用于创建 v-md 文件对象的初始化参数
+   * @param result 完成数据流处理后，用于创建 v-md 文件对象的初始化参数
    */
-  onFileUpload?: (file: File, files: FileManager, result: FileOptions) => Promisable<void>
+  onFileStream?: (file: File, files: FileManager, result: FileOptions) => Promisable<void>
 
   /**
    * 文件的编译过程。

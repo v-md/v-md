@@ -1,0 +1,36 @@
+{
+  "name": "@v-md/plugin-lang-sass",
+  "type": "module",
+  "version": "0.0.4",
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "module": "dist/index.js",
+  "types": "dist/src/index.d.ts",
+  "files": [
+    "CHANGELOG.md",
+    "dist"
+  ],
+  "scripts": {
+    "tsc": "vue-tsc --noEmit --skipLibCheck -p tsconfig.json",
+    "build-check": "cross-env BUILD_CHECK=true vite build",
+    "build": "vite build"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
+  },
+  "peerDependencies": {
+    "@v-md/core": "workspace:^"
+  },
+  "dependencies": {
+    "@v-md/shared": "workspace:^"
+  },
+  "devDependencies": {
+    "@v-md/core": "workspace:^",
+    "sass": "catalog:"
+  }
+}

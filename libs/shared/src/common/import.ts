@@ -3,7 +3,7 @@ import { isLocalPath } from './path'
 
 export interface ResolveImportSourceResult {
   /**
-   * - 'remote-script' 远程脚本，如果在 import-map 中有声明，浏览器的 <script type="module"> 标签可以自行处理。
+   * - 'remote-script' 远程脚本，如果在 import-map 中有声明，浏览器的 <script type="module"> 标签可以自行处理。目前只包括 .js 和 .mjs 脚本。
    * - 'remote-resource' 远程资源，无法被识别为 content-type: application/javascript。需要转化为文件系统中的虚拟文件处理
    * - 'local' 本地文件
    */

@@ -14,3 +14,7 @@ export function excludeRelativeLeafFiles(nodes: Set<FileNode>) {
   })
   return result
 }
+
+export function getMapId(path: string, isFolder: boolean = false) {
+  return isFolder ? `folder:${path}` : `file:${path}`
+}

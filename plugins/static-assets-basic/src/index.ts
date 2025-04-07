@@ -45,7 +45,7 @@ export function staticAssetsPlugin() {
       initRemoteUpload(files)
     },
 
-    onFileUpload: async (file, files, result) => {
+    onFileStream: async (file, files, result) => {
       const ext = extname(file.name)
       const mime = files.getFileExtInfo(ext, 'mime')
       // 非文本类的 mime 触发二进制文件上传

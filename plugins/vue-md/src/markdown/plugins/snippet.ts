@@ -4,7 +4,7 @@ import type { Editor } from '@v-md/core'
 import type MarkdownIt from 'markdown-it'
 import type { RuleBlock } from 'markdown-it/lib/parser_block.mjs'
 import type { MarkdownEnv } from '../../types'
-import { join } from '@v-md/shared'
+import { joinPath } from '@v-md/shared'
 
 /**
  * raw path format: "/path/to/file.extension#region {meta} [title]"
@@ -149,7 +149,7 @@ export function snippetPlugin(md: MarkdownIt, editor: Editor) {
     }  ${attrs ?? ''}`
 
     const { file } = state.env as MarkdownEnv
-    const resolvedPath = join(file.dirPath.value, filepath);
+    const resolvedPath = joinPath(file.dirPath.value, filepath);
 
     (token as any).src = [resolvedPath, region.slice(1)]
     token.markup = '```'

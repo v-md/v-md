@@ -1,6 +1,7 @@
 /* eslint-disable no-alert */
 import { createEditor, createViewer } from '@v-md/app'
 import { editorVolarPlugin } from '@v-md/plugin-editor-volar'
+import { langSassPlugin } from '@v-md/plugin-lang-sass'
 import { setOrCreate } from '@v-md/shared'
 import { toFormData } from '@v-md/shared/browser'
 // 产物测试时需要手动引入样式
@@ -35,7 +36,7 @@ else {
     cdnType: CDN_TYPE,
     value: hash.slice(1),
     plugins: (editor) => {
-      editor.use(editorVolarPlugin({
+      editor.use(langSassPlugin(), { before: 'lang-json' }).use(editorVolarPlugin({
         vueWorker: async () => {
           const { default: VueWorker } = await import('@v-md/plugin-editor-volar/vue.worker?worker')
           return new VueWorker()
@@ -63,6 +64,15 @@ else {
     toolbars: {
       preview: {
         items: [
+          {
+            name: 'refresh',
+            type: 'button',
+            icon: import('./assets/refresh.svg').then(m => m.default),
+            tip: '刷新预览',
+            onTrigger: (app) => {
+              app.files.preview.reload()
+            },
+          },
           {
             name: 'jump',
             type: 'button',
