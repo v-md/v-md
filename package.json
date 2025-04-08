@@ -5,7 +5,7 @@
   "scripts": {
     "lint:script": "eslint . --fix",
     "lint:style": "stylelint --fix ./**/*.{css,scss,vue}",
-    "tsc:libs": "pnpm -F @v-md/app -F @v-md/plugin-editor-volar tsc",
+    "tsc:libs": "pnpm -F @v-md/app -F @v-md/plugin-editor-volar -F @v-md/plugin-lang-sass tsc",
     "dev:play": "pnpm -F @v-md/playground run dev",
     "build-check:libs": "pnpm -F \"./libs/**\" -F \"./plugins/**\" build-check",
     "build:play": "pnpm -F @v-md/playground build",

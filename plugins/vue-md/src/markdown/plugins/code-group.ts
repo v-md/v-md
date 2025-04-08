@@ -1,4 +1,5 @@
 import type MarkdownIt from 'markdown-it'
+import type { ContainerOpts } from 'markdown-it-container'
 import { nanoid } from '@v-md/shared'
 import container from 'markdown-it-container'
 import { extractTitle } from './code-block-wrapper'
@@ -10,7 +11,7 @@ import { extractTitle } from './code-block-wrapper'
  */
 export function codeGroupPlugin(md: MarkdownIt) {
   md.use(container, 'code-group', {
-    render(tokens, idx) {
+    render(tokens: any, idx: any) {
       if (tokens[idx].nesting === 1) {
         const name = nanoid(5)
         let tabs = ''
@@ -50,5 +51,5 @@ export function codeGroupPlugin(md: MarkdownIt) {
       }
       return `</div></div>\n`
     },
-  } as container.ContainerOpts)
+  } as ContainerOpts)
 }
