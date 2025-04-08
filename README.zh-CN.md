@@ -242,7 +242,9 @@ import { createViewer } from '@v-md/renderer'
 - [@v-md/plugin-editor-volar](./plugins/editor-volar/README.md): 集成 [Volar](https://github.com/vuejs/language-tools) 插件，提供 Vue/JS/TS 语言服务。
 - [@v-md/plugin-files-basic](./plugins/files-basic/README.md): 编辑器初始内容预设。
 - [@v-md/plugin-toolbar-basic](./plugins/toolbar-basic/README.md): 编辑器顶部工具栏预设(架构已实现，但是尚未实装具体的工具类选项)。
+- [@v-md/plugin-static-assets-basic](./plugins/static-assets-basic/README.md): 编辑器支持文件上传，支持将二进制文件处理为资源 URL，支持远程服务器上传静态资源，支持图片资源预览。
 - [@v-md/plugin-lang-css](./plugins/lang-css/README.md): CSS 语言能力。
+- [@v-md/plugin-lang-sass](./plugins/lang-sass/README.md): Sass 语言能力。
 - [@v-md/plugin-lang-js](./plugins/lang-js/README.md): JavaScript 语言能力。
 - [@v-md/plugin-lang-json](./plugins/lang-json/README.md): JSON 语言能力。
 - [@v-md/plugin-lang-ts](./plugins/lang-ts/README.md): TypeScript 语言能力。

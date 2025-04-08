@@ -239,7 +239,7 @@ export class Compiler {
       const source = node.value
       let targetFile: FileNode | null = null
       if (type === 'remote-resource') {
-        targetFile = await this.file.manager.generateNodeModules(urlSource || '')
+        targetFile = await this.file.manager.nodeModulesFetch(urlSource || '')
       }
       else {
         targetFile = this.file.getNodeByPath(source) ||
@@ -281,7 +281,7 @@ export class Compiler {
   if (!stylesheet) {
     stylesheet = document.createElement('style')
     stylesheet.setAttribute('id', id)
-    stylesheet.setAttribute('css', '')
+    stylesheet.setAttribute('app', '')
     document.head.appendChild(stylesheet)
   }
   const styles = document.createTextNode(${JSON.stringify(this.css)})

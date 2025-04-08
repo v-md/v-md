@@ -1,7 +1,6 @@
 import type {
   UserConfig,
 } from '../../build'
-import { nodePolyfills } from 'vite-plugin-node-polyfills'
 import {
   defineConfig,
   dtsPlugin,
@@ -17,12 +16,6 @@ export default defineConfig(async () => {
   return {
     plugins: [
       dtsPlugin(),
-      nodePolyfills({
-        include: [],
-        globals: {
-          Buffer: true,
-        },
-      }),
     ],
     build: {
       lib: {

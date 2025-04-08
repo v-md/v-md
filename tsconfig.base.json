@@ -4,7 +4,7 @@
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "baseUrl": ".",
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "paths": {
       "@v-md/shared": ["libs/shared/src"],
       "@v-md/shared/*": ["libs/shared/src/*"],
@@ -24,6 +24,7 @@
       "@v-md/plugin-lang-json": ["plugins/lang-json/src"],
       "@v-md/plugin-lang-js": ["plugins/lang-js/src"],
       "@v-md/plugin-lang-ts": ["plugins/lang-ts/src"],
+      "@v-md/plugin-lang-sass": ["plugins/lang-sass/src"],
       "@v-md/plugin-theme": ["plugins/theme/src"],
       "@v-md/plugin-static-assets-basic": ["plugins/static-assets-basic/src"]
     },

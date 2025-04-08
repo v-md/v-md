@@ -14,14 +14,19 @@ import type {
 } from './types'
 import {
   applyJsonEdits,
+  basename,
   compareFileNames,
   debounce,
   extname,
   isAbsolutePath,
+  joinPath,
   modifyJson,
   parseJson,
   resolveDynamicImport,
 } from '@v-md/shared'
+import {
+  readFileAsText,
+} from '@v-md/shared/browser'
 import {
   computed,
   nextTick,
@@ -32,6 +37,7 @@ import {
 } from 'vue'
 import { Compiler } from '../compiler'
 import { FileView } from './file-view'
+import { getMapId } from './utils'
 
 export class FileNode {
   /** 文件管理对象 */
@@ -47,17 +53,12 @@ export class FileNode {
   /** 对应的 UI model */
   view: FileView
 
-  /** 文件 / 目录名 */
-  name = ref('')
-
   /**
-   * 重命名文件。会触发 onRename
+   * 文件 / 目录名。
+   *
+   * 改名请勿直接修改此值，请调用 remame 方法，否则将会缺失很多必要操作，导致系统错误
    */
-  rename(name: string) {
-    const oldName = this.name.value
-    this.name.value = name
-    this.manager.emit('onRename', this, name, oldName)
-  }
+  name = ref('')
 
   /** 是否为目录 */
   isFolder = ref(false)
@@ -99,7 +100,6 @@ export class FileNode {
       isFolder = false,
       keyType = false,
       content = '',
-      children = [],
       meta = {},
     } = options || {}
 
@@ -120,10 +120,6 @@ export class FileNode {
     this._initFileChange()
     this._initFileNavStyle()
     this._initFileEditorComponent()
-
-    if (children.length) {
-      children.forEach(item => this.create(item))
-    }
   }
 
   private _stopWatchHandlers: WatchHandle[] = []
@@ -206,7 +202,7 @@ export class FileNode {
   /** 子文件 / 目录列表 */
   children = shallowReactive<FileNode[]>([])
 
-  /** 完整路径 */
+  /** 完整路径，以 / 为开头的绝对路径 */
   path: ComputedRef<string> = computed(() => {
     if (!this.parent.value) {
       return this.name.value
@@ -214,13 +210,32 @@ export class FileNode {
     return `${this.dirPath.value}/${this.name.value}`
   })
 
-  /** 所在目录路径 */
+  /** 所在目录路径，以 / 为开头的绝对路径 */
   dirPath: ComputedRef<string> = computed(() => {
     if (!this.parent.value) {
       return ''
     }
     return this.parent.value.path.value
   })
+
+  /** 文件在 hashMap 中的索引键 */
+  get mapId() {
+    return getMapId(this.path.value, this.isFolder.value)
+  }
+
+  /**
+   * 重命名文件。会触发 onRename
+   */
+  rename(name: string) {
+    const oldName = this.name.value
+    const oldMapId = this.mapId
+    this.name.value = name
+
+    this.manager.childrenMap.delete(oldMapId)
+    this.manager.childrenMap.set(this.mapId, this)
+
+    this.manager.emit('onRename', this, name, oldName)
+  }
 
   /**
    * 插入子文件 / 目录
@@ -230,6 +245,16 @@ export class FileNode {
   private _insertToIndex(index: number, file: FileNode) {
     this.children.splice(index, 0, file)
     file.parent.value = this
+    this.manager.childrenMap.set(file.mapId, file)
+  }
+
+  /** 移除子文件 / 目录 */
+  private _deleteFromIndex(index: number) {
+    const file = this.children.splice(index, 1)[0]
+    if (file) {
+      file.parent.value = null
+      this.manager.childrenMap.delete(file.mapId)
+    }
   }
 
   /**
@@ -271,12 +296,42 @@ export class FileNode {
     file.name.value = fileName
     this.add(file)
 
+    // 递归创建子节点
+    const { children = [] } = options || {}
+    if (children.length) {
+      children.forEach(item => file.create(item))
+    }
+
     // 使用 nextTick，确保 path、dirPath 等属性已经更新
     nextTick(() => {
       this.manager.emit('onMove', file, this, null)
     })
 
     return file
+  }
+
+  /**
+   * 从 File 文件对象创建文件
+   * @param file 二进制流，浏览器文件对象
+   * @param options 文件创建补充选项
+   */
+  async createFileByStream(file: File, options?: FileOptions) {
+    this.checkFolder()
+
+    const fileCreateOptions: FileOptions = {}
+    await this.editor.emit('onFileStream', file, this.manager, fileCreateOptions)
+
+    // 配置项未正确设置，按默认配置创建文件
+    if (!fileCreateOptions.name) {
+      fileCreateOptions.name = file.name
+      fileCreateOptions.content = await readFileAsText(file)
+    }
+
+    return this.create({
+      ...fileCreateOptions,
+      ...options,
+      isFolder: false,
+    })
   }
 
   /**
@@ -347,7 +402,7 @@ export class FileNode {
       throw new Error(`File ${file.name.value} not found`)
     }
 
-    this.children.splice(index, 1)
+    this._deleteFromIndex(index)
 
     if (destroy) {
       file.destroy()
@@ -401,11 +456,9 @@ export class FileNode {
       return null
     }
 
-    if (isFolder) {
-      return this.childFolders.value.find(cur => cur.name.value === name) || null
-    }
-
-    return this.childFiles.value.find(cur => cur.name.value === name) || null
+    const path = `/${joinPath(this.path.value, name)}`
+    const mapId = getMapId(path, isFolder)
+    return this.manager.childrenMap.get(mapId) || null
   }
 
   /**
@@ -415,31 +468,43 @@ export class FileNode {
    * @returns 对应文件节点
    */
   getNodeByPath(src: string, isFolder: boolean = false) {
-    const srcArr = src.split('/').filter(Boolean)
+    const isAbsolute = isAbsolutePath(src)
+    const absolutePath = isAbsolute ? src : `/${joinPath(this.dirPath.value, src)}`
+    const mapId = getMapId(absolutePath, isFolder)
+    return this.manager.childrenMap.get(mapId) || null
+  }
 
-    let cur: FileNode | null = isAbsolutePath(src) ?
-      this.manager.root :
-      this.parent.value || this
-    let i = 0
-    while (i < srcArr.length) {
-      if (!cur) {
-        return null
-      }
-      const name = srcArr[i]
-      if (name !== '.' && name !== '..') {
-        if (i < srcArr.length - 1 || isFolder) {
-          cur = cur.getChildByName(name, true)
-        }
-        else {
-          cur = cur.getChildByName(name)
-        }
-      }
-      else if (name === '..' && cur.parent.value) {
-        cur = cur.parent.value
-      }
-      i++
+  /**
+   * 根据路径，递归地创建目录
+   * @param src 路径。绝对路径以 / 开头，相对路径以 . 或 .. 开头
+   * @param options 新建目录创建时的额外选项
+   * @returns 创建目录节点
+   */
+  mkdir(src: string, options?: FileOptions) {
+    const isAbsolute = isAbsolutePath(src)
+    if (!this.isFolder.value && !isAbsolute) {
+      // 非目录节点无法使用相对路径创建目录
+      return null
     }
-    return cur
+
+    const absolutePath = isAbsolute ? src : `/${joinPath(this.path.value, src)}`
+    const pathArr = absolutePath.split('/').filter(Boolean)
+    let curNode = this.manager.root
+    pathArr.forEach((section) => {
+      const target = curNode.getChildByName(section, true)
+      if (!target) {
+        curNode = curNode.create({
+          name: section,
+          isFolder: true,
+          ...options,
+        })
+      }
+      else {
+        curNode = target
+      }
+    })
+
+    return curNode
   }
 
   /**
@@ -482,14 +547,8 @@ export class FileNode {
     return result
   }
 
-  /** 无后缀名称 */
-  basename = computed(() => {
-    if (this.isFolder.value) {
-      return this.name.value
-    }
-    const nameArr = this.name.value.split('.')
-    return nameArr.length > 1 ? nameArr.slice(0, nameArr.length - 1).join('.') : this.name.value
-  })
+  /** 无后缀文件名称 */
+  basename = computed(() => basename(this.name.value))
 
   /** 文件名后缀 */
   ext = computed(() => extname(this.name.value, this.isFolder.value).toLocaleLowerCase())

@@ -290,6 +290,14 @@ export class Preview extends EventEmitter<PreviewEvent> {
     }
   }
 
+  /** 手动重置编译状态，并进行渲染 */
+  reload() {
+    this.relativeFiles.forEach((_, file) => {
+      file.compiler.reset()
+    })
+    this.update()
+  }
+
   destroy() {
     this._destroySandbox?.()
     this.clearAllEvents()

@@ -30,14 +30,15 @@ export default defineConfig({
       },
     }),
   ],
+  optimizeDeps: {
+    exclude: ['sass'],
+  },
   define: {
     CDN_URL: `${JSON.stringify(cdnUrl)}`,
     CDN_TYPE: `${JSON.stringify(cdnType)}`,
     UPLOAD_URL: `${JSON.stringify(uploadUrl)}`,
   },
   base: '/v-md/',
-  resolve: {
-  },
   build: {
     // minify: false,
     sourcemap: true,

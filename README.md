@@ -242,7 +242,9 @@ import { createViewer } from '@v-md/renderer'
 - [@v-md/plugin-editor-volar](./plugins/editor-volar/README.md): Integrates the [Volar](https://github.com/vuejs/language-tools) plugin to provide Vue/JS/TS language services.
 - [@v-md/plugin-files-basic](./plugins/files-basic/README.md): Presets for the initial content of the editor.
 - [@v-md/plugin-toolbar-basic](./plugins/toolbar-basic/README.md): Preset for the editor's top toolbar (the architecture has been implemented, but specific tool options have not been implemented yet).
+- [@v-md/plugin-static-assets-basic](./plugins/static-assets-basic/README.md): The editor supports file uploads, processing binary files into resource URLs, uploading static resources to remote servers, and previewing image resources.
 - [@v-md/plugin-lang-css](./plugins/lang-css/README.md): CSS language capabilities.
+- [@v-md/plugin-lang-sass](./plugins/lang-sass/README.md): Sass language capabilities.
 - [@v-md/plugin-lang-js](./plugins/lang-js/README.md): JavaScript language capabilities.
 - [@v-md/plugin-lang-json](./plugins/lang-json/README.md): JSON language capabilities.
 - [@v-md/plugin-lang-ts](./plugins/lang-ts/README.md): TypeScript language capabilities.

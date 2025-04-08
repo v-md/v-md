@@ -4,7 +4,7 @@ export default antfu({
   ignores: [
     '**/dist',
     '**/node_modules',
-    '**/vitest-output',
+    '**/vitest-output'
   ],
   javascript: {
     overrides: {
