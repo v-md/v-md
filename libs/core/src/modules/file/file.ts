@@ -228,9 +228,10 @@ export class FileNode {
    */
   rename(name: string) {
     const oldName = this.name.value
+    const oldMapId = this.mapId
     this.name.value = name
 
-    this.manager.childrenMap.delete(this.mapId)
+    this.manager.childrenMap.delete(oldMapId)
     this.manager.childrenMap.set(this.mapId, this)
 
     this.manager.emit('onRename', this, name, oldName)

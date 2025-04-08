@@ -30,11 +30,6 @@ export default defineConfig({
       },
     }),
   ],
-  resolve: {
-    alias: {
-      '@sass': 'node_modules/sass/sass.default.js',
-    },
-  },
   optimizeDeps: {
     exclude: ['sass'],
   },

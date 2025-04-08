@@ -27,6 +27,8 @@ export function langSassPlugin() {
         lang: 'sass',
         mime: 'text/css',
       }
+
+      pushOrCreate(files, 'sfcStyleSupportLangs', ['sass', 'scss'])
     },
 
     onFileCompile: async (compiler, result, lang, code) => {

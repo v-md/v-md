@@ -7,6 +7,7 @@
     "../../build",
     "../../libs/shared/src",
     "../../libs/core/src",
-    "../editor-theme/src"
-  ],
+    "../editor-theme/src",
+    "../lang-vue/src"
+  ]
 }

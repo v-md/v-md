@@ -1,7 +1,7 @@
 {
   "name": "@v-md/plugin-lang-sass",
   "type": "module",
-  "version": "0.0.4",
+  "version": "0.0.0",
   "exports": {
     ".": {
       "types": "./dist/src/index.d.ts",
@@ -27,10 +27,10 @@
     "@v-md/core": "workspace:^"
   },
   "dependencies": {
-    "@v-md/shared": "workspace:^"
+    "@v-md/shared": "workspace:^",
+    "sass": "catalog:"
   },
   "devDependencies": {
-    "@v-md/core": "workspace:^",
-    "sass": "catalog:"
+    "@v-md/core": "workspace:^"
   }
 }
