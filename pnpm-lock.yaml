@@ -302,13 +302,13 @@ importers:
       '@v-md/shared':
         specifier: workspace:^
         version: link:../../libs/shared
+      sass:
+        specifier: 'catalog:'
+        version: 1.86.2
     devDependencies:
       '@v-md/core':
         specifier: workspace:^
         version: link:../../libs/core
-      sass:
-        specifier: 'catalog:'
-        version: 1.86.2
 
   plugins/lang-ts:
     dependencies:
