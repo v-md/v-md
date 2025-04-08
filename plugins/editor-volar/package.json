@@ -1,7 +1,7 @@
 {
   "name": "@v-md/plugin-editor-volar",
   "type": "module",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "exports": {
     ".": {
       "types": "./dist/src/index.d.ts",
