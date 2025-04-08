@@ -1,5 +1,16 @@
 # @v-md/playground
 
+## 0.0.5
+
+### Patch Changes
+
+- [#11](https://github.com/v-md/v-md/pull/11) [`3bcf9aa`](https://github.com/v-md/v-md/commit/3bcf9aad74632ee34e0b18a9e520c24ab8ea1d4c) Thanks [@gkn1234](https://github.com/gkn1234)! - Playground integrates the `@v-md/plugin-lang-sass` plugin and supports `sass`.
+
+- Updated dependencies [[`3bcf9aa`](https://github.com/v-md/v-md/commit/3bcf9aad74632ee34e0b18a9e520c24ab8ea1d4c)]:
+  - @v-md/plugin-lang-sass@0.0.1
+  - @v-md/app@0.0.5
+  - @v-md/plugin-editor-volar@0.0.5
+
 ## 0.0.4
 
 ### Patch Changes

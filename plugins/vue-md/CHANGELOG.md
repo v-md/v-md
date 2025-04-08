@@ -1,5 +1,12 @@
 # @v-md/plugin-vue-md
 
+## 0.0.5
+
+### Patch Changes
+
+- Updated dependencies [[`3bcf9aa`](https://github.com/v-md/v-md/commit/3bcf9aad74632ee34e0b18a9e520c24ab8ea1d4c)]:
+  - @v-md/core@0.0.5
+
 ## 0.0.4
 
 ### Patch Changes
