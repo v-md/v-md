@@ -1,5 +1,15 @@
 # @v-md/playground
 
+## 0.0.6
+
+### Patch Changes
+
+- Updated dependencies [[`eb7141e`](https://github.com/v-md/v-md/commit/eb7141ebdcde87cbbf1473fb9769a6cd9225bafc)]:
+  - @v-md/shared@0.0.4
+  - @v-md/plugin-editor-volar@0.0.6
+  - @v-md/plugin-lang-sass@0.0.2
+  - @v-md/app@0.0.6
+
 ## 0.0.5
 
 ### Patch Changes

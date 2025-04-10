@@ -1,5 +1,11 @@
 # @v-md/shared
 
+## 0.0.4
+
+### Patch Changes
+
+- [#13](https://github.com/v-md/v-md/pull/13) [`eb7141e`](https://github.com/v-md/v-md/commit/eb7141ebdcde87cbbf1473fb9769a6cd9225bafc) Thanks [@gkn1234](https://github.com/gkn1234)! - add several url path functions.
+
 ## 0.0.3
 
 ### Patch Changes

@@ -1,7 +1,7 @@
 {
   "name": "@v-md/plugin-static-assets-basic",
   "type": "module",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "exports": {
     ".": {
       "types": "./dist/src/index.d.ts",

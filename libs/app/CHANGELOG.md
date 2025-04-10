@@ -1,5 +1,24 @@
 # @v-md/app
 
+## 0.0.6
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @v-md/core@0.0.6
+  - @v-md/plugin-editor-theme@0.0.6
+  - @v-md/plugin-lang-css@0.0.6
+  - @v-md/plugin-lang-js@0.0.6
+  - @v-md/plugin-lang-json@0.0.6
+  - @v-md/plugin-lang-ts@0.0.6
+  - @v-md/plugin-lang-vue@0.0.6
+  - @v-md/plugin-lang-vue-jsx@0.0.6
+  - @v-md/plugin-static-assets-basic@0.0.4
+  - @v-md/plugin-theme@0.0.6
+  - @v-md/plugin-vue-md@0.0.6
+  - @v-md/plugin-files-basic@0.0.6
+  - @v-md/plugin-toolbar-basic@0.0.6
+
 ## 0.0.5
 
 ### Patch Changes

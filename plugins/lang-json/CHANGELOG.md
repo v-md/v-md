@@ -1,5 +1,13 @@
 # @v-md/plugin-lang-json
 
+## 0.0.6
+
+### Patch Changes
+
+- Updated dependencies [[`eb7141e`](https://github.com/v-md/v-md/commit/eb7141ebdcde87cbbf1473fb9769a6cd9225bafc)]:
+  - @v-md/shared@0.0.4
+  - @v-md/core@0.0.6
+
 ## 0.0.5
 
 ### Patch Changes
