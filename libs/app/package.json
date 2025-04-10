@@ -1,7 +1,7 @@
 {
   "name": "@v-md/app",
   "type": "module",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "exports": {
     ".": {
       "types": "./dist/src/index.d.ts",

@@ -1,5 +1,12 @@
 # @v-md/plugin-files-basic
 
+## 0.0.6
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @v-md/core@0.0.6
+
 ## 0.0.5
 
 ### Patch Changes
