@@ -1,7 +1,7 @@
 import { resolveDynamicImport } from '@v-md/shared'
 import { describe, expect, it } from 'vitest'
 
-describe('dynamic import', () => {
+describe('resolve dynamic import', () => {
   it('from raw source', () => {
     const source = 'aaa'
     resolveDynamicImport(source).then((res) => {

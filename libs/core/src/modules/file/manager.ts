@@ -246,8 +246,8 @@ export class FileManager extends EventEmitter<FileEvents> {
    * @return 生成的文件或目录节点。
    */
   async nodeModulesFetch(url: string, isFolder: boolean = false) {
-    const urlWithoutProtocol = url.replace(/^https?:\/\//, '')
     if (isFolder) {
+      const urlWithoutProtocol = url.replace(/^https?:\/\//, '')
       return this.nodeModules.mkdir(urlWithoutProtocol, { keyType: 'nodeModules' })
     }
 
