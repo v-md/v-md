@@ -1,0 +1,13 @@
+@mixin icon() {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  color: inherit;
+  background-color: currentcolor;
+  /* stylelint-disable-next-line property-no-vendor-prefix */
+  -webkit-mask: var(--icon) no-repeat;
+  mask: var(--icon) no-repeat;
+  /* stylelint-disable-next-line property-no-vendor-prefix */
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+}

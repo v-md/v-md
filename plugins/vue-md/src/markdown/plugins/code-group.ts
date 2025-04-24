@@ -1,8 +1,11 @@
+import type { IterableElement } from '@v-md/shared'
 import type MarkdownIt from 'markdown-it'
 import type { ContainerOpts } from 'markdown-it-container'
 import { nanoid } from '@v-md/shared'
 import container from 'markdown-it-container'
 import { extractTitle } from './code-block-wrapper'
+
+export type Token = IterableElement<ReturnType<MarkdownIt['parse']>>
 
 /**
  * 说明：https://vitepress.dev/zh/guide/markdown#code-groups
@@ -11,7 +14,7 @@ import { extractTitle } from './code-block-wrapper'
  */
 export function codeGroupPlugin(md: MarkdownIt) {
   md.use(container, 'code-group', {
-    render(tokens: any, idx: any) {
+    render(tokens: Token[], idx: number) {
       if (tokens[idx].nesting === 1) {
         const name = nanoid(5)
         let tabs = ''

@@ -1,11 +1,11 @@
 import type {
   UserConfig,
-} from '../../build'
+} from '../../build/vite'
 import {
   defineConfig,
   dtsPlugin,
   getExternalDependencies,
-} from '../../build'
+} from '../../build/vite'
 
 // 必须确保其他 @v-md 依赖构建出产物后，才能构建成功
 

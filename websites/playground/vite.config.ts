@@ -31,7 +31,10 @@ export default defineConfig({
     }),
   ],
   optimizeDeps: {
-    exclude: ['sass'],
+    exclude: [
+      // @v-md/plugin-lang-sass 插件引入时，要解决 sass 的依赖产物问题
+      'sass',
+    ],
   },
   define: {
     CDN_URL: `${JSON.stringify(cdnUrl)}`,
@@ -44,11 +47,11 @@ export default defineConfig({
     sourcemap: true,
   },
   server: {
-    port: 8080,
+    port: 5173,
     host: true,
   },
   preview: {
-    port: 8090,
+    port: 5183,
     host: true,
   },
 })

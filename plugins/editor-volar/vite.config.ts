@@ -1,11 +1,11 @@
 import type {
   UserConfig,
-} from '../../build'
+} from '../../build/vite'
 import {
   defineConfig,
   dtsPlugin,
   getExternalDependencies,
-} from '../../build'
+} from '../../build/vite'
 
 /**
  * // https://vitejs.dev/config/

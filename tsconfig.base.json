@@ -12,6 +12,7 @@
       "@v-md/core": ["libs/core/src"],
       "@v-md/core/*": ["libs/core/src/*"],
       "@v-md/app": ["libs/app/src"],
+      "@v-md/ui": ["libs/ui/src"],
       "@v-md/plugin-files-basic": ["plugins/files-basic/src"],
       "@v-md/plugin-toolbar-basic": ["plugins/toolbar-basic/src"],
       "@v-md/plugin-editor-theme": ["plugins/editor-theme/src"],

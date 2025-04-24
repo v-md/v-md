@@ -1,12 +1,12 @@
 import type {
   UserConfig,
-} from '../../build'
+} from '../../build/vite'
 import { nodePolyfills } from 'vite-plugin-node-polyfills'
 import {
   defineConfig,
   dtsPlugin,
   getExternalDependencies,
-} from '../../build'
+} from '../../build/vite'
 
 /**
  * // https://vitejs.dev/config/

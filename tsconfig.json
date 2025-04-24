@@ -8,6 +8,7 @@
     ".lintstagedrc.js",
     "*.config.*",
     "vitest.workspace.ts",
-    "build"
+    "build",
+    "libs/shared/src"
   ]
 }

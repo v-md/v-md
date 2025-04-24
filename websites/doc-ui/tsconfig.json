@@ -1,0 +1,18 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {},
+  "vueCompilerOptions": {
+    "vitePressExtensions": [".md"]
+  },
+  "include": [
+    ".vitepress/**/*",
+    "docs/**/*",
+    "shared/**/*",
+    "*.config.ts",
+    "../../libs/ui/src"
+  ],
+  "exclude": [
+    "**/dist",
+    "**/.vitepress/cache"
+  ]
+}

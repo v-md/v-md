@@ -1,13 +1,13 @@
 import type {
   UserConfig,
-} from '../../build'
+} from '../../build/vite'
 import { env } from 'node:process'
 import tsconfigPaths from 'vite-tsconfig-paths'
 import {
   defineConfig,
   dtsPlugin,
   getExternalDependencies,
-} from '../../build'
+} from '../../build/vite'
 
 /**
  * // https://vitejs.dev/config/

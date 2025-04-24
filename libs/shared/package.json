@@ -28,11 +28,11 @@
     "access": "public"
   },
   "dependencies": {
-    "@types/lodash-es": "^4.17.12",
+    "@types/lodash-es": "catalog:",
     "fflate": "^0.8.2",
     "jsonc-parser": "^3.3.1",
-    "lodash-es": "^4.17.21",
+    "lodash-es": "catalog:",
     "nanoid": "^5.0.9",
-    "type-fest": "^4.31.0"
+    "type-fest": "catalog:"
   }
 }

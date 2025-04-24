@@ -10,6 +10,13 @@ catalog:
   '@shikijs/transformers': ^1.26.2
   '@shikijs/monaco': ^1.26.2
   sass: 1.86.2
+  markdown-it: ^14.1.0
+  '@types/markdown-it': ^14.1.2
+  markdown-it-container: ^4.0.0
+  '@types/markdown-it-container': ^2.0.10
+  lodash-es: ^4.17.21
+  '@types/lodash-es': ^4.17.12
+  type-fest: ^4.31.0
 
 catalogs:
   peer:
