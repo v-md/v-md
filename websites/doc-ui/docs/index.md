@@ -4,7 +4,7 @@ layout: home
 title: 文档
 
 hero:
-  name: OpenX 前端组件
+  name: v-md UI 组件
   image:
     src: /logo.png
     alt: OpenX

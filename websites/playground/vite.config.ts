@@ -1,11 +1,11 @@
 import { env } from 'node:process'
 import { nodePolyfills } from 'vite-plugin-node-polyfills'
 import tsconfigPaths from 'vite-tsconfig-paths'
+import { readEnv } from '../../build/common'
 import {
   defineConfig,
-  readEnv,
   vue,
-} from '../../build'
+} from '../../build/vite'
 
 delete env.CDN_URL
 delete env.CDN_TYPE
@@ -43,12 +43,12 @@ export default defineConfig({
   },
   base: '/v-md/',
   build: {
-    // minify: false,
     sourcemap: true,
   },
   server: {
     port: 5173,
     host: true,
+    allowedHosts: true,
   },
   preview: {
     port: 5183,

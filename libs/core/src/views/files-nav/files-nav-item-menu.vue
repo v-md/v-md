@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { FileNavMenuConfirmOptions, FileNode } from '../../modules/file'
+import type { FileNavMenuConfirmOptions, FileNode } from '../../modules-o/file'
 import { reactive, ref } from 'vue'
 import { Tippy } from 'vue-tippy'
 

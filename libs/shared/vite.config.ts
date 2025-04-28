@@ -5,6 +5,7 @@ import {
   defineConfig,
   dtsPlugin,
   getExternalDependencies,
+  tsconfigPath,
 } from '../../build/vite'
 import { vitestBaseConfig } from '../../build/vitest'
 
@@ -17,6 +18,7 @@ export default defineConfig(async () => {
   return {
     plugins: [
       dtsPlugin(),
+      tsconfigPath(),
     ],
     test: vitestBaseConfig({ name: 'shared' }),
     build: {

@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import type { ToolbarItemOptions } from '../../modules/toolbar'
+import type { ToolbarItemOptions } from '../../modules-o/toolbar'
 import {
   computed,
   ref,
 } from 'vue'
 import { Tippy } from 'vue-tippy'
 import iMenudown from '../../assets/icons/menu-down.svg'
-import { Editor } from '../../modules/editor'
+import { Editor } from '../../modules-o/editor'
 import ToolbarItemIcon from './toolbar-item-icon.vue'
 
 const props = withDefaults(

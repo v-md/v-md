@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Editor } from '../../modules/editor'
+import { Editor } from '../../modules-o/editor'
 import { FilesNav } from '../files-nav'
 import { Toolbar } from '../toolbar'
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { ToolbarType } from '../../modules/toolbar'
-import { Editor } from '../../modules/editor'
+import type { ToolbarType } from '../../modules-o/toolbar'
+import { Editor } from '../../modules-o/editor'
 import ToolbarItem from './toolbar-item.vue'
 
 const props = withDefaults(

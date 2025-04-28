@@ -1,5 +1,5 @@
 import type { TippyComponent, TippyOptions } from 'vue-tippy'
-import type { FileNode } from '../file'
+import type { FileNode } from '.'
 import type {
   FileNavMenuConfirmOptions,
   FileNavMenuItem,

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Editor } from '../../modules/editor'
+import { Editor } from '../../modules-o/editor'
 import { Layout } from '../layout'
 import { ViewEditor } from '../view-editor'
 import { ViewFiles } from '../view-files'

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { FileNode } from '../../modules/file'
+import type { FileNode } from '../../modules-o/file'
 import {
   ref,
   watch,

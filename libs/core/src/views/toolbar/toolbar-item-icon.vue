@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ToolbarItemOptions } from '../../modules/toolbar'
+import type { ToolbarItemOptions } from '../../modules-o/toolbar'
 import { resolveDynamicImport } from '@v-md/shared'
 import {
   computed,

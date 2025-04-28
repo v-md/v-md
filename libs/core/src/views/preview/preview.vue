@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
-import { Editor } from '../../modules/editor'
+import { Editor } from '../../modules-o/editor'
 
 const editor = Editor.use()
 const { preview } = editor.files

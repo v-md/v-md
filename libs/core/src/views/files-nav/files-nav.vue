@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { FileNode } from '../../modules/file'
+import type { FileNode } from '../../modules-o/file'
 import { onBeforeUnmount, ref } from 'vue'
 import FilesNavItemInput from './files-nav-item-input.vue'
 import FilesNavItemMenu from './files-nav-item-menu.vue'

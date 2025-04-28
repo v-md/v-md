@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { Editor } from '../../modules/editor'
+import { Editor } from '../../modules-o/editor'
 import { CodeEditor } from '../code-editor'
 import { Toolbar } from '../toolbar'
 
