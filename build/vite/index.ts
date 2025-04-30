@@ -1,4 +1,5 @@
 import vue from '@vitejs/plugin-vue'
+import vueJsx from '@vitejs/plugin-vue-jsx'
 import tsconfigPath from 'vite-tsconfig-paths'
 
 export * from './dts-plugin'
@@ -10,4 +11,5 @@ export type { PluginOptions as TsconfigPathsOptions } from 'vite-tsconfig-paths'
 export {
   tsconfigPath,
   vue,
+  vueJsx,
 }

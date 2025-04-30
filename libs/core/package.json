@@ -48,6 +48,7 @@
     "@babel/types": "^7.26.5",
     "@v-md/renderer": "workspace:^",
     "@v-md/shared": "workspace:^",
+    "@v-md/ui": "workspace:^",
     "@vueuse/core": "^12.3.0",
     "tippy.js": "^6.3.7",
     "vue-tippy": "^6.6.0"

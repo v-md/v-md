@@ -1,7 +1,8 @@
 import type {
+  DynamicImportResolver,
   SequencePositionOptions,
 } from '@v-md/shared'
-import type { App } from 'vue'
+import type { App, Component } from 'vue'
 import type { Model } from '../../model'
 import type {
   Plugin,
@@ -13,6 +14,7 @@ import {
   insertIntoSequence,
   logger,
   removeFromSequence,
+  resolveDynamicImport,
 } from '@v-md/shared'
 import {
   createApp,
@@ -43,10 +45,17 @@ export class Editor {
    * @param el 挂载的元素，取值说明如下：
    * - 字符串：将作为选择器，查找页面中对应的元素
    * - HTMLElement：直接使用传入的元素
+   * @param template 编辑器自定义模板，一般不用传递，使用系统默认模板
    */
-  mount(el: string | HTMLElement = '#app') {
+  mount(
+    el: string | HTMLElement = '#app',
+    template?: DynamicImportResolver<Component>,
+  ) {
     // eslint-disable-next-line ts/no-this-alias
     const editor = this
+    const templateGetter: DynamicImportResolver<Component> =
+      template ||
+      (() => import('../view/editor.vue').then(res => res.default))
 
     return new Promise<Editor>((resolve, reject) => {
       let target: HTMLElement | null = null
@@ -62,7 +71,7 @@ export class Editor {
         return
       }
 
-      import('../view/editor.vue').then(({ default: EditorApp }) => {
+      resolveDynamicImport(templateGetter).then((EditorApp) => {
         const Comp = defineComponent({
           setup() {
             provide(PROVIDE_KEY, editor)
@@ -201,7 +210,7 @@ export class Editor {
    * 插入模块
    * @param model 模块对象
    */
-  registerModel(model: Model) {
+  addModel(model: Model) {
     const modelExisted = this.findModel(model.modelName)
     if (modelExisted) {
       logger.warn(EDITOR_ERR_MSG.MODEL_DUPLICATED(model.modelName))

@@ -15,8 +15,6 @@ export class LayoutTop extends Model {
   }
 
   setup() {
-    Object.values(this.slots).forEach((slot) => {
-      slot.setup()
-    })
+
   }
 }

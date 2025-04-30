@@ -1,0 +1,109 @@
+[data-tippy-root] {
+  max-width: calc(100vw - 10px);
+}
+
+.tippy-arrow {
+  width: 16px;
+  height: 16px;
+  color: #333;
+
+  &::before {
+    position: absolute;
+    content: "";
+    border-color: transparent;
+    border-style: solid;
+  }
+}
+
+.tippy-box {
+  --vmd-tippy-color-text: var(--vmd-color-text-primary);
+  --vmd-tippy-color-bg: var(--vmd-color-bg-content);
+  --vmd-tippy-box-shadow: 0 0 20px 4px rgb(154 161 177 / 15%), 0 4px 80px -8px rgb(36 40 47 / 25%), 0 4px 4px -2px rgb(91 94 105 / 15%);
+
+  position: relative;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--vmd-tippy-color-text);
+  white-space: normal;
+  background-color: var(--vmd-tippy-color-bg);
+  border-radius: 4px;
+  outline: 0;
+  box-shadow: var(--vmd-tippy-box-shadow);
+  transition-property: transform, visibility, opacity;
+
+  & > .tippy-svg-arrow {
+    fill: var(--vmd-tippy-color-bg);
+  }
+
+  & > .tippy-backdrop {
+    background-color: var(--vmd-tippy-color-bg);
+  }
+
+  &[data-animation="fade"][data-state="hidden"] {
+    opacity: 0;
+  }
+
+  &[data-placement^="top"] {
+    & > .tippy-arrow {
+      bottom: 0;
+
+      &::before {
+        bottom: -7px;
+        left: 0;
+        border-width: 8px 8px 0;
+        border-top-color: var(--vmd-tippy-color-bg);
+        transform-origin: center top;
+      }
+    }
+  }
+
+  &[data-placement^="bottom"] {
+    & > .tippy-arrow {
+      top: 0;
+
+      &::before {
+        top: -7px;
+        left: 0;
+        border-width: 0 8px 8px;
+        border-bottom-color: var(--vmd-tippy-color-bg);
+        transform-origin: center bottom;
+      }
+    }
+  }
+
+  &[data-placement^="left"] {
+    & > .tippy-arrow {
+      right: 0;
+
+      &::before {
+        right: -7px;
+        border-width: 8px 0 8px 8px;
+        border-left-color: var(--vmd-tippy-color-bg);
+        transform-origin: center left;
+      }
+    }
+  }
+
+  &[data-placement^="right"] {
+    & > .tippy-arrow {
+      left: 0;
+
+      &::before {
+        right: -7px;
+        border-width: 8px 8px 8px 0;
+        border-right-color: var(--vmd-tippy-color-bg);
+        transform-origin: center right;
+      }
+    }
+  }
+
+  &[data-inertia][data-state="visible"] {
+    transition-timing-function: cubic-bezier(0.54, 1.5, 0.38, 1.11);
+  }
+}
+
+.tippy-content {
+  position: relative;
+  z-index: 1;
+  padding: 5px 9px;
+}

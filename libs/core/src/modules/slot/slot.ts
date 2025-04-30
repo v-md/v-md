@@ -15,27 +15,50 @@ import {
 import { reactive } from 'vue'
 
 export class Slot {
-  items: SlotItem[] = reactive([])
+  private _isSetup = false
 
-  addSlotItem(item: SlotItemOptions, options?: SequenceInsertOptions) {
-    insertIntoSequence(this.items, item, options)
+  constructor() {
+    // 由于 private 属性的缘故，此处类型转换有问题，故使用 unknown
+    return reactive(this) as unknown as Slot
+  }
+
+  items: SlotItem[] = []
+
+  addItem(item: SlotItemOptions, options?: SequenceInsertOptions) {
+    const isInsert = insertIntoSequence(this.items, item, {
+      ...options,
+    })
+    if (isInsert && this._isSetup) {
+      this._loadItemComponent(item)
+    }
     return this
   }
 
-  removeSlotItem(name: string, options?: SequenceRemoveOptions) {
-    removeFromSequence(this.items, name, options)
+  removeItem(name: string, options?: SequenceRemoveOptions) {
+    removeFromSequence(this.items, name, {
+      ...options,
+    })
     return this
   }
 
-  getSlotItem(name: string) {
+  getItem(name: string) {
     return getItemFromSequence(this.items, name)
   }
 
   setup() {
+    this._isSetup = true
     this.items.forEach((item) => {
-      resolveDynamicImport(item.component).then((component) => {
-        item.renderComponent = component
-      })
+      this._loadItemComponent(item)
+    })
+  }
+
+  unmount() {
+    this._isSetup = false
+  }
+
+  private _loadItemComponent(item: SlotItem) {
+    resolveDynamicImport(item.component).then((component) => {
+      item.renderComponent = component
     })
   }
 }

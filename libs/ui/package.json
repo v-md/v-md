@@ -23,7 +23,15 @@
     "registry": "https://registry.npmjs.org/",
     "access": "public"
   },
+  "peerDependencies": {
+    "vue": "catalog:peer"
+  },
+  "peerDependenciesMeta": {
+    "vue": {
+      "optional": true
+    }
+  },
   "dependencies": {
-
+    "vue-tippy": "^6.6.0"
   }
 }
