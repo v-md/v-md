@@ -1,0 +1,34 @@
+@use "../../styles/mixins" as *;
+@use "../../styles/function" as *;
+
+@include c("menu", "item") {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: #{css-var-value("menu", "padding")};
+  background-color: #{css-var-value("menu", "bg-color")};
+
+  @include cc("menu", "item", "active") {
+    background-color: #{css-var-value("menu", "bg-color-active")};
+  }
+}
+
+@include c("menu", "item", "split") {
+  height: 1px;
+  margin: #{css-var-value("menu", "split-margin")};
+  background-color: #{css-var-value("menu", "border-color")};
+}
+
+@include c("menu", "item", "label") {
+  font-size: #{css-var-value("menu", "label-size")};
+  color: #{css-var-value("menu", "label-color")};
+}
+
+@include c("menu", "item", "collapse", "icon") {
+  color: #{css-var-value("menu", "key-binding-color")};
+}
+
+@include c("menu", "item", "key", "binding") {
+  font-size: #{css-var-value("menu", "key-binding-size")};
+  color: #{css-var-value("menu", "key-binding-color")};
+}

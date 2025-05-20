@@ -1,0 +1,33 @@
+@use "./function.scss" as *;
+
+@mixin c($args...) {
+  .#{class-name($args...)} {
+    @content;
+  }
+}
+
+@mixin cc($args...) {
+  &.#{class-name($args...)} {
+    @content;
+  }
+}
+
+@mixin v($name, $var-map) {
+  @each $key, $value in $var-map {
+    #{css-var-name($name, $key)}: #{$value};
+  }
+}
+
+@mixin icon() {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  color: inherit;
+  background-color: currentcolor;
+  /* stylelint-disable-next-line property-no-vendor-prefix */
+  -webkit-mask: #{css-var-value("icon")} no-repeat;
+  mask: #{css-var-value("icon")} no-repeat;
+  /* stylelint-disable-next-line property-no-vendor-prefix */
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+}

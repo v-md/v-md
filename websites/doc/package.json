@@ -12,6 +12,7 @@
     "@types/lodash-es": "catalog:",
     "@v-md/ui": "workspace:^",
     "lodash-es": "catalog:",
+    "postcss": "^8.5.3",
     "type-fest": "catalog:",
     "vue": "catalog:"
   }

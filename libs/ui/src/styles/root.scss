@@ -1,0 +1,6 @@
+@use "./mixins" as *;
+@use "./var";
+
+:root {
+  @include v("color", $colors-map);
+}

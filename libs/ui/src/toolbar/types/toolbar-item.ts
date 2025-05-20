@@ -1,5 +1,6 @@
-import type { DynamicImportResolver, Promisable } from '@v-md/shared'
+import type { Promisable } from '@v-md/shared'
 import type { VNode } from 'vue'
+import type { IconProps } from '../../icon'
 
 export interface ToolbarItemProps {
   /**
@@ -9,21 +10,11 @@ export interface ToolbarItemProps {
   split?: boolean
 
   /**
-   * 工具栏展示的小图标 url
+   * 工具栏展示的小图标的配置选项
    *
    * 为空代表不展示小图标
-   *
-   * 支持异步加载
    */
-  icon?: DynamicImportResolver<string>
-
-  /**
-   * 小图标的类型：
-   * - svg: svg 格式的图标，支持换色
-   * - img: img 图片图标，不支持换色
-   * @default 'svg'
-   */
-  iconType?: 'svg' | 'img'
+  icon?: IconProps
 
   /**
    * 小图标右侧展示文字

@@ -1,19 +1,27 @@
-:root {
-  --vmd-color-primary: #409eff;
-  --vmd-color-primary-light: #ecf5ff;
-  --vmd-color-warning: #e6a23c;
+@use "sass:map";
 
-  // hover 颜色
-  --vmd-color-hover: #e1e4e8;
-
-  // 面板背景色
-  --vmd-color-bg-content: #fff;
-  --vmd-color-bg-panel: #f3f3f3;
-  --vmd-color-bg-nav: #e8e8e8;
-
-  // 字体颜色
-  --vmd-color-text-primary: #303133;
-  --vmd-color-text-regular: #606266;
-  --vmd-color-text-secondary: #909399;
-  --vmd-color-text-placeholder: #c0c4cc;
-}
+$colors: () !default;
+$colors-map:  map.deep-merge(
+  (
+    "primary": #409eff,
+    "primary-light": #ecf5ff,
+    "success": #67c23a,
+    "warning": #e6a23c,
+    "danger": #f56c6c,
+    "info": #909399
+    // hover 颜色
+    "hover": #e1e4e8,
+    // 背景颜色
+    "bg-content": #fff,
+    "bg-panel": #f3f3f3,
+    "bg-nav": #e8e8e8,
+    // 文字颜色
+    "text-primary": #303133,
+    "text-regular": #606266,
+    "text-secondary": #909399,
+    "text-placeholder": #c0c4cc,
+    // 边框颜色
+    "border": #e4e7ed,
+  ),
+  $colors
+);

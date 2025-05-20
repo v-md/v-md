@@ -2,10 +2,9 @@ import type {
   InjectionKey,
   provide,
 } from 'vue'
-import type { Locale } from '../model/locale'
 import { inject } from 'vue'
 import { useVueApp } from '../../common'
-import { defaultLocale } from '../utils/default'
+import { Locale } from '../model/locale'
 
 export type LocaleContext = ReturnType<Locale['toVueContext']>
 
@@ -31,7 +30,7 @@ export function useLocale() {
   let res = inject(LOCALE_PROVIDE_KEY)
   if (!res) {
     const app = useVueApp()
-    res = provideLocale(app.provide.bind(app), defaultLocale())
+    res = provideLocale(app.provide.bind(app), new Locale())
   }
   return res
 }

@@ -1,0 +1,20 @@
+@use "sass:map";
+@use "../../styles/function" as *;
+
+$menu: () !default;
+$menu-map:  map.deep-merge(
+  (
+    "bg-color": #{css-var-value("color", "bg-content")},
+    "bg-color-active": #{css-var-value("color", "hover")},
+    "border-color": #{css-var-value("color", "border")},
+    "icon-size": 16px,
+    "icon-color": #{css-var-value("color", "text-primary")},
+    "label-size": 14px,
+    "label-color": #{css-var-value("color", "text-primary")},
+    "key-binding-size": 14px,
+    "key-binding-color": #{css-var-value("color", "text-primary")},
+    "padding": 2px 8px,
+    "split-margin": 4px 0,
+  ),
+  $menu
+);

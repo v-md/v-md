@@ -6,10 +6,10 @@ import { ref, watch } from 'vue'
 export type RenderSlotFn = (...args: any[]) => Promisable<VNode>
 
 export function useRenderSlot<T extends RenderSlotFn = RenderSlotFn>(
-  renderFn: WatchSource<T | undefined | null>,
+  renderFn: WatchSource<T | undefined>,
   ...args: Parameters<T>
 ) {
-  const renderComponent = ref<VNode | null | undefined>(null)
+  const renderComponent = ref<VNode | undefined>()
   watch(renderFn, (fn) => {
     if (!fn) {
       return
@@ -19,5 +19,5 @@ export function useRenderSlot<T extends RenderSlotFn = RenderSlotFn>(
       renderComponent.value = res
     })
   }, { immediate: true })
-  return { renderComponent }
+  return renderComponent
 }

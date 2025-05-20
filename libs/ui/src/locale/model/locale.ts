@@ -40,7 +40,7 @@ export class Locale {
   /**
    * 为某种语言拓展本地化字典
    * @param lang 语言标识
-   * @param dict 字典原始对象。会与原有的字典深合并
+   * @param dict 字典原始对象。解析完成后会覆盖原有字典
    * @returns 支持链式调用
    */
   add(lang: string, dict: LocaleDict) {

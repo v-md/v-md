@@ -1,0 +1,6 @@
+@use "../../styles/mixins" as *;
+@use "./var";
+
+@include c("menu") {
+  @include v("menu", var.$menu-map);
+}

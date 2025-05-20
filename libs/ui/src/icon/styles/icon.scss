@@ -1,0 +1,18 @@
+@use "../../styles/mixins" as *;
+@use "../../styles/function" as *;
+@use "./var";
+
+@include c("icon") {
+  @include v("icon", var.$icon-map);
+
+  @include cc("icon", "svg") {
+    @include icon;
+
+    font-size: #{css-var-value("icon", "size")};
+  }
+
+  @include cc("icon", "img") {
+    width: #{css-var-value("icon", "size")};
+    height: #{css-var-value("icon", "size")};
+  }
+}

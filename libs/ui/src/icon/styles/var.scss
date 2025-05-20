@@ -1,0 +1,9 @@
+@use "sass:map";
+
+$icon: () !default;
+$icon-map:  map.deep-merge(
+  (
+    "size": 16px,
+  ),
+  $icon
+);

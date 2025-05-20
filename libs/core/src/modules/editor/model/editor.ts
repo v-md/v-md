@@ -16,6 +16,7 @@ import {
   removeFromSequence,
   resolveDynamicImport,
 } from '@v-md/shared'
+import { Locale } from '@v-md/ui'
 import {
   createApp,
   defineComponent,

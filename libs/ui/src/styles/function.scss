@@ -1,0 +1,21 @@
+@use "./config";
+
+@function class-name($args...) {
+  $name: config.$namespace;
+
+  @each $item in $args {
+    @if $item != "" {
+      $name: $name + "-" + $item;
+    }
+  }
+
+  @return $name;
+}
+
+@function css-var-name($args...) {
+  @return "--" + class-name($args...);
+}
+
+@function css-var-value($args...) {
+  @return "var(" + css-var-name($args...) + ")";
+}
