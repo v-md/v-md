@@ -13,13 +13,13 @@ function getUrl() {
 <template>
   <div>
     <h3>基本使用</h3>
-    <Icon src="/icons/file.svg" />
+    <Icon url="/icons/file.svg" />
     <h3>图标换色</h3>
-    <Icon src="/icons/file.svg" class-name="c-red" />
+    <Icon url="/icons/file.svg" class="c-red" />
     <h3>图标变大小</h3>
-    <Icon src="/icons/file.svg" :styles="{ fontSize: '24px' }" />
+    <Icon url="/icons/file.svg" :style="{ fontSize: '24px' }" />
     <h3>动态加载(2s 后加载出图像)</h3>
-    <Icon :src="getUrl" />
+    <Icon :url="getUrl" />
   </div>
 </template>
 

@@ -7,3 +7,11 @@
 ../demo/menu/menu-basic.vue
 
 :::
+
+## 菜单嵌套
+
+:::demo
+
+../demo/menu/menu-sub.vue
+
+:::

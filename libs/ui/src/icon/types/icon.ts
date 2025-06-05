@@ -1,7 +1,7 @@
 import type { DynamicImportResolver } from '@v-md/shared'
-import type { StyleProps } from '../../common'
+import type { ImgHTMLAttributes } from 'vue'
 
-export interface IconProps extends StyleProps {
+export interface IconProps {
   /**
    * 图标 url
    *
@@ -9,7 +9,7 @@ export interface IconProps extends StyleProps {
    *
    * 支持异步加载
    */
-  src?: DynamicImportResolver<string>
+  url?: DynamicImportResolver<string>
 
   /**
    * 图标的类型：
@@ -19,3 +19,5 @@ export interface IconProps extends StyleProps {
    */
   type?: 'svg' | 'img'
 }
+
+export type IconPropsWithAttrs = IconProps & ImgHTMLAttributes

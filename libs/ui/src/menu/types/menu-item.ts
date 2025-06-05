@@ -1,6 +1,5 @@
-import type { Promisable } from '@v-md/shared'
-import type { VNode } from 'vue'
-import type { IconProps } from '../../icon'
+import type { LiHTMLAttributes } from 'vue'
+import type { IconPropsWithAttrs } from '../../icon'
 
 export interface MenuItemProps {
   /** 渲染分隔线，为 true 时，其他选项均无效 */
@@ -11,7 +10,7 @@ export interface MenuItemProps {
    *
    * 为空代表不展示小图标
    */
-  icon?: IconProps
+  icon?: IconPropsWithAttrs
 
   /** 菜单项左侧主文字内容 */
   label?: string
@@ -20,40 +19,36 @@ export interface MenuItemProps {
   keyBinding?: string
 
   /**
-   * 菜单项右侧是否展示折叠箭头。
-   *
-   * 优先级高于 `keyBinding`，为 true 时，keyBinding 不展示
+   * 菜单项右侧的折叠箭头
+   * - object: 显示折叠箭头，对象将作为 `Icon` 组件的属性传入
+   * - true: 展示默认的折叠箭头
+   * - false: 不展示折叠箭头
    */
-  collapse?: boolean
+  collapseIcon?: IconPropsWithAttrs | boolean
 
-  /** 是否激活 */
-  active?: boolean
+  /**
+   * 折叠浮动窗的触发方式：
+   * - 'none' | undefined: 禁用折叠浮动窗
+   * - 'hover': 鼠标悬停时触发
+   * - 'click': 点击后触发
+   * @default 'none'
+   */
+  collapseTrigger?: 'hover' | 'click' | 'none'
 
   /** 是否禁用 */
   disabled?: boolean
 
-  /**
-   * 子级下拉菜单内容，需要传递 VNode 渲染函数
-   *
-   * 支持异步加载
-   */
-  dropdown?: () => Promisable<VNode>
+  /** 是否隐藏 */
+  hidden?: boolean
+}
 
-  /**
-   * 是否展示子级下拉菜单。
-   *
-   * 该选项有效需要设置 `dropdown`
-   *
-   * @default
-   */
-  dropdownVisible?: boolean
+export type MenuItemPropsWithAttrs = MenuItemProps & LiHTMLAttributes
+export interface MenuItemEmits {
+  /** 鼠标覆盖时触发 */
+  (e: 'hover'): void
+}
 
-  /** 点击触发 */
-  onClick?: () => void
-
-  /** 右键点击触发 */
-  onRightClick?: () => void
-
-  /** 鼠标悬停触发 */
-  onHover?: () => void
+export interface MenuItemSlots {
+  /** 默认插槽，弹出浮动窗中的内容 */
+  default: () => any
 }

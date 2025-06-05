@@ -1,2 +1,4 @@
 @use "./base";
 @use "./vp/theme";
+/* stylelint-disable-next-line scss/load-partial-extension */
+@use "@v-md/ui/styles/root.scss";

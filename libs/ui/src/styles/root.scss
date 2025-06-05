@@ -1,6 +1,7 @@
 @use "./mixins" as *;
-@use "./var";
+@use "./var" as *;
 
 :root {
   @include v("color", $colors-map);
+  @include v("font-size", $font-size-map);
 }

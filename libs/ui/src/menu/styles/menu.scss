@@ -1,6 +1,15 @@
 @use "../../styles/mixins" as *;
+@use "../../styles/function" as *;
 @use "./var";
 
 @include c("menu") {
   @include v("menu", var.$menu-map);
+
+  box-sizing: border-box;
+  padding: #{css-var-value("menu", "padding")};
+  margin: 0;
+  list-style: none;
+  background-color: #{css-var-value("menu", "bg-color")};
+  border: 1px solid #{css-var-value("menu", "border-color")};
+  border-radius: #{css-var-value("menu", "border-radius")};
 }

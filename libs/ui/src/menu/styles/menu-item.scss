@@ -2,13 +2,32 @@
 @use "../../styles/function" as *;
 
 @include c("menu", "item") {
+  box-sizing: border-box;
+  background-color: #{css-var-value("menu", "bg-color")};
+
+  @include cc("menu", "item", "disabled") {
+    @include c("menu", "item", "link") {
+      cursor: not-allowed;
+
+      &:hover {
+        background-color: #{css-var-value("menu", "bg-color")};
+      }
+    }
+  }
+}
+
+@include c("menu", "item", "link") {
+  position: relative;
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: #{css-var-value("menu", "padding")};
-  background-color: #{css-var-value("menu", "bg-color")};
+  height: 26px;
+  padding: #{css-var-value("menu", "item", "padding")};
+  cursor: pointer;
+  border-radius: #{css-var-value("menu", "border-radius")};
 
-  @include cc("menu", "item", "active") {
+  &:hover {
     background-color: #{css-var-value("menu", "bg-color-active")};
   }
 }
@@ -20,15 +39,33 @@
 }
 
 @include c("menu", "item", "label") {
+  flex-grow: 1;
+  width: 0;
   font-size: #{css-var-value("menu", "label-size")};
   color: #{css-var-value("menu", "label-color")};
-}
 
-@include c("menu", "item", "collapse", "icon") {
-  color: #{css-var-value("menu", "key-binding-color")};
+  @include truncate;
 }
 
 @include c("menu", "item", "key", "binding") {
+  flex-shrink: 0;
+  margin-left: 8px;
   font-size: #{css-var-value("menu", "key-binding-size")};
   color: #{css-var-value("menu", "key-binding-color")};
+}
+
+@include c("menu", "item", "icon") {
+  #{css-var-name('icon', 'size')}: #{css-var-value("menu", "icon-size")};
+  position: absolute;
+  top: 50%;
+  color: #{css-var-value("menu", "icon-color")};
+  transform: translateY(-50%);
+}
+
+@include c("menu", "item", "label", "icon") {
+  left: 6px;
+}
+
+@include c("menu", "item", "collapse", "icon") {
+  right: 6px;
 }

@@ -2,45 +2,34 @@
 import type { IconProps } from '../types/icon'
 import { computed } from 'vue'
 import { useDynamicImport } from '../../common'
-import {
-  useDefaultProps,
-  useNamespace,
-} from '../../config-provider'
+import { useNamespace } from '../../config-provider'
 
-const initialProps = defineProps<IconProps>()
-
-const props = useDefaultProps('iconDefault', initialProps, () => ({
-  src: '',
-  type: 'svg',
-  className: '',
-  styles: {},
-}))
+const props = defineProps<IconProps>()
 
 const { c, v } = useNamespace()
 
-const iconSrc = useDynamicImport(() => props.src)
+const iconUrl = useDynamicImport(() => props.url)
 const iconUrlStyle = computed(() => {
-  if (!iconSrc.value) {
-    return {}
+  if (!iconUrl.value) {
+    return { color: 'transparent' }
   }
   return {
-    [v('icon')]: `url("${iconSrc.value}")`,
+    [v('icon')]: `url("${iconUrl.value}")`,
   }
 })
 </script>
 
 <template>
-  <i
-    v-if="props.type === 'svg'"
-    v-bind="$attrs"
-    :class="[c('icon'), c('icon', 'svg'), props.className]"
-    :style="[props.styles, iconUrlStyle]" />
   <img
+    v-if="type === 'img'"
+    v-bind="$attrs"
+    :class="[c('icon'), c('icon', 'img')]"
+    :src="iconUrl">
+  <i
     v-else
     v-bind="$attrs"
-    :class="[c('icon'), c('icon', 'img'), props.className]"
-    :style="[props.styles]"
-    :src="iconSrc">
+    :class="[c('icon'), c('icon', 'svg')]"
+    :style="[iconUrlStyle]" />
 </template>
 
 <style lang="scss">

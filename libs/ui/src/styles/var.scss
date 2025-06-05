@@ -8,7 +8,7 @@ $colors-map:  map.deep-merge(
     "success": #67c23a,
     "warning": #e6a23c,
     "danger": #f56c6c,
-    "info": #909399
+    "info": #909399,
     // hover 颜色
     "hover": #e1e4e8,
     // 背景颜色
@@ -24,4 +24,16 @@ $colors-map:  map.deep-merge(
     "border": #e4e7ed,
   ),
   $colors
+);
+$font-size: () !default;
+$font-size-map: map.merge(
+  (
+    "extra-large": 20px,
+    "large": 18px,
+    "medium": 16px,
+    "base": 14px,
+    "small": 13px,
+    "extra-small": 12px,
+  ),
+  $font-size
 );

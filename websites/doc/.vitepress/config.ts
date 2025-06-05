@@ -1,3 +1,4 @@
+import { join } from 'node:path'
 import {
   defineConfig,
   mdPlugin,
@@ -13,6 +14,11 @@ export default defineConfig({
   description: 'v-md UI 组件',
 
   vite: vitepressViteConfig({
+    resolve: {
+      alias: {
+        '@v-md/ui/styles': '../../libs/ui/src/styles',
+      },
+    },
     server: {
       port: 5273,
     },

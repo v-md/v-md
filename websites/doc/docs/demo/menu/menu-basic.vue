@@ -4,16 +4,20 @@ import { Menu, MenuItem } from '@v-md/ui'
 
 <template>
   <div>
-    <Menu class="menu">
-      <MenuItem label="aaaa" />
-      <MenuItem label="bbb" />
-      <MenuItem label="ccc" />
+    <Menu style="width: 200px;">
+      <MenuItem
+        label="aaaa"
+        collapse-icon
+        :icon="{
+          url: '/icons/file.svg',
+        }"
+        key-binding="Ctrl+A" />
+      <MenuItem label="bbb" key-binding="Ctrl+B" />
+      <MenuItem split />
+      <MenuItem label="ccccccccccccccccccccccccccccc" />
     </Menu>
   </div>
 </template>
 
 <style scoped>
-.menu {
-  border: 1px solid #ccc;
-}
 </style>

@@ -12,7 +12,7 @@ export function vitepressViteConfig(options: UserConfig['vite'] = {}) {
       postcss: {
         plugins: [
           postcssIsolateStyles({
-            includeFiles: [/vp-doc\.css/], // 默认为 /base\.css/
+            includeFiles: [/vp-doc\.css/, /base\.css/], // 默认为 /base\.css/
           }),
         ],
       },
