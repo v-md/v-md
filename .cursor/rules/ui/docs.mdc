@@ -198,6 +198,14 @@ import { Icon } from '@v-md/ui'
 - **说明优先级**：优先使用源码注释，无注释时清晰描述用途和限制
 - **存在性检查**：源码中不存在的部分，文档中不展示
 
+## 类型格式化规范
+- **类型格式**：所有类型必须使用反引号包围
+  - ✅ 正确：`string`、`number`、`boolean`、`Array<string>`
+  - ❌ 错误：string、number、boolean、Array<string>
+- **复杂类型**：对象类型和联合类型同样使用反引号
+  - ✅ 正确：`{ name: string; age: number }`、`'small' | 'medium' | 'large'`
+  - ❌ 错误：{ name: string; age: number }、'small' | 'medium' | 'large'
+
 ### CSS变量
 - **数据来源**：`libs/ui/src/组件名/style/var.scss`
 - **一致性要求**：变量名、默认值必须与源码完全一致
