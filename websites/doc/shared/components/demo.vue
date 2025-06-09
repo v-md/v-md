@@ -49,7 +49,7 @@ const isCodeShow = ref(false)
   </div>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @use "../styles/mixins.scss" as *;
 
 .demo-wrapper {

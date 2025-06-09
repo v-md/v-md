@@ -16,7 +16,7 @@ export default defineConfig({
   vite: vitepressViteConfig({
     resolve: {
       alias: {
-        '@v-md/ui/styles': '../../libs/ui/src/styles',
+        '@v-md/ui/styles': join(__dirname, '../../..', 'libs/ui/src/styles'),
       },
     },
     server: {
@@ -42,6 +42,7 @@ export default defineConfig({
     search: {
       provider: 'local',
     },
+    outline: [2, 3],
     nav: [
       { text: '开始', link: '/guide/' },
       { text: '组件', link: '/components/' },

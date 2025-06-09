@@ -1,0 +1,60 @@
+---
+description: '@v-md/ui' 的目录结构规范
+globs: libs/ui/**/*
+alwaysApply: false
+---
+
+# UI 组件库目录结构规则
+
+`@v-md/ui` 是一个基于 Vue 3 的 UI 组件库，为 `v-md` 编辑器提供了一系列可复用的 UI 组件。
+
+## 目录结构
+```
+libs/ui/
+├── src/                      # 源代码目录
+│   ├── common/              # 通用工具和类型定义
+│   │   ├── composables/     # 组合式函数
+│   │   └── types/          # 通用类型定义
+│   ├── styles/              # 全局样式
+│   │   ├── mixins.scss     # 样式混入
+│   │   ├── function.scss   # 样式函数
+│   │   ├── var.scss        # 样式变量
+│   │   └── root.scss       # 根样式
+│   ├── component/           # 组件目录（示例：实际开发时替换为具体组件名）。
+│   │   └── ...             # 后续详细介绍
+│   ├── index.ts            # 主入口文件
+│   └── env.d.ts            # 环境声明文件
+├── package.json            # 包配置文件
+├── tsconfig.json           # TypeScript 配置
+└── vite.config.ts          # Vite 构建配置
+```
+
+## 每个组件的目录结构
+每个组件目录应包含（以下使用 `component` 作为示例名称，实际开发时需替换为具体组件名）：
+```
+component/                  # 组件目录（示例名称）
+├── assets/               # 组件资源文件（如 SVG 图标）
+├── composables/         # 组件组合式函数
+│   └── index.ts        # 组合式函数导出
+├── styles/              # 组件样式
+│   ├── var.scss        # 组件样式变量
+│   ├── component.scss  # 组件样式实现
+│   └── component-xxx.scss  # 子组件样式实现
+├── types/               # 组件类型定义
+│   ├── index.ts        # 类型定义导出
+│   ├── component.ts    # 组件类型定义（包含 props、emits、slots、model、expose）
+│   └── component-xxx.ts    # 子组件类型定义
+├── view/                # 组件视图
+│   ├── component.vue   # 组件实现
+│   └── component-xxx.vue   # 子组件实现
+├── __tests__/          # 组件测试
+│   ├── component.spec.ts # 组件测试文件
+│   └── component-xxx.spec.ts # 子组件测试文件
+└── index.ts            # 组件入口文件
+```
+
+某些较为复杂的组件，还会包含子组件，子组件的命名规范为：`component-xxx`(`component` 为主组件名称，`xxx` 根据实际情况自行决定)
+
+子组件同样有自己的样式(`component/styles/component-xxx.scss`)、类型定义(`component/types/component-xxx.ts`)、视图实现(`component/view/component-xxx.vue`)、测试文件(`component/__tests__/component-xxx.spec.ts`)
+
+## 组件的入口文件

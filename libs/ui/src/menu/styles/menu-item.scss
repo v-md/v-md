@@ -5,9 +5,11 @@
   box-sizing: border-box;
   background-color: #{css-var-value("menu", "bg-color")};
 
+  // 禁用状态样式
   @include cc("menu", "item", "disabled") {
     @include c("menu", "item", "link") {
       cursor: not-allowed;
+      opacity: 0.4;
 
       &:hover {
         background-color: #{css-var-value("menu", "bg-color")};

@@ -1,0 +1,172 @@
+---
+description: '@v-md/ui' 的样式规范
+globs: libs/ui/src/*/styles/*
+alwaysApply: false
+---
+
+# @v-md/ui 样式规范
+
+## 样式系统概览
+
+@v-md/ui 采用基于 SCSS 的样式系统，使用 CSS 变量和 BEM 方法论来管理组件样式。
+
+## 文件结构
+
+### 核心样式文件
+
+样式文件位于 [libs/ui/src/styles/](mdc:libs/ui/src/styles/) 目录：
+
+```
+libs/ui/src/styles/
+├── config.scss        # 全局配置，定义命名空间
+├── var.scss           # 全局样式变量定义（颜色、字体等）
+├── function.scss      # SCSS 工具函数（类名生成、CSS变量等）
+├── mixins.scss        # SCSS mixins 工具（组件样式、图标、截断等）
+└── root.scss          # 根样式变量注入到 :root
+```
+
+### 组件样式文件
+
+每个组件都有自己的样式目录，遵循统一的文件结构：
+
+```
+libs/ui/src/component/
+└── styles/
+    ├── component.scss           # 主组件样式文件
+    ├── component-item.scss      # 子组件样式文件（如果有子组件）
+    └── var.scss                 # 组件专用变量定义
+```
+
+**组件样式目录结构说明：**
+
+- **主组件样式** (`component.scss`)：定义组件的整体布局、基础样式和主要交互状态
+- **子组件样式** (`component-item.scss`)：处理复杂组件的子元素样式（可选）
+- **变量定义** (`var.scss`)：定义该组件专用的样式变量，通常引用全局变量
+
+**实际组件示例：**
+
+```
+libs/ui/src/
+└── menu/styles/              # 菜单组件
+    ├── menu.scss
+    ├── menu-item.scss
+    └── var.scss
+```
+
+**组件样式文件命名规则：**
+- 主组件样式文件名与组件目录名保持一致
+- 子组件样式文件以 `{component}-{subcomponent}` 命名
+- 变量文件统一命名为 `var.scss`
+
+## 命名空间与类名规范
+
+### 命名空间配置
+
+默认命名空间为 `vmd`，在 [config.scss](mdc:libs/ui/src/styles/config.scss) 中定义：
+
+```scss
+$namespace: "vmd" !default;
+```
+
+### 类名生成规则
+
+使用 `class-name` 函数(在 [function.scss](mdc:libs/ui/src/styles/function.scss) 中定义)或 `c` 混入(在 [mixins.scss](mdc:libs/ui/src/styles/mixins.scss) 中定义)生成 BEM 风格的类名：
+
+```scss
+// 生成： .vmd-menu
+@include c("menu") { ... }
+
+// 生成： .vmd-menu-item
+@include c("menu", "item") { ... }
+
+// 生成： .vmd-menu-item-link
+@include c("menu", "item", "link") { ... }
+```
+
+若需要应用交集选择器，可以使用 `cc` 混入(在 [mixins.scss](mdc:libs/ui/src/styles/mixins.scss) 中定义)：
+
+```scss
+@include c("menu", "item") {
+  // ...
+
+  // 生成： .vmd-menu-item.vmd-menu-item-active
+  @include cc("menu", "item", "active") {
+    // ...
+  }
+}
+```
+
+### CSS 变量命名规则
+
+使用 `css-var-name()` 函数生成 CSS 变量名：
+
+```scss
+// 生成： --vmd-menu-bg-color: #fff;
+#{css-var-name("menu", "bg-color")}: #fff;
+
+// 生成： background-color: var(--vmd-menu-bg-color);
+background-color: #{css-var-value("menu", "bg-color")};
+```
+
+## 样式变量系统
+
+### 全局变量
+
+在 [var.scss](mdc:libs/ui/src/styles/var.scss) 中定义有全局主题变量，包括颜色、字体大小等。它们在 [root.scss](mdc:libs/ui/src/styles/root.scss) 中注入到 `:root` 中。
+
+### 组件级变量
+
+每个组件都有自己的变量文件，子组件的变量也一并父组件的变量文件中定义，如 [menu/styles/var.scss](mdc:libs/ui/src/menu/styles/var.scss)。
+
+## 组件样式编写规范
+
+### 定义组件变量
+
+在组件的 `var.scss` 中定义组件变量，例如：
+
+```scss
+$component-map: (
+  "bg-color": #{css-var-value("color", "bg-content")},
+  "bg-color-active": #{css-var-value("color", "hover")},
+  "border-color": #{css-var-value("color", "border")},
+  "border-radius": 4px,
+  "icon-size": 16px,
+  "padding": 4px 0,
+  "item-padding": 2px 28px,
+);
+```
+
+### 基本结构
+
+每个组件(包括子组件)的样式文件(component.scss)应遵循以下结构：
+
+```scss
+@use "../../styles/mixins" as *;
+@use "../../styles/function" as *;
+@use "./var";
+
+// 主组件样式
+@include c("component") {
+  // 注入组件 CSS 变量
+  @include v("component", var.$component-map);
+  
+  // 基础样式
+  // ...
+  
+  // 交集选择器，选中：.vmd-component.vmd-component-modifier
+  @include cc("component", "modifier") {
+    // ...
+  }
+}
+
+// 子元素样式
+@include c("component", "element") {
+  // ...
+}
+```
+
+### 变量使用原则
+
+1. **优先使用全局变量**：尽量使用全局变量
+2. **组件变量继承全局变量**：组件变量应尽量引用全局变量
+3. **可配置性**：样式值应尽量通过变量控制

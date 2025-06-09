@@ -1,0 +1,340 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# UI 库开发规范
+
+## 项目概述
+`@v-md/ui` 是一个基于 Vue 3 的 UI 组件库，为 `v-md` 编辑器提供了一系列可复用的 UI 组件。
+
+## 目录结构
+```
+libs/ui/
+├── src/                      # 源代码目录
+│   ├── common/              # 通用工具和类型定义
+│   │   ├── composables/     # 组合式函数
+│   │   └── types/          # 通用类型定义
+│   ├── styles/              # 全局样式
+│   │   ├── mixins.scss     # 样式混入
+│   │   ├── function.scss   # 样式函数
+│   │   ├── var.scss        # 样式变量
+│   │   └── root.scss       # 根样式
+│   ├── component/           # 组件目录（示例：实际开发时替换为具体组件名）
+│   │   ├── assets/         # 组件资源文件
+│   │   ├── composables/    # 组件组合式函数
+│   │   ├── styles/         # 组件样式
+│   │   │   ├── var.scss    # 组件样式变量
+│   │   │   └── component.scss   # 组件样式实现
+│   │   ├── types/          # 组件类型定义
+│   │   │   ├── index.ts    # 类型定义导出
+│   │   │   └── component.ts     # 组件类型定义（包含 props、emits、slots、model、expose）
+│   │   ├── view/           # 组件视图
+│   │   │   └── component.vue    # 组件实现
+│   │   ├── __tests__/      # 组件测试
+│   │   │   └── component.spec.ts # 组件测试文件
+│   │   └── index.ts        # 组件入口文件
+│   ├── index.ts            # 主入口文件
+│   └── env.d.ts            # 环境声明文件
+├── package.json            # 包配置文件
+├── tsconfig.json           # TypeScript 配置
+└── vite.config.ts          # Vite 构建配置
+```
+
+## 组件开发规范
+
+### 1. 组件目录结构
+每个组件目录应包含（以下使用 `component` 作为示例名称，实际开发时需替换为具体组件名）：
+```
+component/                  # 组件目录（示例名称）
+├── assets/               # 组件资源文件（如 SVG 图标）
+├── composables/         # 组件组合式函数
+│   └── index.ts        # 组合式函数导出
+├── styles/              # 组件样式
+│   ├── var.scss        # 组件样式变量
+│   └── component.scss  # 组件样式实现
+├── types/               # 组件类型定义
+│   ├── index.ts        # 类型定义导出
+│   └── component.ts    # 组件类型定义（包含 props、emits、slots、model、expose）
+├── view/                # 组件视图
+│   └── component.vue   # 组件实现
+├── __tests__/          # 组件测试
+│   └── component.spec.ts # 组件测试文件
+└── index.ts            # 组件入口文件
+```
+
+### 2. 类型定义规范
+组件类型定义文件 `types/component.ts` 应包含以下类型定义：
+
+```typescript
+// Props 类型定义
+export interface ComponentProps {
+  // 组件属性定义
+}
+
+// Emits 类型定义
+export interface ComponentEmits {
+  // 组件事件定义
+}
+
+// Slots 类型定义
+export interface ComponentSlots {
+  // 组件插槽定义
+}
+
+// Model 类型定义
+export interface ComponentModel {
+  // 组件 v-model 定义
+}
+
+// Expose 类型定义
+export interface ComponentExpose {
+  // 组件暴露的方法和属性
+}
+
+// 其他与该组件相关的类型定义
+```
+
+### 3. 样式开发规范
+- 使用 SCSS 预处理器
+- 使用 CSS 变量实现主题
+- 遵循 BEM 命名规范
+- 响应式设计使用媒体查询
+- 避免使用行内样式
+
+#### 3.1 样式工具库
+样式工具库位于 `@/styles` 目录，提供以下功能：
+
+1. 配置（config.scss）
+```scss
+// 定义命名空间
+$namespace: "vmd" !default;
+```
+
+2. 函数（function.scss）
+```scss
+// 生成 BEM 类名
+@function class-name($args...) {
+  $name: config.$namespace;
+  @each $item in $args {
+    @if $item != "" {
+      $name: $name + "-" + $item;
+    }
+  }
+  @return $name;
+}
+
+// 生成 CSS 变量名
+@function css-var-name($args...) {
+  @return "--" + class-name($args...);
+}
+
+// 生成 CSS 变量值
+@function css-var-value($args...) {
+  @return "var(" + css-var-name($args...) + ")";
+}
+```
+
+3. 混入（mixins.scss）
+```scss
+// BEM 块混入
+@mixin c($args...) {
+  .#{class-name($args...)} {
+    @content;
+  }
+}
+
+// BEM 修饰符混入
+@mixin cc($args...) {
+  &.#{class-name($args...)} {
+    @content;
+  }
+}
+
+// CSS 变量混入
+@mixin v($name, $var-map) {
+  @each $key, $value in $var-map {
+    #{css-var-name($name, $key)}: #{$value};
+  }
+}
+
+// 图标混入
+@mixin icon() {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  color: inherit;
+  background-color: currentcolor;
+  -webkit-mask: #{css-var-value("icon")} no-repeat;
+  mask: #{css-var-value("icon")} no-repeat;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+}
+
+// 文本截断混入
+@mixin truncate() {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+```
+
+4. 全局变量（var.scss）
+```scss
+// 颜色变量
+$colors: () !default;
+$colors-map: map.deep-merge(
+  (
+    "primary": #409eff,
+    "primary-light": #ecf5ff,
+    "success": #67c23a,
+    // ... 其他颜色
+  ),
+  $colors
+);
+
+// 字体大小变量
+$font-size: () !default;
+$font-size-map: map.merge(
+  (
+    "extra-large": 20px,
+    "large": 18px,
+    "medium": 16px,
+    // ... 其他尺寸
+  ),
+  $font-size
+);
+```
+
+#### 3.2 组件样式开发范式
+1. 组件变量文件（var.scss）
+```scss
+$component: () !default;
+$component-map: map.deep-merge(
+  (
+    "bg-color": #{css-var-value("color", "bg-content")},
+    "border-color": #{css-var-value("color", "border")},
+    // ... 其他变量
+  ),
+  $component
+);
+```
+
+2. 组件样式文件（component.scss）
+```scss
+@use "../../styles/mixins" as *;
+@use "../../styles/function" as *;
+@use "./var";
+
+// 使用 BEM 块混入定义组件
+@include c("component") {
+  // 使用 CSS 变量混入定义组件变量
+  @include v("component", var.$component-map);
+
+  // 组件基础样式
+  box-sizing: border-box;
+  background-color: #{css-var-value("component", "bg-color")};
+  border: 1px solid #{css-var-value("component", "border-color")};
+
+  // 使用 BEM 修饰符混入定义状态
+  @include cc("component", "disabled") {
+    cursor: not-allowed;
+  }
+}
+```
+
+### 5. 样式规范
+- 使用 SCSS 预处理器
+- 使用 CSS 变量实现主题
+- 遵循 BEM 命名规范
+- 响应式设计使用媒体查询
+- 避免使用行内样式
+
+#### 5.1 目录结构
+```
+styles/
+├── mixins.scss     # 样式混入（如：c、cc、v、icon、truncate 等）
+├── function.scss   # 样式函数（如：class-name、css-var-name、css-var-value 等）
+├── var.scss        # 全局样式变量（如：颜色、字体大小等）
+└── root.scss       # 根样式（CSS 变量定义）
+```
+
+#### 5.2 样式变量规范
+- 使用 SCSS 变量定义主题相关的值
+- 变量命名使用 kebab-case
+- 使用 map 结构组织变量
+- 支持变量覆盖机制
+
+```scss
+// 变量定义示例
+$colors: () !default;
+$colors-map: map.deep-merge(
+  (
+    "primary": #409eff,
+    "primary-light": #ecf5ff,
+    "success": #67c23a,
+    // ... 其他颜色
+  ),
+  $colors
+);
+```
+
+#### 5.3 样式混入规范
+- 使用 `@mixin` 定义可复用的样式
+- 混入命名使用语义化的名称
+- 提供必要的参数支持
+
+```scss
+// 混入示例
+@mixin c($args...) {
+  .#{class-name($args...)} {
+    @content;
+  }
+}
+
+@mixin icon() {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  color: inherit;
+  background-color: currentcolor;
+  -webkit-mask: #{css-var-value("icon")} no-repeat;
+  mask: #{css-var-value("icon")} no-repeat;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+}
+```
+
+#### 5.4 组件样式规范
+- 组件样式文件使用 kebab-case 命名
+- 使用 BEM 命名规范组织类名
+- 使用 CSS 变量实现主题定制
+- 使用混入复用通用样式
+
+```scss
+// 组件样式示例
+@include c("menu") {
+  @include v("menu", var.$menu-map);
+
+  box-sizing: border-box;
+  padding: #{css-var-value("menu", "padding")};
+  margin: 0;
+  list-style: none;
+  background-color: #{css-var-value("menu", "bg-color")};
+  border: 1px solid #{css-var-value("menu", "border-color")};
+  border-radius: #{css-var-value("menu", "border-radius")};
+}
+```
+
+#### 5.5 主题定制规范
+- 使用 CSS 变量实现主题定制
+- 在根元素定义全局变量
+- 组件使用变量而不是硬编码值
+- 支持多主题切换
+
+```scss
+:root {
+  @include v("color", $colors-map);
+  @include v("font-size", $font-size-map);
+}
+```

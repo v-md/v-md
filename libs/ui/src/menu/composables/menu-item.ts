@@ -1,6 +1,3 @@
-import type {
-  Ref,
-} from 'vue'
 import type { TippyComponent } from '../../tippy'
 import type { MenuItemProps } from '../types'
 import {
@@ -23,7 +20,7 @@ const DATASET_KEY = 'vmdMenuItem'
 export class MenuItemContext {
   menu: MenuContext
 
-  props: MenuItemProps
+  props: Required<MenuItemProps>
 
   /** 子组件在组件列表中的索引 */
   index = -1
@@ -37,17 +34,20 @@ export class MenuItemContext {
   /** 子菜单引用 */
   tippyEl = ref<TippyComponent>()
 
-  /** 鼠标是否覆盖子组件 */
-  isHovered: Ref<boolean>
+  /** hover 响应、点击响应是否可用 */
+  triggerEnabled = computed(() =>
+    !this.props.split &&
+    !this.props.hidden &&
+    !this.props.disabled,
+  )
 
   /** 折叠子菜单是否可用 */
   collapseEnabled = computed(() =>
-    !this.props.split &&
-    this.props.collapseTrigger &&
+    this.triggerEnabled.value &&
     this.props.collapseTrigger !== 'none',
   )
 
-  constructor(props: MenuItemProps) {
+  constructor(props: Required<MenuItemProps>) {
     this.props = props
     this.menu = MenuContext.use()
 
@@ -59,8 +59,7 @@ export class MenuItemContext {
       this.unmount()
     })
 
-    const elementHover = useElementHover(this.linkEl)
-    this.isHovered = elementHover.isHovered
+    this._setupHover()
   }
 
   mount() {
@@ -71,7 +70,8 @@ export class MenuItemContext {
 
     el._menuItemContext = this
     const prevItem = this.findPrevItem()
-    const index = prevItem ? prevItem._menuItemContext.index + 1 : 0
+    const targetContext = prevItem?._menuItemContext
+    const index = targetContext ? targetContext.index + 1 : 0
     this.menu.children.splice(index, 0, this)
     this.index = index
 
@@ -81,6 +81,11 @@ export class MenuItemContext {
   }
 
   unmount() {
+    const el = this.itemEl.value
+    if (!el) {
+      return
+    }
+
     this.menu.children.splice(this.index, 1)
 
     for (let i = this.index; i < this.menu.children.length; i++) {
@@ -106,7 +111,76 @@ export class MenuItemContext {
   private _setupHover() {
     const { isHovered } = useElementHover(this.linkEl)
     watch(isHovered, (val) => {
+      if (!this.triggerEnabled.value) {
+        return
+      }
 
+      if (!val) {
+        return
+      }
+
+      clearTimeout(this.menu.tippyTimer)
+
+      this.menu.tippyTimer = setTimeout(() => {
+        if (this.isSubMenuShow()) {
+          return
+        }
+
+        this.hideOtherSubMenu()
+
+        if (this.props.collapseTrigger !== 'hover') {
+          return
+        }
+
+        this.showSubMenu()
+      }, this.menu.props.collapseDelay)
     })
+  }
+
+  showSubMenu() {
+    if (!this.collapseEnabled.value) {
+      return
+    }
+
+    this.tippyEl.value?.show()
+  }
+
+  isSubMenuShow() {
+    return this.tippyEl.value?.state.isVisible || false
+  }
+
+  hideSubMenu() {
+    if (!this.collapseEnabled.value) {
+      return
+    }
+
+    this.tippyEl.value?.hide()
+  }
+
+  hideOtherSubMenu() {
+    this.menu.children.forEach((item) => {
+      if (item === this) {
+        return
+      }
+
+      item.hideSubMenu()
+    })
+  }
+
+  clickHandler() {
+    if (!this.collapseEnabled.value || this.props.collapseTrigger !== 'click') {
+      return
+    }
+
+    clearTimeout(this.menu.tippyTimer)
+
+    this.menu.tippyTimer = setTimeout(() => {
+      if (this.isSubMenuShow()) {
+        return
+      }
+
+      this.hideOtherSubMenu()
+      this.showSubMenu()
+    }, this.menu.props.collapseDelay)
   }
 }

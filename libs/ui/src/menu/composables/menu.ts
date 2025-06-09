@@ -1,4 +1,5 @@
 import type { InjectionKey } from 'vue'
+import type { MenuProps } from '../types'
 import type { MenuItemContext } from './menu-item'
 import {
   inject,
@@ -9,8 +10,8 @@ import {
 const MENU_PROVIDE_KEY = Symbol('menu') as InjectionKey<MenuContext>
 
 export class MenuContext {
-  static setup() {
-    return new MenuContext()
+  static setup(props: Required<MenuProps>) {
+    return new MenuContext(props)
   }
 
   static use() {
@@ -21,10 +22,16 @@ export class MenuContext {
     return res
   }
 
-  constructor() {
+  props: Required<MenuProps>
+
+  constructor(props: Required<MenuProps>) {
+    this.props = props
     provide(MENU_PROVIDE_KEY, this)
   }
 
   /** 子组件列表 */
   children = shallowReactive<MenuItemContext[]>([])
+
+  /** 浮动窗触发计时器 */
+  tippyTimer?: ReturnType<typeof setTimeout>
 }

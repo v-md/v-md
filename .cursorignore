@@ -1,0 +1,10 @@
+node_modules
+logs
+.cache
+vitest-output
+dist
+.npmrc
+
+.env.local
+.env.*.local
+vite.config.*.timestamp*.*

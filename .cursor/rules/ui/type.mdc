@@ -1,0 +1,55 @@
+---
+description: '@v-md/ui' 的类型定义规范
+globs: libs/ui/src/*/types/*.ts
+alwaysApply: false
+---
+
+# UI 组件库类型定义规则
+
+每个组件类型定义文件 `types/component.ts` 应包含以下类型定义：
+
+```typescript
+import type { InferVueDefaults } from '../../common'
+
+// Props 类型定义
+export interface ComponentProps {
+  // 组件属性定义
+}
+
+// Props 的默认值
+export function defaultComponentProps() {
+  return {
+    // 组件属性默认值
+  } satisfies InferVueDefaults<ComponentProps>
+}
+
+// Emits 类型定义
+export interface ComponentEmits {
+  // 组件事件定义
+}
+
+// Slots 类型定义
+export interface ComponentSlots {
+  // 组件插槽定义
+}
+
+// Model 类型定义
+export interface ComponentModel {
+  // 组件 v-model 定义
+}
+
+// Expose 类型定义
+export interface ComponentExpose {
+  // 组件暴露的方法和属性
+}
+
+// 其他与该组件相关的类型定义
+```
+
+在 `types/index.ts` 中，应导出所有组件与子组件的类型定义：
+
+```typescript
+export * from './component'
+export * from './component-xxx'
+// 导出更多子组件的类型定义...
+```
