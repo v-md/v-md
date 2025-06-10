@@ -1,0 +1,159 @@
+---
+description: npm/pnpm 命令运行规范
+globs:
+alwaysApply: false
+---
+
+任何情况下，禁止使用 npm，必须使用 pnpm。
+
+# pnpm 命令规范
+
+## 项目概述
+
+这是一个基于 pnpm workspace 的 monorepo 项目，包含以下工作空间：
+- `libs/*` - 核心库文件
+- `plugins/*` - 插件文件  
+- `websites/*` - 网站项目
+
+项目配置文件：
+- [package.json](mdc:package.json) - 根目录包配置和脚本
+- [pnpm-workspace.yaml](mdc:pnpm-workspace.yaml) - workspace 配置
+
+## 常用命令规范
+
+### 1. 开发命令
+
+#### 启动开发服务器
+```bash
+# 启动 playground 开发环境
+pnpm dev:play
+
+# 启动文档开发环境  
+pnpm dev:doc
+```
+
+#### 构建命令
+```bash
+# 构建所有库文件
+pnpm build:libs
+
+# 构建类型检查
+pnpm build-check:libs
+
+# 构建 playground
+pnpm build:play
+
+# 构建文档
+pnpm build:doc
+```
+
+### 2. 测试命令
+
+```bash
+# 运行测试
+pnpm test
+
+# 运行测试并生成覆盖率报告
+pnpm test:coverage
+
+# 预览测试结果
+pnpm test:preview
+```
+
+### 3. 代码质量检查
+
+```bash
+# 修复 JavaScript/TypeScript 代码风格
+pnpm lint:script
+
+# 修复样式文件风格
+pnpm lint:style
+
+# TypeScript 类型检查
+pnpm tsc:libs
+```
+
+### 4. 工作空间操作
+
+#### 过滤器语法 (-F)
+```bash
+# 在特定包中运行命令
+pnpm -F @v-md/playground run dev
+pnpm -F @v-md/doc run dev
+
+# 在多个包中运行命令（使用 glob 模式）
+pnpm -F "./libs/**" -F "./plugins/**" build
+
+# 在特定目录下的所有包中运行
+pnpm -F "libs/*" build
+```
+
+#### 依赖管理
+```bash
+# 安装根目录依赖
+pnpm install
+
+# 为特定工作空间添加依赖
+pnpm -F @v-md/ui add lodash
+
+# 为特定工作空间添加开发依赖
+pnpm -F @v-md/ui add -D @types/lodash
+
+# 添加到所有工作空间
+pnpm -r add lodash
+```
+
+## 命令最佳实践
+
+### 1. 使用过滤器提高效率
+- 使用 `-F` 或 `--filter` 只在需要的包中运行命令
+- 使用 glob 模式批量操作相关包
+- 优先使用包名而不是路径进行过滤
+
+
+### 2. 依赖管理
+- 使用 catalog 功能统一管理版本号（参考 [pnpm-workspace.yaml](mdc:pnpm-workspace.yaml)）
+- 共享依赖放在根目录
+- 特定依赖放在对应的工作空间
+
+### 3. 脚本命名约定
+- `dev:*` - 开发环境命令
+- `build:*` - 构建相关命令
+- `test:*` - 测试相关命令
+- `lint:*` - 代码检查命令
+
+## 环境要求
+
+- Node.js 版本：建议使用 LTS 版本
+- pnpm 版本：9.0+ 
+- 确保已安装 pnpm：`npm install -g pnpm`
+
+## 故障排除
+
+### 常见问题
+
+1. **依赖安装失败**
+   ```bash
+   # 清理缓存重新安装
+   pnpm store prune
+   rm -rf node_modules
+   pnpm install
+   ```
+
+2. **工作空间命令找不到**
+   ```bash
+   # 检查工作空间配置
+   pnpm list -r
+   
+   # 验证包名是否正确
+   pnpm -F 包名 list
+   ```
+
+3. **构建失败**
+   ```bash
+   # 清理构建缓存
+   pnpm -F "./libs/**" -F "./plugins/**" clean
+   
+   # 重新构建
+   pnpm build:libs
+   ```

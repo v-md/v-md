@@ -3,53 +3,195 @@ description: '@v-md/ui' 的类型定义规范
 globs: libs/ui/src/*/types/*.ts
 alwaysApply: false
 ---
-
 # UI 组件库类型定义规则
 
-每个组件类型定义文件 `types/component.ts` 应包含以下类型定义：
+## 基本原则
+
+### 1. 类型文件分离原则
+- **主组件和子组件的类型定义必须分离到各自的文件中**
+- **每个组件（包括子组件）都必须有独立的类型定义文件**
+- **不允许在一个类型文件中混合定义多个组件的类型**
+
+### 2. 文件命名规范
+- 主组件：`types/component.ts`
+- 子组件：`types/component-subcomponent.ts`
+- 导出文件：`types/index.ts`
+
+### 3. 类型完整性要求
+每个组件类型文件必须包含完整的类型定义，即使某些接口为空也要声明。
+
+## 类型文件结构
+
+### 主组件类型定义文件
+每个主组件类型定义文件 `types/component.ts` 应包含以下类型定义：
 
 ```typescript
 import type { InferVueDefaults } from '../../common'
 
 // Props 类型定义
 export interface ComponentProps {
-  // 组件属性定义
+  /**
+   * 属性描述
+   * @default 默认值
+   */
+  propName?: PropType
 }
 
-// Props 的默认值
+// Props 的默认值函数
 export function defaultComponentProps() {
   return {
-    // 组件属性默认值
+    propName: 'defaultValue',
   } satisfies InferVueDefaults<ComponentProps>
 }
 
 // Emits 类型定义
 export interface ComponentEmits {
-  // 组件事件定义
+  /**
+   * 事件描述
+   * @param paramName 参数描述
+   */
+  'event-name': [paramName: ParamType]
 }
 
 // Slots 类型定义
 export interface ComponentSlots {
-  // 组件插槽定义
+  /**
+   * 插槽描述
+   */
+  slotName: { slotProp: SlotPropType }
+  /**
+   * 默认插槽
+   */
+  default: void
 }
 
-// Model 类型定义
+// Model 类型定义（如果组件支持 v-model）
 export interface ComponentModel {
-  // 组件 v-model 定义
+  /**
+   * v-model 绑定值
+   */
+  modelValue: ModelType
 }
 
 // Expose 类型定义
 export interface ComponentExpose {
-  // 组件暴露的方法和属性
+  /**
+   * 暴露的方法描述
+   */
+  methodName: (param: ParamType) => ReturnType
+  /**
+   * 暴露的属性描述
+   */
+  propertyName: PropertyType
 }
 
 // 其他与该组件相关的类型定义
+export type ComponentRelatedType = 'type1' | 'type2'
 ```
 
-在 `types/index.ts` 中，应导出所有组件与子组件的类型定义：
+### 子组件类型定义文件
+每个子组件类型定义文件 `types/component-subcomponent.ts` 遵循相同结构：
 
 ```typescript
+import type { InferVueDefaults } from '../../common'
+
+export interface ComponentSubcomponentProps {
+  // 子组件属性定义
+}
+
+export function defaultComponentSubcomponentProps() {
+  return {
+    // 子组件属性默认值
+  } satisfies InferVueDefaults<ComponentSubcomponentProps>
+}
+
+export interface ComponentSubcomponentEmits {
+  // 子组件事件定义
+}
+
+export interface ComponentSubcomponentSlots {
+  // 子组件插槽定义
+}
+
+export interface ComponentSubcomponentExpose {
+  // 子组件暴露的方法和属性
+}
+```
+
+### 导出文件结构
+在 `types/index.ts` 中，必须导出所有组件与子组件的类型定义：
+
+```typescript
+// 导出主组件类型
 export * from './component'
-export * from './component-xxx'
+// 导出子组件类型
+export * from './component-subcomponent'
+export * from './component-another-subcomponent'
 // 导出更多子组件的类型定义...
 ```
+
+## 最佳实践
+
+### 1. 类型注释规范
+- **所有属性都必须包含 JSDoc 注释**
+- **使用 `@default` 标注默认值**
+- **事件参数必须明确标注类型和说明**
+
+### 2. 命名规范
+- **接口名称使用 PascalCase，以组件名开始**
+- **属性名称使用 camelCase**
+- **事件名称使用 kebab-case**
+
+### 3. 类型安全
+- **使用 `InferVueDefaults` 确保默认值类型安全**
+- **使用 `satisfies` 操作符进行类型检查**
+- **避免使用 `any` 类型**
+
+### 4. 文档一致性
+- **类型定义必须与源码完全一致**
+- **不能编造不存在的属性或方法**
+- **所有暴露的 API 都必须在类型中体现**
+
+## 常见错误
+
+### ❌ 错误示例：混合定义
+```typescript
+// 错误：在一个文件中定义多个组件的类型
+export interface ParentComponentProps { ... }
+export interface ChildComponentProps { ... }  // 应该分离到独立文件
+```
+
+### ✅ 正确示例：分离定义
+```typescript
+// parent-component.ts
+export interface ParentComponentProps { ... }
+
+// child-component.ts  
+export interface ChildComponentProps { ... }
+```
+
+### ❌ 错误示例：缺少类型定义
+```typescript
+// 错误：只定义了 Props，缺少其他必要接口
+export interface ComponentProps { ... }
+// 缺少 Emits, Slots, Expose 等接口
+```
+
+### ✅ 正确示例：完整定义
+```typescript
+export interface ComponentProps { ... }
+export interface ComponentEmits { ... }
+export interface ComponentSlots { ... }
+export interface ComponentExpose { ... }
+// 即使某些接口为空，也要声明
+```
+
+## 重构指南
+
+当发现类型定义不符合规范时，按以下步骤重构：
+
+1. **识别混合定义**：检查是否有多个组件的类型在同一文件中
+2. **创建独立文件**：为每个子组件创建独立的类型定义文件
+3. **拆分类型定义**：将相关类型移动到对应文件中
+4. **更新导出文件**：在 `index.ts` 中添加新的导出
+5. **验证引用**：确保所有引用仍然正确工作

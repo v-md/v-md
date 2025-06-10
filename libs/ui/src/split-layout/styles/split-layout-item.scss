@@ -1,0 +1,13 @@
+@use "../../styles/mixins" as *;
+@use "../../styles/function" as *;
+@use "./var";
+
+// 面板样式
+@include c("split-layout", "item") {
+  position: relative;
+  flex-grow: 0;
+  flex-shrink: 0;
+  overflow: #{css-var-value("split-layout", "item-overflow")};
+  background-color: #{css-var-value("split-layout", "item-bg-color")};
+  border-radius: #{css-var-value("split-layout", "border-radius")};
+}

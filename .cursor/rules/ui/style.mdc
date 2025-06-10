@@ -3,7 +3,6 @@ description: '@v-md/ui' 的样式规范
 globs: libs/ui/src/*/styles/*
 alwaysApply: false
 ---
-
 # @v-md/ui 样式规范
 
 ## 样式系统概览
@@ -41,16 +40,17 @@ libs/ui/src/component/
 
 - **主组件样式** (`component.scss`)：定义组件的整体布局、基础样式和主要交互状态
 - **子组件样式** (`component-item.scss`)：处理复杂组件的子元素样式（可选）
-- **变量定义** (`var.scss`)：定义该组件专用的样式变量，通常引用全局变量
+- **变量定义** (`var.scss`)：定义该组件及其子组件的所有样式变量，**子组件变量统一在此文件中定义**
 
 **实际组件示例：**
 
 ```
 libs/ui/src/
-└── menu/styles/              # 菜单组件
-    ├── menu.scss
-    ├── menu-item.scss
-    └── var.scss
+└── split-layout/styles/      # 分割布局组件
+    ├── split-layout.scss     # 主组件样式
+    ├── split-layout-resizer.scss  # 分割线子组件样式
+    ├── split-layout-item.scss     # 面板子组件样式
+    └── var.scss              # 所有变量定义（包含主组件和子组件）
 ```
 
 **组件样式文件命名规则：**
@@ -70,7 +70,7 @@ $namespace: "vmd" !default;
 
 ### 类名生成规则
 
-使用 `class-name` 函数(在 [function.scss](mdc:libs/ui/src/styles/function.scss) 中定义)或 `c` 混入(在 [mixins.scss](mdc:libs/ui/src/styles/mixins.scss) 中定义)生成 BEM 风格的类名：
+优先使用 `c` 混入(在 [mixins.scss](mdc:libs/ui/src/styles/mixins.scss) 中定义)生成 BEM 风格的类名：
 
 ```scss
 // 生成： .vmd-menu
@@ -83,7 +83,19 @@ $namespace: "vmd" !default;
 @include c("menu", "item", "link") { ... }
 ```
 
-若需要应用交集选择器，可以使用 `cc` 混入(在 [mixins.scss](mdc:libs/ui/src/styles/mixins.scss) 中定义)：
+若需要应用后代选择器，同样优先使用 `c` 混入：
+```scss
+@include c("menu", "item") {
+  // ...
+
+  // 生成： .vmd-menu-item .vmd-menu-item-link
+  @include c("menu", "item", "link") {
+    // ...
+  }
+}
+```
+
+若需要应用交集选择器，优先使用 `cc` 混入(在 [mixins.scss](mdc:libs/ui/src/styles/mixins.scss) 中定义)：
 
 ```scss
 @include c("menu", "item") {
@@ -116,30 +128,58 @@ background-color: #{css-var-value("menu", "bg-color")};
 
 ### 组件级变量
 
-每个组件都有自己的变量文件，子组件的变量也一并父组件的变量文件中定义，如 [menu/styles/var.scss](mdc:libs/ui/src/menu/styles/var.scss)。
+每个组件都有自己的变量文件，**所有子组件的变量也统一在父组件的变量文件中定义**，如 [split-layout/styles/var.scss](mdc:libs/ui/src/split-layout/styles/var.scss)。
+
+**重要原则：**
+- ✅ **集中管理**：子组件变量不单独声明，统一在主组件的变量映射中定义
+- ✅ **统一挂载**：所有 CSS 变量都挂在主组件的类名上（如 `.vmd-split-layout`）
+- ✅ **前缀规范**：子组件变量使用对应的前缀（如 `resizer-`、`item-` 等）
 
 ## 组件样式编写规范
 
 ### 定义组件变量
 
-在组件的 `var.scss` 中定义组件变量，例如：
+在组件的 `var.scss` 中定义组件及其子组件的所有变量：
 
 ```scss
-$component-map: (
+// ✅ 正确：统一的变量映射，包含主组件和子组件变量
+$split-layout-map: (
+  // 主组件变量
   "bg-color": #{css-var-value("color", "bg-content")},
-  "bg-color-active": #{css-var-value("color", "hover")},
   "border-color": #{css-var-value("color", "border")},
-  "border-radius": 4px,
-  "icon-size": 16px,
-  "padding": 4px 0,
-  "item-padding": 2px 28px,
+  "border-radius": 0,
+  
+  // 子组件变量 - 分割线相关
+  "resizer-bg-color": transparent,
+  "resizer-bg-color-hover": #{css-var-value("color", "hover")},
+  "resizer-bg-color-active": #{css-var-value("color", "active")},
+  "resizer-size": 4px,
+  "resizer-cursor-horizontal": col-resize,
+  "resizer-cursor-vertical": row-resize,
+  
+  // 子组件变量 - 面板相关
+  "item-bg-color": transparent,
+  "item-overflow": hidden,
+);
+```
+
+```scss
+// ❌ 错误：单独声明子组件变量
+$split-layout-resizer-map: (
+  "bg-color": var(--vmd-split-layout-resizer-bg-color),
+  // ...
+);
+$split-layout-item-map: (
+  "bg-color": transparent,
+  // ...
 );
 ```
 
 ### 基本结构
 
-每个组件(包括子组件)的样式文件(component.scss)应遵循以下结构：
+每个组件的样式文件应遵循以下结构：
 
+**主组件样式文件 (`component.scss`)：**
 ```scss
 @use "../../styles/mixins" as *;
 @use "../../styles/function" as *;
@@ -147,7 +187,7 @@ $component-map: (
 
 // 主组件样式
 @include c("component") {
-  // 注入组件 CSS 变量
+  // 注入组件 CSS 变量（包含所有子组件变量）
   @include v("component", var.$component-map);
   
   // 基础样式
@@ -158,15 +198,34 @@ $component-map: (
     // ...
   }
 }
+```
 
-// 子元素样式
-@include c("component", "element") {
-  // ...
+**子组件样式文件 (`component-item.scss`)：**
+```scss
+@use "../../styles/mixins" as *;
+@use "../../styles/function" as *;
+@use "./var";
+
+// 子组件样式
+@include c("component", "item") {
+  // ✅ 直接使用主组件的变量，不需要单独注入
+  background-color: #{css-var-value("component", "item-bg-color")};
+  overflow: #{css-var-value("component", "item-overflow")};
+  
+  // 其他样式...
 }
 ```
 
 ### 变量使用原则
 
-1. **优先使用全局变量**：尽量使用全局变量
+1. **优先使用全局变量**：尽量使用全局变量作为组件变量的默认值
 2. **组件变量继承全局变量**：组件变量应尽量引用全局变量
 3. **可配置性**：样式值应尽量通过变量控制
+4. **集中管理**：子组件变量不单独声明，统一在主组件变量中定义
+5. **统一挂载**：所有 CSS 变量都挂在主组件类名上，便于覆盖和管理
+
+### 变量命名约定
+
+- **主组件变量**：直接使用语义化名称，如 `bg-color`、`border-radius`
+- **子组件变量**：使用子组件前缀，如 `resizer-bg-color`、`item-padding`
+- **状态变量**：添加状态后缀，如 `bg-color-hover`、`bg-color-active`
