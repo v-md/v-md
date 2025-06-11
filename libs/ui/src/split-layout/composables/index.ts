@@ -1,3 +1,4 @@
-export * from './split-layout'
-export { SplitLayoutItemContext } from './split-layout-item'
-export { SplitLayoutResizerContext } from './split-layout-resizer'
+export { SplitLayoutContext } from './split-layout'
+export * from './split-layout-item'
+export * from './split-layout-resizer'
+export * from './utils'

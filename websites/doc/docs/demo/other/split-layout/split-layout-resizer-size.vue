@@ -5,21 +5,27 @@ import { SplitLayout, SplitLayoutItem, SplitLayoutResizer } from '@v-md/ui'
 <template>
   <div style="height: 300px; border: 1px solid #ddd;">
     <SplitLayout>
-      <SplitLayoutItem>
+      <SplitLayoutItem size="30%">
         <div style="display: flex; align-items: center; justify-content: center; height: 100%; padding: 20px; background: #f5f5f5;">
-          <h3>左侧面板 (自动分配)</h3>
+          <h3>面板 1</h3>
         </div>
       </SplitLayoutItem>
-      <SplitLayoutResizer />
-      <SplitLayoutItem>
+      <SplitLayoutResizer size="8px" />
+      <SplitLayoutItem size="40%">
         <div style="display: flex; align-items: center; justify-content: center; height: 100%; padding: 20px; background: #e8f4fd;">
-          <h3>右侧面板 (自动分配)</h3>
+          <h3>面板 2</h3>
+        </div>
+      </SplitLayoutItem>
+      <SplitLayoutResizer size="2px" />
+      <SplitLayoutItem size="30%">
+        <div style="display: flex; align-items: center; justify-content: center; height: 100%; padding: 20px; background: #fff2e8;">
+          <h3>面板 3</h3>
         </div>
       </SplitLayoutItem>
     </SplitLayout>
   </div>
   <p style="margin-top: 10px; font-size: 14px; color: #666;">
-    不设置 size 属性时，面板会自动平分可用空间
+    第一个分割线宽度为 8px，第二个分割线宽度为 2px
   </p>
 </template>
 

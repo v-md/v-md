@@ -40,8 +40,8 @@ SVG 图标支持通过 CSS 继承颜色，可以通过修改父元素的 `color`
 
 | 属性名 | 类型 | 默认值 | 是否必填 | 说明 |
 |--------|------|--------|----------|------|
-| url | `DynamicImportResolver<string>` | - | 否 | 图标 url，为空代表不展示小图标，支持异步加载 |
-| type | `'svg' \| 'img'` | `'svg'` | 否 | 图标的类型：svg 格式的图标支持换色，img 图片图标不支持换色 |
+| url | `DynamicImportResolver<string>` | - | 否 | 图标 url<br/>为空代表不展示小图标，支持异步加载 |
+| type | `'svg' \| 'img'` | `'svg'` | 否 | 图标的类型<br/>svg 格式的图标支持换色<br/>img 图片图标不支持换色 |
 
 ### Icon CSS 变量
 

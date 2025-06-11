@@ -10,9 +10,14 @@ export interface SplitLayoutResizerProps {
 
   /**
    * 分割线大小
+   *
+   * 支持以下类型：
+   * - string: 支持 CSS 单位，但仅限 px 单位，如 '4px'
+   * - number: 数字类型，默认单位为 px，如 4 等价于 '4px'
+   *
    * @default '4px'
    */
-  size?: string
+  size?: string | number
 }
 
 export function defaultSplitLayoutResizerProps() {

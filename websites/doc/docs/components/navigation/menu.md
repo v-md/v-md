@@ -61,11 +61,11 @@
 | 属性名 | 类型 | 默认值 | 是否必填 | 说明 |
 |-----|---|-----|----|---|
 | split | `boolean` | `false` | `false` | 渲染分隔线，为 true 时其他选项均无效 |
-| icon | `IconPropsWithAttrs \| null` | `null` | `false` | 菜单项最左侧小图标选项，为空代表不展示小图标 |
+| icon | `IconPropsWithAttrs \| null` | `null` | `false` | 菜单项最左侧小图标选项<br/>为空代表不展示小图标 |
 | label | `string` | `''` | `false` | 菜单项左侧主文字内容 |
-| keyBinding | `string` | `''` | `false` | 菜单项右侧快捷键文字内容，并不会真正绑定快捷键事件，只决定展示的文字内容 |
-| collapseIcon | `IconPropsWithAttrs \| boolean` | `false` | `false` | 菜单项右侧的折叠箭头。object: 显示折叠箭头，对象将作为 Icon 组件的属性传入；true: 展示默认的折叠箭头；false: 不展示折叠箭头 |
-| collapseTrigger | `'hover' \| 'click' \| 'none'` | `'none'` | `false` | 折叠浮动窗的触发方式。'none': 禁用折叠浮动窗；'hover': 鼠标悬停时触发；'click': 点击后触发 |
+| keyBinding | `string` | `''` | `false` | 菜单项右侧快捷键文字内容<br/>并不会真正绑定快捷键事件，只决定展示的文字内容 |
+| collapseIcon | `IconPropsWithAttrs \| boolean` | `false` | `false` | 菜单项右侧的折叠箭头<br/>object: 显示折叠箭头，对象将作为 Icon 组件的属性传入<br/>true: 展示默认的折叠箭头<br/>false: 不展示折叠箭头 |
+| collapseTrigger | `'hover' \| 'click' \| 'none'` | `'none'` | `false` | 折叠浮动窗的触发方式<br/>'none': 禁用折叠浮动窗<br/>'hover': 鼠标悬停时触发<br/>'click': 点击后触发 |
 | disabled | `boolean` | `false` | `false` | 是否禁用 |
 | hidden | `boolean` | `false` | `false` | 是否隐藏 |
 

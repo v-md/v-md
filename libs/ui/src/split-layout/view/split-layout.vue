@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { SplitLayoutEmits, SplitLayoutExpose, SplitLayoutProps } from '../types'
-import { computed } from 'vue'
+import { computed, onBeforeUnmount } from 'vue'
 import { useNamespace } from '../../config-provider'
 import { SplitLayoutContext } from '../composables'
 import { defaultSplitLayoutProps } from '../types'
@@ -25,8 +25,13 @@ context.onResize((sizes) => {
 // 计算容器类名
 const containerClasses = computed(() => [
   c('split-layout'),
-  c('split-layout', props.direction),
+  c(`split-layout-${props.direction}`),
 ])
+
+// 清理资源
+onBeforeUnmount(() => {
+  context.destroy()
+})
 
 // 暴露方法
 const expose: SplitLayoutExpose = {

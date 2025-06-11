@@ -5,6 +5,7 @@ import {
   defineConfig,
   dtsPlugin,
   getExternalDependencies,
+  tsconfigPath,
   vue,
   vueJsx,
 } from '../../build/vite'
@@ -24,6 +25,7 @@ export default defineConfig(async () => {
       vue(),
       vueJsx(),
       dtsPlugin(),
+      tsconfigPath(),
     ],
     test: vitestBaseConfig({ name: 'ui' }),
     build: {

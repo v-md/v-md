@@ -129,9 +129,9 @@ websites/doc/docs/
 | model1 | type | value  | true/false| desc |
 
 ### 组件名称 Expose
-| 属性名 | 类型 | 默认值 | 是否必填 | 说明 |
-|--------|------|--------|----------|------|
-| expose1 | type | value  | true/false| desc |
+| 属性名 | 类型  | 说明 |
+|--------|------|------|
+| expose1 | type | desc |
 
 ### 组件名称 CSS 变量
 | 变量名 | 默认值 | 说明 |
@@ -205,6 +205,16 @@ import { Icon } from '@v-md/ui'
 - **复杂类型**：对象类型和联合类型同样使用反引号
   - ✅ 正确：`{ name: string; age: number }`、`'small' | 'medium' | 'large'`
   - ❌ 错误：{ name: string; age: number }、'small' | 'medium' | 'large'
+
+## API说明换行规范
+- **换行原则**：当API说明内容较长需要换行时，统一使用 `<br/>` 标签进行换行
+- **换行时机**：
+  - 说明文字超过80个字符时建议换行
+  - 包含多个不同含义的信息点时建议分行
+  - 包含示例和说明时建议分行
+- **换行格式**：
+  - ✅ 正确：`面板大小<br/>string: 支持 'px'、'%'、'fr' 单位<br/>number: 默认单位为 px`
+  - ❌ 错误：`面板大小。string: 支持 'px'、'%'、'fr' 单位（如 '200px'、'50%'、'1fr'）；number: 默认单位为 px（如 200 等价于 '200px'）`
 
 ### CSS变量
 - **数据来源**：`libs/ui/src/组件名/style/var.scss`

@@ -13,7 +13,7 @@ export interface SplitLayoutProps {
 
 export function defaultSplitLayoutProps() {
   return {
-    direction: 'horizontal' as SplitDirection,
+    direction: 'horizontal',
   } satisfies InferVueDefaults<SplitLayoutProps>
 }
 

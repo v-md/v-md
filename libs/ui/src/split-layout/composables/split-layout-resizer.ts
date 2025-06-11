@@ -1,10 +1,12 @@
 import type { SplitLayoutResizerProps } from '../types'
+import type { SplitLayoutItemContext } from './split-layout-item'
 import {
   onBeforeUnmount,
   onMounted,
   ref,
 } from 'vue'
-import { type SplitLayoutResizerContext as ISplitLayoutResizerContext, SplitLayoutContext } from './split-layout'
+import { SplitLayoutContext } from './split-layout'
+import { DOMUtils, EventUtils, SizeUtils } from './utils'
 
 interface SplitLayoutResizerElement extends HTMLElement {
   _splitLayoutResizerContext: SplitLayoutResizerContext
@@ -13,18 +15,144 @@ interface SplitLayoutResizerElement extends HTMLElement {
 /** Dom 元素的标记，必须与模板中绑定的 dataset 属性相对应 */
 const DATASET_KEY = 'vmdSplitLayoutResizer'
 
-export class SplitLayoutResizerContext implements ISplitLayoutResizerContext {
-  splitLayout: SplitLayoutContext
-  props: Required<SplitLayoutResizerProps>
+/**
+ * 拖拽状态管理类
+ */
+class DragState {
+  readonly isHorizontal: boolean
+  readonly startPosition: number
+  readonly containerSize: number
+  readonly prevItem: SplitLayoutItemContext
+  readonly nextItem: SplitLayoutItemContext
+  readonly initialPrevSize: string
+  readonly initialNextSize: string
+  readonly initialPrevPixels: number
+  readonly initialNextPixels: number
+  readonly constraints: {
+    prevMinPixels: number
+    nextMinPixels: number
+    prevMaxPixels: number
+    nextMaxPixels: number
+  }
+
+  constructor(
+    isHorizontal: boolean,
+    startPosition: number,
+    containerSize: number,
+    prevItem: SplitLayoutItemContext,
+    nextItem: SplitLayoutItemContext,
+  ) {
+    this.isHorizontal = isHorizontal
+    this.startPosition = startPosition
+    this.containerSize = containerSize
+    this.prevItem = prevItem
+    this.nextItem = nextItem
+    this.initialPrevSize = prevItem.currentSize
+    this.initialNextSize = nextItem.currentSize
+    this.initialPrevPixels = SizeUtils.toPixels(this.initialPrevSize, containerSize)
+    this.initialNextPixels = SizeUtils.toPixels(this.initialNextSize, containerSize)
+
+    // 计算约束条件
+    this.constraints = {
+      prevMinPixels: prevItem.currentMinSize ?
+          SizeUtils.toPixels(prevItem.currentMinSize, containerSize) :
+        10,
+      nextMinPixels: nextItem.currentMinSize ?
+          SizeUtils.toPixels(nextItem.currentMinSize, containerSize) :
+        10,
+      prevMaxPixels: prevItem.currentMaxSize ?
+          SizeUtils.toPixels(prevItem.currentMaxSize, containerSize) :
+        Infinity,
+      nextMaxPixels: nextItem.currentMaxSize ?
+          SizeUtils.toPixels(nextItem.currentMaxSize, containerSize) :
+        Infinity,
+    }
+  }
+
+  /**
+   * 根据移动量计算新的面板大小
+   */
+  calculateNewSizes(delta: number): { prevPixels: number, nextPixels: number } {
+    let targetPrevPixels = this.initialPrevPixels + delta
+    let targetNextPixels = this.initialNextPixels - delta
+
+    // 应用约束条件
+    targetPrevPixels = SizeUtils.clamp(
+      targetPrevPixels,
+      this.constraints.prevMinPixels,
+      this.constraints.prevMaxPixels,
+    )
+    targetNextPixels = SizeUtils.clamp(
+      targetNextPixels,
+      this.constraints.nextMinPixels,
+      this.constraints.nextMaxPixels,
+    )
+
+    // 保持总大小不变
+    return this.maintainTotalSize(targetPrevPixels, targetNextPixels)
+  }
+
+  /**
+   * 保持总大小不变的调整逻辑
+   */
+  private maintainTotalSize(prevPixels: number, nextPixels: number): { prevPixels: number, nextPixels: number } {
+    const targetTotal = this.initialPrevPixels + this.initialNextPixels
+    const currentTotal = prevPixels + nextPixels
+    const diff = targetTotal - currentTotal
+
+    if (Math.abs(diff) <= 1) {
+      return { prevPixels, nextPixels }
+    }
+
+    if (diff > 0) {
+      // 需要增加总大小
+      const canIncreasePrev = Math.min(diff, this.constraints.prevMaxPixels - prevPixels)
+      prevPixels += canIncreasePrev
+
+      const remaining = targetTotal - prevPixels
+      nextPixels = SizeUtils.clamp(remaining, this.constraints.nextMinPixels, this.constraints.nextMaxPixels)
+    }
+    else {
+      // 需要减少总大小
+      const canDecreasePrev = Math.min(Math.abs(diff), prevPixels - this.constraints.prevMinPixels)
+      prevPixels -= canDecreasePrev
+
+      const remaining = targetTotal - prevPixels
+      nextPixels = SizeUtils.clamp(remaining, this.constraints.nextMinPixels, this.constraints.nextMaxPixels)
+    }
+
+    return { prevPixels, nextPixels }
+  }
+
+  /**
+   * 更新面板大小
+   */
+  updatePanelSizes(prevPixels: number, nextPixels: number): void {
+    const newPrevSize = SizeUtils.fromPixels(prevPixels, this.containerSize, this.initialPrevSize)
+    const newNextSize = SizeUtils.fromPixels(nextPixels, this.containerSize, this.initialNextSize)
+
+    this.prevItem.updateSize(newPrevSize)
+    this.nextItem.updateSize(newNextSize)
+  }
+}
+
+export class SplitLayoutResizerContext {
+  readonly splitLayout: SplitLayoutContext
+  readonly props: Required<SplitLayoutResizerProps>
+  readonly resizerEl = ref<SplitLayoutResizerElement>()
+  readonly isResizing = ref(false)
 
   /** 子组件在组件列表中的索引 */
   index = -1
 
-  /** 子组件主元素引用 */
-  resizerEl = ref<SplitLayoutResizerElement>()
+  /** 当前的拖拽状态 */
+  private dragState: DragState | null = null
 
-  /** 是否正在拖拽 */
-  isResizing = ref(false)
+  /** 事件监听器清理函数 */
+  private eventCleanup: (() => void) | null = null
+
+  /** 结束拖拽事件回调 */
+  onResizeEnd?: () => void
 
   constructor(props: Required<SplitLayoutResizerProps>) {
     this.props = props
@@ -46,91 +174,123 @@ export class SplitLayoutResizerContext implements ISplitLayoutResizerContext {
     }
 
     el._splitLayoutResizerContext = this
-    const prevResizer = this.findPrevResizer()
-    const targetContext = prevResizer?._splitLayoutResizerContext
-    const index = targetContext ? targetContext.index + 1 : 0
-    this.splitLayout.resizers.splice(index, 0, this)
-    this.index = index
-
-    for (let i = index + 1; i < this.splitLayout.resizers.length; i++) {
-      this.splitLayout.resizers[i].index = i
-    }
+    this.insertIntoResizerList(el)
   }
 
   unmount() {
-    const el = this.resizerEl.value
-    if (!el) {
-      return
-    }
+    this.removeFromResizerList()
+    this.clearEventListeners()
+  }
 
+  /** 插入到分割线列表中 */
+  private insertIntoResizerList(el: SplitLayoutResizerElement) {
+    const prevResizer = DOMUtils.findSiblingWithDataset(el, 'previousSibling', DATASET_KEY) as SplitLayoutResizerElement | null
+    const targetContext = prevResizer?._splitLayoutResizerContext
+    const index = targetContext ? targetContext.index + 1 : 0
+
+    this.splitLayout.resizers.splice(index, 0, this)
+    this.index = index
+
+    // 更新后续元素的索引
+    this.updateSubsequentIndices(index)
+  }
+
+  /** 从分割线列表中移除 */
+  private removeFromResizerList() {
     this.splitLayout.resizers.splice(this.index, 1)
+    this.updateSubsequentIndices(this.index)
+  }
 
-    for (let i = this.index; i < this.splitLayout.resizers.length; i++) {
+  /** 更新后续元素的索引 */
+  private updateSubsequentIndices(startIndex: number) {
+    for (let i = startIndex; i < this.splitLayout.resizers.length; i++) {
       this.splitLayout.resizers[i].index = i
     }
   }
 
-  findPrevResizer() {
+  /** 查找相邻的面板项 */
+  private findAdjacentItems(): { prevItem: SplitLayoutItemContext, nextItem: SplitLayoutItemContext } | null {
     if (!this.resizerEl.value) {
       return null
     }
 
-    let cur = this.resizerEl.value.previousSibling
-    while (cur) {
-      if ((cur as any)?.dataset?.[DATASET_KEY]) {
-        return cur as SplitLayoutResizerElement
-      }
-      cur = cur.previousSibling
+    const prevItem = this.findItemElement(this.resizerEl.value, 'previousSibling')
+    const nextItem = this.findItemElement(this.resizerEl.value, 'nextSibling')
+
+    if (!prevItem || !nextItem) {
+      console.warn('[SplitLayout] Cannot find adjacent panels for resizer')
+      return null
     }
-    return null
+
+    return { prevItem, nextItem }
   }
 
-  /** 结束拖拽事件回调 */
-  onResizeEnd?: () => void
+  /** 查找指定方向的面板元素 */
+  private findItemElement(
+    startEl: HTMLElement,
+    direction: 'previousSibling' | 'nextSibling',
+  ): SplitLayoutItemContext | null {
+    const el = DOMUtils.findSiblingWithDataset(startEl, direction, 'vmdSplitLayoutItem')
+    return el ? (el as any)._splitLayoutItemContext || null : null
+  }
+
+  /** 获取容器信息 */
+  private getContainerInfo() {
+    const containerEl = this.splitLayout.items[0]?.itemEl.value?.parentElement
+    if (!containerEl) {
+      return null
+    }
+
+    const isHorizontal = this.splitLayout.props.direction === 'horizontal'
+    const containerSize = isHorizontal ? containerEl.clientWidth : containerEl.clientHeight
+
+    return { containerEl, containerSize, isHorizontal }
+  }
+
+  /** 清理事件监听器 */
+  private clearEventListeners() {
+    if (this.eventCleanup) {
+      this.eventCleanup()
+      this.eventCleanup = null
+    }
+  }
+
+  /** 创建移动事件处理器 */
+  private createMoveHandler(): (event: MouseEvent | TouchEvent) => void {
+    return (moveEvent: MouseEvent | TouchEvent) => {
+      if (!this.isResizing.value || !this.dragState) {
+        return
+      }
+
+      const currentPosition = EventUtils.getEventPosition(moveEvent, this.dragState.isHorizontal)
+      const delta = currentPosition - this.dragState.startPosition
+
+      const { prevPixels, nextPixels } = this.dragState.calculateNewSizes(delta)
+      this.dragState.updatePanelSizes(prevPixels, nextPixels)
+    }
+  }
+
+  /** 创建结束事件处理器 */
+  private createEndHandler(): () => void {
+    return () => {
+      if (!this.isResizing.value) {
+        return
+      }
+
+      this.isResizing.value = false
+      this.dragState = null
+
+      this.clearEventListeners()
+
+      if (this.onResizeEnd) {
+        this.onResizeEnd()
+      }
+    }
+  }
 
   /** 注册结束拖拽事件处理器 */
   setResizeEndHandler(handler: () => void) {
     this.onResizeEnd = handler
-  }
-
-  /** 解析尺寸值为像素值 */
-  private parseSizeToPixels(size: string, containerSize: number): number {
-    if (!size)
-      return 0
-
-    if (size.endsWith('px')) {
-      return Number.parseFloat(size)
-    }
-    else if (size.endsWith('%')) {
-      return (Number.parseFloat(size) / 100) * containerSize
-    }
-    else if (size.endsWith('fr')) {
-      // fr 单位比较复杂，这里简化处理，假设平均分配
-      return containerSize / this.splitLayout.items.length
-    }
-    else {
-      // 纯数字，当作像素处理
-      const num = Number.parseFloat(size)
-      return Number.isNaN(num) ? 0 : num
-    }
-  }
-
-  /** 像素值转换为指定单位 */
-  private pixelsToSize(pixels: number, containerSize: number, originalSize: string): string {
-    if (!originalSize)
-      return `${pixels}px`
-
-    if (originalSize.endsWith('%')) {
-      return `${(pixels / containerSize) * 100}%`
-    }
-    else if (originalSize.endsWith('fr')) {
-      // fr 单位保持原有值，简化处理
-      return originalSize
-    }
-    else {
-      // 默认使用像素
-      return `${pixels}px`
-    }
   }
 
   /** 开始拖拽 */
@@ -140,132 +300,47 @@ export class SplitLayoutResizerContext implements ISplitLayoutResizerContext {
     }
 
     event.preventDefault()
+
+    // 获取容器信息
+    const containerInfo = this.getContainerInfo()
+    if (!containerInfo) {
+      return
+    }
+
+    // 查找相邻面板
+    const adjacentItems = this.findAdjacentItems()
+    if (!adjacentItems) {
+      this.isResizing.value = false
+      return
+    }
+
+    const { containerSize, isHorizontal } = containerInfo
+    const { prevItem, nextItem } = adjacentItems
+    const startPosition = EventUtils.getEventPosition(event, isHorizontal)
+
+    // 创建拖拽状态
+    this.dragState = new DragState(isHorizontal, startPosition, containerSize, prevItem, nextItem)
     this.isResizing.value = true
 
-    const isHorizontal = this.splitLayout.props.direction === 'horizontal'
-    const startPosition = this.getEventPosition(event, isHorizontal)
+    // 清理之前的事件监听器
+    this.clearEventListeners()
 
-    // 获取相邻的两个面板
-    const prevItem = this.splitLayout.items[this.index]
-    const nextItem = this.splitLayout.items[this.index + 1]
+    // 创建事件处理器
+    const handleMove = this.createMoveHandler()
+    const handleEnd = this.createEndHandler()
 
-    if (!prevItem || !nextItem) {
-      return
-    }
+    // 注册事件监听器并保存清理函数
+    this.eventCleanup = EventUtils.createEventCleanup([
+      { target: document, type: 'mousemove', handler: handleMove },
+      { target: document, type: 'mouseup', handler: handleEnd },
+      { target: document, type: 'touchmove', handler: handleMove },
+      { target: document, type: 'touchend', handler: handleEnd },
+    ])
 
-    const containerEl = this.splitLayout.items[0]?.itemEl.value?.parentElement
-    if (!containerEl) {
-      return
-    }
-
-    const containerSize = isHorizontal ?
-      containerEl.clientWidth :
-      containerEl.clientHeight
-
-    // 记录初始状态
-    const initialPrevSize = prevItem.currentSize
-    const initialNextSize = nextItem.currentSize
-    const initialPrevPixels = this.parseSizeToPixels(initialPrevSize, containerSize)
-    const initialNextPixels = this.parseSizeToPixels(initialNextSize, containerSize)
-
-    const handleMove = (moveEvent: MouseEvent | TouchEvent) => {
-      if (!this.isResizing.value) {
-        return
-      }
-
-      const currentPosition = this.getEventPosition(moveEvent, isHorizontal)
-      const delta = currentPosition - startPosition
-
-      // 计算大小限制
-      const prevMinPixels = prevItem.currentMinSize ?
-          this.parseSizeToPixels(prevItem.currentMinSize, containerSize) :
-        10 // 默认最小10px
-      const nextMinPixels = nextItem.currentMinSize ?
-          this.parseSizeToPixels(nextItem.currentMinSize, containerSize) :
-        10 // 默认最小10px
-
-      const prevMaxPixels = prevItem.currentMaxSize ?
-          this.parseSizeToPixels(prevItem.currentMaxSize, containerSize) :
-        Infinity
-      const nextMaxPixels = nextItem.currentMaxSize ?
-          this.parseSizeToPixels(nextItem.currentMaxSize, containerSize) :
-        Infinity
-
-      // 计算目标大小
-      let targetPrevPixels = initialPrevPixels + delta
-      let targetNextPixels = initialNextPixels - delta
-
-      // 应用大小限制
-      targetPrevPixels = Math.max(prevMinPixels, Math.min(prevMaxPixels, targetPrevPixels))
-      targetNextPixels = Math.max(nextMinPixels, Math.min(nextMaxPixels, targetNextPixels))
-
-      // 确保总大小保持不变
-      const totalPixels = targetPrevPixels + targetNextPixels
-      const targetTotal = initialPrevPixels + initialNextPixels
-
-      if (Math.abs(totalPixels - targetTotal) > 1) {
-        const diff = targetTotal - totalPixels
-
-        // 尝试调整以保持总大小不变
-        if (diff > 0) {
-          // 需要增加总大小
-          if (targetPrevPixels < prevMaxPixels) {
-            const canIncrease = Math.min(diff, prevMaxPixels - targetPrevPixels)
-            targetPrevPixels += canIncrease
-          }
-          if (targetNextPixels < nextMaxPixels && Math.abs(targetPrevPixels + targetNextPixels - targetTotal) > 1) {
-            const remaining = targetTotal - targetPrevPixels
-            targetNextPixels = Math.min(nextMaxPixels, remaining)
-          }
-        }
-        else {
-          // 需要减少总大小
-          if (targetPrevPixels > prevMinPixels) {
-            const canDecrease = Math.min(Math.abs(diff), targetPrevPixels - prevMinPixels)
-            targetPrevPixels -= canDecrease
-          }
-          if (targetNextPixels > nextMinPixels && Math.abs(targetPrevPixels + targetNextPixels - targetTotal) > 1) {
-            const remaining = targetTotal - targetPrevPixels
-            targetNextPixels = Math.max(nextMinPixels, remaining)
-          }
-        }
-      }
-
-      const newPrevPixels = targetPrevPixels
-      const newNextPixels = targetNextPixels
-
-      prevItem.updateSize(this.pixelsToSize(newPrevPixels, containerSize, initialPrevSize))
-      nextItem.updateSize(this.pixelsToSize(newNextPixels, containerSize, initialNextSize))
-    }
-
-    const handleEnd = () => {
-      if (!this.isResizing.value) {
-        return
-      }
-
-      this.isResizing.value = false
-
-      document.removeEventListener('mousemove', handleMove)
-      document.removeEventListener('mouseup', handleEnd)
-      document.removeEventListener('touchmove', handleMove)
-      document.removeEventListener('touchend', handleEnd)
-
-      // 触发结束事件
-      if (this.onResizeEnd) {
-        this.onResizeEnd()
-      }
-    }
-
+    // 立即添加事件监听器
     document.addEventListener('mousemove', handleMove)
     document.addEventListener('mouseup', handleEnd)
     document.addEventListener('touchmove', handleMove)
     document.addEventListener('touchend', handleEnd)
-  }
-
-  /** 获取事件位置 */
-  private getEventPosition(event: MouseEvent | TouchEvent, isHorizontal: boolean) {
-    const isTouch = 'touches' in event
-    const clientEvent = isTouch ? event.touches[0] : event
-    return isHorizontal ? clientEvent.clientX : clientEvent.clientY
   }
 }

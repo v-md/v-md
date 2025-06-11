@@ -23,7 +23,6 @@
 
   // 禁用状态
   @include cc("split-layout-resizer", "disabled") {
-    pointer-events: none;
     cursor: not-allowed !important;
 
     &:hover {
