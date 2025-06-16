@@ -1,5 +1,6 @@
 import type { SplitLayoutResizerProps } from '../types'
 import type { SplitLayoutItemContext } from './split-layout-item'
+import { clamp } from '@v-md/shared'
 import {
   onBeforeUnmount,
   onMounted,
@@ -49,8 +50,12 @@ class DragState {
     this.nextItem = nextItem
     this.initialPrevSize = prevItem.currentSize
     this.initialNextSize = nextItem.currentSize
-    this.initialPrevPixels = SizeUtils.toPixels(this.initialPrevSize, containerSize)
-    this.initialNextPixels = SizeUtils.toPixels(this.initialNextSize, containerSize)
+
+    // 获取元素的实际渲染尺寸，而不是仅基于 currentSize 计算
+    this.initialPrevPixels = this.getActualElementSize(prevItem.itemEl.value, isHorizontal) ||
+      SizeUtils.toPixels(this.initialPrevSize, containerSize)
+    this.initialNextPixels = this.getActualElementSize(nextItem.itemEl.value, isHorizontal) ||
+      SizeUtils.toPixels(this.initialNextSize, containerSize)
 
     // 计算约束条件
     this.constraints = {
@@ -70,58 +75,65 @@ class DragState {
   }
 
   /**
+   * 获取元素的实际渲染尺寸
+   */
+  private getActualElementSize(element: HTMLElement | undefined, isHorizontal: boolean): number | null {
+    if (!element) {
+      return null
+    }
+
+    return isHorizontal ? element.offsetWidth : element.offsetHeight
+  }
+
+  /**
    * 根据移动量计算新的面板大小
    */
   calculateNewSizes(delta: number): { prevPixels: number, nextPixels: number } {
-    let targetPrevPixels = this.initialPrevPixels + delta
-    let targetNextPixels = this.initialNextPixels - delta
+    // 计算期望的新尺寸
+    const targetPrevPixels = this.initialPrevPixels + delta
+    const targetNextPixels = this.initialNextPixels - delta
 
     // 应用约束条件
-    targetPrevPixels = SizeUtils.clamp(
+    const constrainedPrevPixels = clamp(
       targetPrevPixels,
       this.constraints.prevMinPixels,
       this.constraints.prevMaxPixels,
     )
-    targetNextPixels = SizeUtils.clamp(
+
+    const constrainedNextPixels = clamp(
       targetNextPixels,
       this.constraints.nextMinPixels,
       this.constraints.nextMaxPixels,
     )
 
-    // 保持总大小不变
-    return this.maintainTotalSize(targetPrevPixels, targetNextPixels)
-  }
+    // 检查哪个约束更严格，以此来确定实际的移动量
+    const prevConstraintDelta = constrainedPrevPixels - this.initialPrevPixels
+    const nextConstraintDelta = constrainedNextPixels - this.initialNextPixels
 
-  /**
-   * 保持总大小不变的调整逻辑
-   */
-  private maintainTotalSize(prevPixels: number, nextPixels: number): { prevPixels: number, nextPixels: number } {
-    const targetTotal = this.initialPrevPixels + this.initialNextPixels
-    const currentTotal = prevPixels + nextPixels
-    const diff = targetTotal - currentTotal
+    // 选择更严格的约束作为最终的移动量
+    let finalDelta: number
 
-    if (Math.abs(diff) <= 1) {
-      return { prevPixels, nextPixels }
-    }
-
-    if (diff > 0) {
-      // 需要增加总大小
-      const canIncreasePrev = Math.min(diff, this.constraints.prevMaxPixels - prevPixels)
-      prevPixels += canIncreasePrev
-
-      const remaining = targetTotal - prevPixels
-      nextPixels = SizeUtils.clamp(remaining, this.constraints.nextMinPixels, this.constraints.nextMaxPixels)
+    if (delta > 0) {
+      // 向右拖拽：prev增大，next减小
+      finalDelta = Math.min(
+        prevConstraintDelta, // prev能增大的最大量
+        -nextConstraintDelta, // next能减小的最大量（取负值）
+      )
     }
     else {
-      // 需要减少总大小
-      const canDecreasePrev = Math.min(Math.abs(diff), prevPixels - this.constraints.prevMinPixels)
-      prevPixels -= canDecreasePrev
-
-      const remaining = targetTotal - prevPixels
-      nextPixels = SizeUtils.clamp(remaining, this.constraints.nextMinPixels, this.constraints.nextMaxPixels)
+      // 向左拖拽：prev减小，next增大
+      finalDelta = Math.max(
+        prevConstraintDelta, // prev能减小的最大量（负值）
+        -nextConstraintDelta, // next能增大的最大量的负值
+      )
     }
 
-    return { prevPixels, nextPixels }
+    // 根据最终的移动量计算新尺寸
+    const finalPrevPixels = this.initialPrevPixels + finalDelta
+    const finalNextPixels = this.initialNextPixels - finalDelta
+
+    // console.log('delta:', delta, 'finalDelta:', finalDelta, 'prev:', finalPrevPixels, 'next:', finalNextPixels)
+    return { prevPixels: finalPrevPixels, nextPixels: finalNextPixels }
   }
 
   /**

@@ -65,13 +65,6 @@ export class SizeUtils {
       `${(pixels / containerSize) * 100}%` :
       `${pixels}px`
   }
-
-  /**
-   * 确保尺寸值在指定范围内
-   */
-  static clamp(value: number, min: number, max: number): number {
-    return Math.max(min, Math.min(max, value))
-  }
 }
 
 /**

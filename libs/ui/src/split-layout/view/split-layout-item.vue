@@ -3,6 +3,7 @@ import type { SplitLayoutItemExpose, SplitLayoutItemProps } from '../types'
 import { computed } from 'vue'
 import { useNamespace } from '../../config-provider'
 import { SplitLayoutItemContext } from '../composables'
+import { SizeUtils } from '../composables/utils'
 import { defaultSplitLayoutItemProps } from '../types'
 
 const props = withDefaults(
@@ -20,25 +21,52 @@ const itemStyle = computed(() => {
   const { direction } = context.splitLayout.props
   const isHorizontal = direction === 'horizontal'
 
-  const style: Record<string, string | undefined> = {
-    flex: `0 0 ${context.currentSize}`,
+  // 获取容器尺寸信息用于单位转换
+  const containerEl = context.itemEl.value?.parentElement
+  const containerSize = containerEl ?
+      (isHorizontal ? containerEl.clientWidth : containerEl.clientHeight) :
+    0
+
+  const style: Record<string, string | undefined> = {}
+
+  // 转换主尺寸为 px 单位
+  if (context.currentSize) {
+    const sizeInPx = containerSize > 0 ?
+        SizeUtils.toPixels(context.currentSize, containerSize) :
+      context.currentSize
+    style.flex = `0 0 ${typeof sizeInPx === 'number' ? `${sizeInPx}px` : sizeInPx}`
+  }
+  else {
+    style.flex = `0 0 ${context.currentSize}`
   }
 
-  // 根据方向设置最小/最大尺寸约束
+  // 根据方向设置最小/最大尺寸约束，统一转换为 px
   if (isHorizontal) {
     if (context.currentMinSize) {
-      style.minWidth = context.currentMinSize
+      const minSizeInPx = containerSize > 0 ?
+          SizeUtils.toPixels(context.currentMinSize, containerSize) :
+        context.currentMinSize
+      style.minWidth = typeof minSizeInPx === 'number' ? `${minSizeInPx}px` : minSizeInPx
     }
     if (context.currentMaxSize) {
-      style.maxWidth = context.currentMaxSize
+      const maxSizeInPx = containerSize > 0 ?
+          SizeUtils.toPixels(context.currentMaxSize, containerSize) :
+        context.currentMaxSize
+      style.maxWidth = typeof maxSizeInPx === 'number' ? `${maxSizeInPx}px` : maxSizeInPx
     }
   }
   else {
     if (context.currentMinSize) {
-      style.minHeight = context.currentMinSize
+      const minSizeInPx = containerSize > 0 ?
+          SizeUtils.toPixels(context.currentMinSize, containerSize) :
+        context.currentMinSize
+      style.minHeight = typeof minSizeInPx === 'number' ? `${minSizeInPx}px` : minSizeInPx
     }
     if (context.currentMaxSize) {
-      style.maxHeight = context.currentMaxSize
+      const maxSizeInPx = containerSize > 0 ?
+          SizeUtils.toPixels(context.currentMaxSize, containerSize) :
+        context.currentMaxSize
+      style.maxHeight = typeof maxSizeInPx === 'number' ? `${maxSizeInPx}px` : maxSizeInPx
     }
   }
 

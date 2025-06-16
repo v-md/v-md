@@ -5,7 +5,7 @@ import {
   ref,
 } from 'vue'
 import { SplitLayoutContext } from './split-layout'
-import { PanelSizeNormalizer } from './utils'
+import { PanelSizeNormalizer, SizeUtils } from './utils'
 
 interface SplitLayoutItemElement extends HTMLElement {
   _splitLayoutItemContext: SplitLayoutItemContext
@@ -38,6 +38,7 @@ export class SplitLayoutItemContext {
 
     onMounted(() => {
       this.mount()
+      this.applyConstraintsToSize()
     })
 
     onBeforeUnmount(() => {
@@ -126,5 +127,51 @@ export class SplitLayoutItemContext {
     this.splitLayout.scheduleAutoAllocateSpace()
     // 通知父组件更新
     this.splitLayout.notifyResize()
+  }
+
+  /** 应用约束条件到初始尺寸 */
+  private applyConstraintsToSize() {
+    if (!this.currentSize || !this.itemEl.value) {
+      return
+    }
+
+    // 延迟执行以确保 DOM 已渲染
+    setTimeout(() => {
+      this.adjustSizeWithConstraints()
+    }, 0)
+  }
+
+  /** 根据约束条件调整尺寸 */
+  private adjustSizeWithConstraints() {
+    const containerEl = this.itemEl.value?.parentElement
+    if (!containerEl) {
+      return
+    }
+
+    const isHorizontal = this.splitLayout.props.direction === 'horizontal'
+    const containerSize = isHorizontal ? containerEl.clientWidth : containerEl.clientHeight
+
+    // 将当前尺寸转换为像素值
+    const currentPixels = SizeUtils.toPixels(this.currentSize, containerSize)
+    let adjustedPixels = currentPixels
+
+    // 应用最小尺寸约束
+    if (this.currentMinSize) {
+      const minPixels = SizeUtils.toPixels(this.currentMinSize, containerSize)
+      adjustedPixels = Math.max(adjustedPixels, minPixels)
+    }
+
+    // 应用最大尺寸约束
+    if (this.currentMaxSize) {
+      const maxPixels = SizeUtils.toPixels(this.currentMaxSize, containerSize)
+      adjustedPixels = Math.min(adjustedPixels, maxPixels)
+    }
+
+    // 如果调整后的尺寸与原尺寸不同，更新当前尺寸
+    if (Math.abs(adjustedPixels - currentPixels) > 1) {
+      const adjustedSize = SizeUtils.fromPixels(adjustedPixels, containerSize, this.currentSize)
+      this.internalSize.value = adjustedSize
+      this.scheduleLayoutUpdate()
+    }
   }
 }
