@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { SplitLayoutResizerEmits, SplitLayoutResizerExpose, SplitLayoutResizerProps } from '../types'
 import { computed } from 'vue'
-import { useNamespace } from '../../config-provider'
 import { SplitLayoutResizerContext } from '../composables'
 import { ResizerSizeNormalizer } from '../composables/utils'
 import { defaultSplitLayoutResizerProps } from '../types'
@@ -13,8 +12,6 @@ const props = withDefaults(
 
 const emit = defineEmits<SplitLayoutResizerEmits>()
 
-const { c } = useNamespace()
-
 // 标准化分割线大小值
 const normalizedSize = computed(() => ResizerSizeNormalizer.normalize(props.size))
 
@@ -22,16 +19,16 @@ const normalizedSize = computed(() => ResizerSizeNormalizer.normalize(props.size
 const context = new SplitLayoutResizerContext({
   ...props,
   size: normalizedSize.value,
-})
+}, emit)
 
-// 注册结束事件处理器
-context.setResizeEndHandler(() => {
-  emit('resize-end')
-})
+const { resizerEl, isResizing } = context
+
+function c(...names: string[]) {
+  return context.layout.resizerClassName(...names)
+}
 
 // 处理拖拽开始
 function handleResizeStart(event: MouseEvent | TouchEvent) {
-  emit('resize-start')
   context.startResize(event)
 }
 
@@ -39,15 +36,6 @@ function handleResizeStart(event: MouseEvent | TouchEvent) {
 const resizerStyle = computed(() => ({
   flexBasis: normalizedSize.value,
 }))
-
-// 计算CSS类名
-const resizerClasses = computed(() => [
-  c('split-layout-resizer'),
-  {
-    [c('split-layout-resizer-active')]: context.isResizing.value,
-    [c('split-layout-resizer-disabled')]: props.disabled,
-  },
-])
 
 // 暴露方法
 const expose: SplitLayoutResizerExpose = {}
@@ -57,9 +45,15 @@ defineExpose(expose)
 
 <template>
   <div
-    :ref="(el) => { context.resizerEl.value = el as any }"
-    :class="resizerClasses"
-    :data-vmd-split-layout-resizer="true"
+    ref="resizerEl"
+    :class="[
+      c(),
+      {
+        [c('active')]: isResizing,
+        [c('disabled')]: disabled,
+      },
+    ]"
+    :[context.datasetTemplateKey]="true"
     :style="resizerStyle"
     @mousedown="handleResizeStart"
     @touchstart="handleResizeStart" />

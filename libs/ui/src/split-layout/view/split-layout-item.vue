@@ -2,7 +2,6 @@
 import type { SplitLayoutItemExpose, SplitLayoutItemProps } from '../types'
 import { cssSizeToPixels } from '@v-md/shared'
 import { computed } from 'vue'
-import { useNamespace } from '../../config-provider'
 import { SplitLayoutItemContext } from '../composables'
 import { defaultSplitLayoutItemProps } from '../types'
 
@@ -11,14 +10,18 @@ const props = withDefaults(
   defaultSplitLayoutItemProps(),
 )
 
-const { c } = useNamespace()
-
 // 创建组件上下文
-const context = new SplitLayoutItemContext(props as Required<SplitLayoutItemProps>)
+const context = new SplitLayoutItemContext(props)
+
+const { itemEl } = context
+
+function c(...names: string[]) {
+  return context.layout.itemClassName(...names)
+}
 
 // 计算动态样式
 const itemStyle = computed(() => {
-  const { direction } = context.splitLayout.props
+  const { direction } = context.layout.props
   const isHorizontal = direction === 'horizontal'
 
   // 获取容器尺寸信息用于单位转换
@@ -83,9 +86,9 @@ defineExpose(expose)
 
 <template>
   <div
-    :ref="(el) => { context.itemEl.value = el as any }"
-    :class="[c('split-layout-item')]"
-    :data-vmd-split-layout-item="true"
+    ref="itemEl"
+    :class="[c()]"
+    :[context.datasetTemplateKey]="true"
     :style="itemStyle">
     <slot />
   </div>

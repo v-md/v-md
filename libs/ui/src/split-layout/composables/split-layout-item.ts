@@ -1,5 +1,9 @@
 import type { SplitLayoutItemProps } from '../types'
-import { cssSizeToPixels, pixelsToCssSize } from '@v-md/shared'
+import {
+  camelCase,
+  cssSizeToPixels,
+} from '@v-md/shared'
+import { findSiblingWithDataset } from '@v-md/shared/browser'
 import {
   onBeforeUnmount,
   onMounted,
@@ -8,20 +12,31 @@ import {
 import { SplitLayoutContext } from './split-layout'
 import { PanelSizeNormalizer, SizeUtils } from './utils'
 
-interface SplitLayoutItemElement extends HTMLElement {
+export interface SplitLayoutItemElement extends HTMLElement {
   _splitLayoutItemContext: SplitLayoutItemContext
 }
 
-/** Dom 元素的标记，必须与模板中绑定的 dataset 属性相对应 */
-const DATASET_KEY = 'vmdSplitLayoutItem'
-
 export class SplitLayoutItemContext {
-  readonly splitLayout: SplitLayoutContext
+  readonly layout: SplitLayoutContext
   readonly props: Required<SplitLayoutItemProps>
   readonly itemEl = ref<SplitLayoutItemElement>()
 
   /** 子组件在组件列表中的索引 */
   index = -1
+
+  /** dataset 属性 */
+  get datasetKey() {
+    return camelCase(this.layout.itemClassName())
+  }
+
+  /** 模板绑定的 dataset 属性 */
+  get datasetTemplateKey() {
+    return `data-${this.layout.itemClassName()}`
+  }
+
+  /** 初始容器大小 */
+
+  /** 容器最大值限制(一旦确定) */
 
   /** 内部大小状态，用于拖拽时动态更新 */
   private readonly internalSize = ref<string>('')
@@ -30,7 +45,7 @@ export class SplitLayoutItemContext {
 
   constructor(props: Required<SplitLayoutItemProps>) {
     this.props = props
-    this.splitLayout = SplitLayoutContext.use()
+    this.layout = SplitLayoutContext.use()
 
     // 仅在初始化时设置值，不再监听 props 变化（非响应性）
     this.internalSize.value = PanelSizeNormalizer.normalize(props.size)
@@ -65,7 +80,7 @@ export class SplitLayoutItemContext {
   /** 更新大小 */
   updateSize(newSize: string): void {
     this.internalSize.value = newSize
-    this.splitLayout.notifyResize()
+    this.layout.notifyResize()
   }
 
   mount() {
@@ -86,11 +101,11 @@ export class SplitLayoutItemContext {
 
   /** 插入到面板列表中 */
   private insertIntoItemList(el: SplitLayoutItemElement) {
-    const prevItem = this.findPrevItem(el)
+    const prevItem = findSiblingWithDataset<SplitLayoutItemElement>(el, 'previousSibling', this.datasetKey)
     const targetContext = prevItem?._splitLayoutItemContext
     const index = targetContext ? targetContext.index + 1 : 0
 
-    this.splitLayout.items.splice(index, 0, this)
+    this.layout.items.splice(index, 0, this)
     this.index = index
 
     // 更新后续元素的索引
@@ -99,35 +114,23 @@ export class SplitLayoutItemContext {
 
   /** 从面板列表中移除 */
   private removeFromItemList() {
-    this.splitLayout.items.splice(this.index, 1)
+    this.layout.items.splice(this.index, 1)
     this.updateSubsequentIndices(this.index)
   }
 
   /** 更新后续元素的索引 */
   private updateSubsequentIndices(startIndex: number) {
-    for (let i = startIndex; i < this.splitLayout.items.length; i++) {
-      this.splitLayout.items[i].index = i
+    for (let i = startIndex; i < this.layout.items.length; i++) {
+      this.layout.items[i].index = i
     }
-  }
-
-  /** 查找前一个面板元素 */
-  private findPrevItem(el: HTMLElement): SplitLayoutItemElement | null {
-    let cur = el.previousSibling
-    while (cur) {
-      if ((cur as any)?.dataset?.[DATASET_KEY]) {
-        return cur as SplitLayoutItemElement
-      }
-      cur = cur.previousSibling
-    }
-    return null
   }
 
   /** 调度布局更新 */
   private scheduleLayoutUpdate() {
     // 延迟触发自动空间分配，确保所有变更都已完成
-    this.splitLayout.scheduleAutoAllocateSpace()
+    this.layout.scheduleAutoAllocateSpace()
     // 通知父组件更新
-    this.splitLayout.notifyResize()
+    this.layout.notifyResize()
   }
 
   /** 应用约束条件到初始尺寸 */
@@ -149,7 +152,7 @@ export class SplitLayoutItemContext {
       return
     }
 
-    const isHorizontal = this.splitLayout.props.direction === 'horizontal'
+    const isHorizontal = this.layout.props.direction === 'horizontal'
     const containerSize = isHorizontal ? containerEl.clientWidth : containerEl.clientHeight
 
     // 将当前尺寸转换为像素值

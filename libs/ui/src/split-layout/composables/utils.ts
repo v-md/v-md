@@ -83,32 +83,3 @@ export class DOMUtils {
     return null
   }
 }
-
-/**
- * 事件处理工具类
- */
-export class EventUtils {
-  /**
-   * 获取鼠标或触摸事件的位置
-   */
-  static getEventPosition(event: MouseEvent | TouchEvent, isHorizontal: boolean): number {
-    const isTouch = 'touches' in event
-    const clientEvent = isTouch ? event.touches[0] : event
-    return isHorizontal ? clientEvent.clientX : clientEvent.clientY
-  }
-
-  /**
-   * 创建事件监听器清理函数
-   */
-  static createEventCleanup(events: Array<{
-    target: EventTarget
-    type: string
-    handler: EventListenerOrEventListenerObject
-  }>): () => void {
-    return () => {
-      events.forEach(({ target, type, handler }) => {
-        target.removeEventListener(type, handler)
-      })
-    }
-  }
-}

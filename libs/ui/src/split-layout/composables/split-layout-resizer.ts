@@ -1,20 +1,21 @@
-import type { SplitLayoutResizerProps } from '../types'
-import type { SplitLayoutItemContext } from './split-layout-item'
-import { clamp, cssSizeToPixels } from '@v-md/shared'
+import type {
+  EmitFn,
+} from 'vue'
+import type { SplitLayoutResizerEmits, SplitLayoutResizerProps } from '../types'
+import type { SplitLayoutItemContext, SplitLayoutItemElement } from './split-layout-item'
+import { camelCase, clamp, cssSizeToPixels } from '@v-md/shared'
+import { findSiblingWithDataset } from '@v-md/shared/browser'
 import {
   onBeforeUnmount,
   onMounted,
   ref,
 } from 'vue'
 import { SplitLayoutContext } from './split-layout'
-import { DOMUtils, EventUtils, SizeUtils } from './utils'
+import { SizeUtils } from './utils'
 
 interface SplitLayoutResizerElement extends HTMLElement {
   _splitLayoutResizerContext: SplitLayoutResizerContext
 }
-
-/** Dom 元素的标记，必须与模板中绑定的 dataset 属性相对应 */
-const DATASET_KEY = 'vmdSplitLayoutResizer'
 
 /**
  * 拖拽状态管理类
@@ -149,13 +150,24 @@ class DragState {
 }
 
 export class SplitLayoutResizerContext {
-  readonly splitLayout: SplitLayoutContext
+  readonly layout: SplitLayoutContext
   readonly props: Required<SplitLayoutResizerProps>
+  readonly emit: EmitFn<SplitLayoutResizerEmits>
   readonly resizerEl = ref<SplitLayoutResizerElement>()
   readonly isResizing = ref(false)
 
   /** 子组件在组件列表中的索引 */
   index = -1
+
+  /** dataset 属性 */
+  get datasetKey() {
+    return camelCase(this.layout.resizerClassName())
+  }
+
+  /** 模板绑定的 dataset 属性 */
+  get datasetTemplateKey() {
+    return `data-${this.layout.resizerClassName()}`
+  }
 
   /** 当前的拖拽状态 */
   private dragState: DragState | null = null
@@ -163,12 +175,10 @@ export class SplitLayoutResizerContext {
   /** 事件监听器清理函数 */
   private eventCleanup: (() => void) | null = null
 
-  /** 结束拖拽事件回调 */
-  onResizeEnd?: () => void
-
-  constructor(props: Required<SplitLayoutResizerProps>) {
+  constructor(props: Required<SplitLayoutResizerProps>, emit: EmitFn<SplitLayoutResizerEmits>) {
     this.props = props
-    this.splitLayout = SplitLayoutContext.use()
+    this.emit = emit
+    this.layout = SplitLayoutContext.use()
 
     onMounted(() => {
       this.mount()
@@ -196,11 +206,11 @@ export class SplitLayoutResizerContext {
 
   /** 插入到分割线列表中 */
   private insertIntoResizerList(el: SplitLayoutResizerElement) {
-    const prevResizer = DOMUtils.findSiblingWithDataset(el, 'previousSibling', DATASET_KEY) as SplitLayoutResizerElement | null
+    const prevResizer = findSiblingWithDataset<SplitLayoutResizerElement>(el, 'previousSibling', this.datasetKey)
     const targetContext = prevResizer?._splitLayoutResizerContext
     const index = targetContext ? targetContext.index + 1 : 0
 
-    this.splitLayout.resizers.splice(index, 0, this)
+    this.layout.resizers.splice(index, 0, this)
     this.index = index
 
     // 更新后续元素的索引
@@ -209,14 +219,14 @@ export class SplitLayoutResizerContext {
 
   /** 从分割线列表中移除 */
   private removeFromResizerList() {
-    this.splitLayout.resizers.splice(this.index, 1)
+    this.layout.resizers.splice(this.index, 1)
     this.updateSubsequentIndices(this.index)
   }
 
   /** 更新后续元素的索引 */
   private updateSubsequentIndices(startIndex: number) {
-    for (let i = startIndex; i < this.splitLayout.resizers.length; i++) {
-      this.splitLayout.resizers[i].index = i
+    for (let i = startIndex; i < this.layout.resizers.length; i++) {
+      this.layout.resizers[i].index = i
     }
   }
 
@@ -226,8 +236,19 @@ export class SplitLayoutResizerContext {
       return null
     }
 
-    const prevItem = this.findItemElement(this.resizerEl.value, 'previousSibling')
-    const nextItem = this.findItemElement(this.resizerEl.value, 'nextSibling')
+    const prevEl = findSiblingWithDataset<SplitLayoutItemElement>(
+      this.resizerEl.value,
+      'previousSibling',
+      camelCase(this.layout.itemClassName()),
+    )
+    const nextEl = findSiblingWithDataset<SplitLayoutItemElement>(
+      this.resizerEl.value,
+      'nextSibling',
+      camelCase(this.layout.itemClassName()),
+    )
+
+    const prevItem = prevEl?._splitLayoutItemContext
+    const nextItem = nextEl?._splitLayoutItemContext
 
     if (!prevItem || !nextItem) {
       console.warn('[SplitLayout] Cannot find adjacent panels for resizer')
@@ -237,23 +258,14 @@ export class SplitLayoutResizerContext {
     return { prevItem, nextItem }
   }
 
-  /** 查找指定方向的面板元素 */
-  private findItemElement(
-    startEl: HTMLElement,
-    direction: 'previousSibling' | 'nextSibling',
-  ): SplitLayoutItemContext | null {
-    const el = DOMUtils.findSiblingWithDataset(startEl, direction, 'vmdSplitLayoutItem')
-    return el ? (el as any)._splitLayoutItemContext || null : null
-  }
-
   /** 获取容器信息 */
   private getContainerInfo() {
-    const containerEl = this.splitLayout.items[0]?.itemEl.value?.parentElement
+    const containerEl = this.layout.items[0]?.itemEl.value?.parentElement
     if (!containerEl) {
       return null
     }
 
-    const isHorizontal = this.splitLayout.props.direction === 'horizontal'
+    const isHorizontal = this.layout.props.direction === 'horizontal'
     const containerSize = isHorizontal ? containerEl.clientWidth : containerEl.clientHeight
 
     return { containerEl, containerSize, isHorizontal }
@@ -267,6 +279,12 @@ export class SplitLayoutResizerContext {
     }
   }
 
+  getEventPosition(event: MouseEvent | TouchEvent, isHorizontal: boolean): number {
+    const isTouch = 'touches' in event
+    const clientEvent = isTouch ? event.touches[0] : event
+    return isHorizontal ? clientEvent.clientX : clientEvent.clientY
+  }
+
   /** 创建移动事件处理器 */
   private createMoveHandler(): (event: MouseEvent | TouchEvent) => void {
     return (moveEvent: MouseEvent | TouchEvent) => {
@@ -274,7 +292,7 @@ export class SplitLayoutResizerContext {
         return
       }
 
-      const currentPosition = EventUtils.getEventPosition(moveEvent, this.dragState.isHorizontal)
+      const currentPosition = this.getEventPosition(moveEvent, this.dragState.isHorizontal)
       const delta = currentPosition - this.dragState.startPosition
 
       const { prevPixels, nextPixels } = this.dragState.calculateNewSizes(delta)
@@ -294,15 +312,8 @@ export class SplitLayoutResizerContext {
 
       this.clearEventListeners()
 
-      if (this.onResizeEnd) {
-        this.onResizeEnd()
-      }
+      this.emit('resize-end')
     }
-  }
-
-  /** 注册结束拖拽事件处理器 */
-  setResizeEndHandler(handler: () => void) {
-    this.onResizeEnd = handler
   }
 
   /** 开始拖拽 */
@@ -312,6 +323,8 @@ export class SplitLayoutResizerContext {
     }
 
     event.preventDefault()
+
+    this.emit('resize-start')
 
     // 获取容器信息
     const containerInfo = this.getContainerInfo()
@@ -328,7 +341,7 @@ export class SplitLayoutResizerContext {
 
     const { containerSize, isHorizontal } = containerInfo
     const { prevItem, nextItem } = adjacentItems
-    const startPosition = EventUtils.getEventPosition(event, isHorizontal)
+    const startPosition = this.getEventPosition(event, isHorizontal)
 
     // 创建拖拽状态
     this.dragState = new DragState(isHorizontal, startPosition, containerSize, prevItem, nextItem)
@@ -342,12 +355,12 @@ export class SplitLayoutResizerContext {
     const handleEnd = this.createEndHandler()
 
     // 注册事件监听器并保存清理函数
-    this.eventCleanup = EventUtils.createEventCleanup([
-      { target: document, type: 'mousemove', handler: handleMove },
-      { target: document, type: 'mouseup', handler: handleEnd },
-      { target: document, type: 'touchmove', handler: handleMove },
-      { target: document, type: 'touchend', handler: handleEnd },
-    ])
+    this.eventCleanup = () => {
+      document.removeEventListener('mousemove', handleMove)
+      document.removeEventListener('mouseup', handleEnd)
+      document.removeEventListener('touchmove', handleMove)
+      document.removeEventListener('touchend', handleEnd)
+    }
 
     // 立即添加事件监听器
     document.addEventListener('mousemove', handleMove)

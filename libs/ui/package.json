@@ -32,6 +32,7 @@
     }
   },
   "dependencies": {
+    "@vueuse/core": "catalog:",
     "vue-tippy": "^6.6.0"
   }
 }

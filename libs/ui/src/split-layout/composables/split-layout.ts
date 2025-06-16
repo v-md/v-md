@@ -1,19 +1,23 @@
-import type { InjectionKey } from 'vue'
-import type { SplitLayoutProps } from '../types'
+import type { EmitFn, InjectionKey } from 'vue'
+import type { NamespaceContext } from '../../config-provider'
+import type { SplitLayoutEmits, SplitLayoutProps } from '../types'
 import type { SplitLayoutItemContext } from './split-layout-item'
 import type { SplitLayoutResizerContext } from './split-layout-resizer'
 import { cssSizeToPixels, parseCssSize } from '@v-md/shared'
 import {
   inject,
+  onBeforeUnmount,
   provide,
+  ref,
   shallowReactive,
 } from 'vue'
+import { useNamespace } from '../../config-provider'
 
 const SPLIT_LAYOUT_PROVIDE_KEY = Symbol('split-layout') as InjectionKey<SplitLayoutContext>
 
 export class SplitLayoutContext {
-  static setup(props: Required<SplitLayoutProps>) {
-    return new SplitLayoutContext(props)
+  static setup(props: Required<SplitLayoutProps>, emit: EmitFn<SplitLayoutEmits>) {
+    return new SplitLayoutContext(props, emit)
   }
 
   static use() {
@@ -25,20 +29,47 @@ export class SplitLayoutContext {
   }
 
   readonly props: Required<SplitLayoutProps>
+  readonly emit: EmitFn<SplitLayoutEmits>
+
+  readonly namespace: NamespaceContext
+
+  itemClassName(...names: string[]) {
+    return this.namespace.c('split-layout', 'item', ...names)
+  }
+
+  resizerClassName(...names: string[]) {
+    return this.namespace.c('split-layout', 'resizer', ...names)
+  }
+
+  /** 容器 DOM 元素 */
+  readonly containerEl = ref<HTMLElement>()
+
+  /** 面板列表 */
   readonly items = shallowReactive<SplitLayoutItemContext[]>([])
+
+  /** 分割线列表 */
   readonly resizers = shallowReactive<SplitLayoutResizerContext[]>([])
 
-  private emitResize?: (sizes: string[]) => void
-  private autoAllocateTimer?: ReturnType<typeof setTimeout>
-
-  constructor(props: Required<SplitLayoutProps>) {
+  constructor(props: Required<SplitLayoutProps>, emit: EmitFn<SplitLayoutEmits>) {
     this.props = props
+    this.emit = emit
+    this.namespace = useNamespace()
+
+    onBeforeUnmount(() => {
+      this._clearAutoAllocateTimer()
+    })
+
     provide(SPLIT_LAYOUT_PROVIDE_KEY, this)
   }
 
-  /** 清理资源 */
-  destroy() {
-    this.clearAutoAllocateTimer()
+  private _autoAllocateTimer?: ReturnType<typeof setTimeout>
+
+  /** 清理自动分配定时器 */
+  private _clearAutoAllocateTimer() {
+    if (this._autoAllocateTimer) {
+      clearTimeout(this._autoAllocateTimer)
+      this._autoAllocateTimer = undefined
+    }
   }
 
   /** 获取当前所有面板的大小 */
@@ -46,22 +77,17 @@ export class SplitLayoutContext {
     return this.items.map(item => item.currentSize)
   }
 
-  /** 注册 resize 事件处理器 */
-  onResize(handler: (sizes: string[]) => void) {
-    this.emitResize = handler
-  }
-
   /** 通知大小变化 */
   notifyResize() {
-    this.emitResize?.(this.getSizes())
+    this.emit('resize', this.getSizes())
   }
 
   /** 调度自动分配空间 */
   scheduleAutoAllocateSpace() {
-    this.clearAutoAllocateTimer()
-    this.autoAllocateTimer = setTimeout(() => {
+    this._clearAutoAllocateTimer()
+    this._autoAllocateTimer = setTimeout(() => {
       this.autoAllocateSpace()
-      this.autoAllocateTimer = undefined
+      this._autoAllocateTimer = undefined
     }, 0)
   }
 
@@ -221,13 +247,5 @@ export class SplitLayoutContext {
         `${autoPercentage}%`
       item.updateSize(size)
     })
-  }
-
-  /** 清理自动分配定时器 */
-  private clearAutoAllocateTimer() {
-    if (this.autoAllocateTimer) {
-      clearTimeout(this.autoAllocateTimer)
-      this.autoAllocateTimer = undefined
-    }
   }
 }

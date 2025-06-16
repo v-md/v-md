@@ -17,6 +17,7 @@ catalog:
   lodash-es: ^4.17.21
   '@types/lodash-es': ^4.17.12
   type-fest: ^4.31.0
+  '@vueuse/core': ^12.3.0
 
 catalogs:
   peer:
