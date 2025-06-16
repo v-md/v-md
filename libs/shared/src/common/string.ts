@@ -1,5 +1,6 @@
 export {
   camelCase,
+  capitalize,
   kebabCase,
   snakeCase,
   template,

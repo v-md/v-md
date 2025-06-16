@@ -516,7 +516,7 @@ describe('splitLayout', () => {
       const splitLayoutRef = ref()
       const wrapper = mount(() => (
         <SplitLayout ref={splitLayoutRef}>
-          <SplitLayoutItem size="200px">Panel 1</SplitLayoutItem>
+          <SplitLayoutItem size="50%">Panel 1</SplitLayoutItem>
           <SplitLayoutItem>Panel 2</SplitLayoutItem>
         </SplitLayout>
       ))
