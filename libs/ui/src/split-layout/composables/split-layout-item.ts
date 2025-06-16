@@ -1,4 +1,5 @@
 import type { SplitLayoutItemProps } from '../types'
+import { cssSizeToPixels, pixelsToCssSize } from '@v-md/shared'
 import {
   onBeforeUnmount,
   onMounted,
@@ -152,18 +153,18 @@ export class SplitLayoutItemContext {
     const containerSize = isHorizontal ? containerEl.clientWidth : containerEl.clientHeight
 
     // 将当前尺寸转换为像素值
-    const currentPixels = SizeUtils.toPixels(this.currentSize, containerSize)
+    const currentPixels = cssSizeToPixels(this.currentSize, containerSize)
     let adjustedPixels = currentPixels
 
     // 应用最小尺寸约束
     if (this.currentMinSize) {
-      const minPixels = SizeUtils.toPixels(this.currentMinSize, containerSize)
+      const minPixels = cssSizeToPixels(this.currentMinSize, containerSize)
       adjustedPixels = Math.max(adjustedPixels, minPixels)
     }
 
     // 应用最大尺寸约束
     if (this.currentMaxSize) {
-      const maxPixels = SizeUtils.toPixels(this.currentMaxSize, containerSize)
+      const maxPixels = cssSizeToPixels(this.currentMaxSize, containerSize)
       adjustedPixels = Math.min(adjustedPixels, maxPixels)
     }
 

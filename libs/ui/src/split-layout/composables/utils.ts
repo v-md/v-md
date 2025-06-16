@@ -2,109 +2,45 @@
  * 分割布局组件的通用工具模块
  */
 
-/**
- * 尺寸单位类型
- */
-export type SizeUnit = 'px' | '%'
-
-/**
- * 解析尺寸值的结果
- */
-export interface ParsedSize {
-  value: number
-  unit: SizeUnit
-}
+import {
+  cssSizeToPixels,
+  normalizeCssSize,
+  parseCssSize,
+  pixelsToCssSize,
+} from '@v-md/shared'
 
 /**
  * 尺寸工具类 - 处理尺寸值的解析、转换和计算
+ * 基于 @v-md/shared 中的 css-size 函数实现
  */
 export class SizeUtils {
-  /**
-   * 解析尺寸字符串为数值和单位
-   */
-  static parse(size: string): ParsedSize | null {
-    if (!size) {
-      return null
-    }
-
-    const match = size.match(/^(\d+(?:\.\d+)?)(px|%)?$/)
-    if (!match) {
-      return null
-    }
-
-    return {
-      value: Number.parseFloat(match[1]),
-      unit: (match[2] as SizeUnit) || 'px',
-    }
-  }
-
-  /**
-   * 将尺寸值转换为像素
-   */
-  static toPixels(size: string, containerSize: number): number {
-    const parsed = this.parse(size)
-    if (!parsed) {
-      return 0
-    }
-
-    return parsed.unit === '%' ?
-        (parsed.value / 100) * containerSize :
-      parsed.value
-  }
-
   /**
    * 将像素值转换为指定单位的字符串
    */
   static fromPixels(pixels: number, containerSize: number, originalSize: string): string {
-    const parsed = this.parse(originalSize)
-    if (!parsed) {
-      return `${pixels}px`
-    }
-
-    return parsed.unit === '%' ?
-      `${(pixels / containerSize) * 100}%` :
-      `${pixels}px`
+    const parsed = parseCssSize(originalSize)
+    const unit = parsed?.unit || 'px'
+    return pixelsToCssSize(pixels, unit, containerSize)
   }
 }
 
 /**
  * 标准化面板项尺寸值
+ * 基于 @v-md/shared 中的 normalizeCssSize 函数实现
  */
 export class PanelSizeNormalizer {
   /**
    * 将 string | number | null 类型的大小值标准化为字符串
    */
   static normalize(size: string | number | null | undefined): string {
-    if (size === null || size === undefined) {
-      return ''
-    }
+    const normalized = normalizeCssSize(size, ['px', '%'])
 
-    if (typeof size === 'number') {
-      return `${size}px`
-    }
-
-    if (typeof size === 'string') {
-      const trimmed = size.trim()
-      if (!trimmed) {
-        return ''
-      }
-
-      // 检查是否为纯数字
-      if (/^\d+(?:\.\d+)?$/.test(trimmed)) {
-        return `${trimmed}px`
-      }
-
-      // 检查是否为有效的 CSS 单位（仅支持 px、%）
-      if (/^\d+(?:\.\d+)?(?:px|%)$/.test(trimmed)) {
-        return trimmed
-      }
-
-      // 对于不符合规范的字符串，抛出警告并返回空字符串
+    // 保持与原实现一致的警告信息
+    if (size != null && size !== undefined && size !== '' && !normalized) {
       console.warn(`[SplitLayout] Invalid size value: ${size}. Supported formats: number (as px), 'Npx', 'N%', or null`)
-      return ''
     }
 
-    return ''
+    return normalized
   }
 }
 
@@ -113,25 +49,15 @@ export class PanelSizeNormalizer {
  */
 export class ResizerSizeNormalizer {
   static normalize(size: string | number): string {
-    if (typeof size === 'number') {
-      return `${size}px`
+    const normalized = normalizeCssSize(size, ['px'])
+
+    if (!normalized) {
+      // 对于不符合规范的字符串，抛出警告并返回默认值
+      console.warn(`[SplitLayoutResizer] Invalid size value: ${size}. Supported formats: number (as px), 'Npx'`)
+      return '4px'
     }
 
-    const trimmed = size.trim()
-
-    // 检查是否为纯数字
-    if (/^\d+(?:\.\d+)?$/.test(trimmed)) {
-      return `${trimmed}px`
-    }
-
-    // 检查是否为有效的 px 单位
-    if (/^\d+(?:\.\d+)?px$/.test(trimmed)) {
-      return trimmed
-    }
-
-    // 对于不符合规范的字符串，抛出警告并返回默认值
-    console.warn(`[SplitLayoutResizer] Invalid size value: ${size}. Supported formats: number (as px), 'Npx'`)
-    return '4px'
+    return normalized
   }
 }
 

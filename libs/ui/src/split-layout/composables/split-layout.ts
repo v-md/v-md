@@ -2,12 +2,12 @@ import type { InjectionKey } from 'vue'
 import type { SplitLayoutProps } from '../types'
 import type { SplitLayoutItemContext } from './split-layout-item'
 import type { SplitLayoutResizerContext } from './split-layout-resizer'
+import { cssSizeToPixels, parseCssSize } from '@v-md/shared'
 import {
   inject,
   provide,
   shallowReactive,
 } from 'vue'
-import { SizeUtils } from './utils'
 
 const SPLIT_LAYOUT_PROVIDE_KEY = Symbol('split-layout') as InjectionKey<SplitLayoutContext>
 
@@ -92,11 +92,11 @@ export class SplitLayoutContext {
       }
 
       if (typeof size === 'string') {
-        const parsed = SizeUtils.parse(size)
-        return total + (parsed?.value || 4) // 默认4px
+        const parsed = parseCssSize(size)
+        return total + (parsed?.value || 0)
       }
 
-      return total + 4 // 默认4px
+      return total
     }, 0)
   }
 
@@ -165,7 +165,7 @@ export class SplitLayoutContext {
 
     // 计算固定面板占用的像素
     const fixedPixels = fixedItems.reduce((total, item) => {
-      return total + SizeUtils.toPixels(item.currentSize, containerSize)
+      return total + cssSizeToPixels(item.currentSize, containerSize)
     }, 0)
 
     // 计算可用空间

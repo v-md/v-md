@@ -1,6 +1,6 @@
 import type { SplitLayoutResizerProps } from '../types'
 import type { SplitLayoutItemContext } from './split-layout-item'
-import { clamp } from '@v-md/shared'
+import { clamp, cssSizeToPixels } from '@v-md/shared'
 import {
   onBeforeUnmount,
   onMounted,
@@ -53,23 +53,23 @@ class DragState {
 
     // 获取元素的实际渲染尺寸，而不是仅基于 currentSize 计算
     this.initialPrevPixels = this.getActualElementSize(prevItem.itemEl.value, isHorizontal) ||
-      SizeUtils.toPixels(this.initialPrevSize, containerSize)
+      cssSizeToPixels(this.initialPrevSize, containerSize)
     this.initialNextPixels = this.getActualElementSize(nextItem.itemEl.value, isHorizontal) ||
-      SizeUtils.toPixels(this.initialNextSize, containerSize)
+      cssSizeToPixels(this.initialNextSize, containerSize)
 
     // 计算约束条件
     this.constraints = {
       prevMinPixels: prevItem.currentMinSize ?
-          SizeUtils.toPixels(prevItem.currentMinSize, containerSize) :
+          cssSizeToPixels(prevItem.currentMinSize, containerSize) :
         10,
       nextMinPixels: nextItem.currentMinSize ?
-          SizeUtils.toPixels(nextItem.currentMinSize, containerSize) :
+          cssSizeToPixels(nextItem.currentMinSize, containerSize) :
         10,
       prevMaxPixels: prevItem.currentMaxSize ?
-          SizeUtils.toPixels(prevItem.currentMaxSize, containerSize) :
+          cssSizeToPixels(prevItem.currentMaxSize, containerSize) :
         Infinity,
       nextMaxPixels: nextItem.currentMaxSize ?
-          SizeUtils.toPixels(nextItem.currentMaxSize, containerSize) :
+          cssSizeToPixels(nextItem.currentMaxSize, containerSize) :
         Infinity,
     }
   }

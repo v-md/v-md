@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import type { SplitLayoutItemExpose, SplitLayoutItemProps } from '../types'
+import { cssSizeToPixels } from '@v-md/shared'
 import { computed } from 'vue'
 import { useNamespace } from '../../config-provider'
 import { SplitLayoutItemContext } from '../composables'
-import { SizeUtils } from '../composables/utils'
 import { defaultSplitLayoutItemProps } from '../types'
 
 const props = withDefaults(
@@ -32,7 +32,7 @@ const itemStyle = computed(() => {
   // 转换主尺寸为 px 单位
   if (context.currentSize) {
     const sizeInPx = containerSize > 0 ?
-        SizeUtils.toPixels(context.currentSize, containerSize) :
+        cssSizeToPixels(context.currentSize, containerSize) :
       context.currentSize
     style.flex = `0 0 ${typeof sizeInPx === 'number' ? `${sizeInPx}px` : sizeInPx}`
   }
@@ -44,13 +44,13 @@ const itemStyle = computed(() => {
   if (isHorizontal) {
     if (context.currentMinSize) {
       const minSizeInPx = containerSize > 0 ?
-          SizeUtils.toPixels(context.currentMinSize, containerSize) :
+          cssSizeToPixels(context.currentMinSize, containerSize) :
         context.currentMinSize
       style.minWidth = typeof minSizeInPx === 'number' ? `${minSizeInPx}px` : minSizeInPx
     }
     if (context.currentMaxSize) {
       const maxSizeInPx = containerSize > 0 ?
-          SizeUtils.toPixels(context.currentMaxSize, containerSize) :
+          cssSizeToPixels(context.currentMaxSize, containerSize) :
         context.currentMaxSize
       style.maxWidth = typeof maxSizeInPx === 'number' ? `${maxSizeInPx}px` : maxSizeInPx
     }
@@ -58,13 +58,13 @@ const itemStyle = computed(() => {
   else {
     if (context.currentMinSize) {
       const minSizeInPx = containerSize > 0 ?
-          SizeUtils.toPixels(context.currentMinSize, containerSize) :
+          cssSizeToPixels(context.currentMinSize, containerSize) :
         context.currentMinSize
       style.minHeight = typeof minSizeInPx === 'number' ? `${minSizeInPx}px` : minSizeInPx
     }
     if (context.currentMaxSize) {
       const maxSizeInPx = containerSize > 0 ?
-          SizeUtils.toPixels(context.currentMaxSize, containerSize) :
+          cssSizeToPixels(context.currentMaxSize, containerSize) :
         context.currentMaxSize
       style.maxHeight = typeof maxSizeInPx === 'number' ? `${maxSizeInPx}px` : maxSizeInPx
     }
