@@ -41,4 +41,6 @@ export interface SplitLayoutResizerEmits {
 
 export interface SplitLayoutResizerSlots {}
 
-export interface SplitLayoutResizerExpose {}
+export interface SplitLayoutResizerExpose {
+  move: (offset: number) => void
+}

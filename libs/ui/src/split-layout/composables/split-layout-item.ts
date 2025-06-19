@@ -1,16 +1,18 @@
 import type { SplitLayoutItemProps } from '../types'
 import {
   camelCase,
+  clamp,
   cssSizeToPixels,
+  parseCssSize,
 } from '@v-md/shared'
 import { findSiblingWithDataset } from '@v-md/shared/browser'
 import {
+  computed,
   onBeforeUnmount,
   onMounted,
   ref,
 } from 'vue'
 import { SplitLayoutContext } from './split-layout'
-import { PanelSizeNormalizer, SizeUtils } from './utils'
 
 export interface SplitLayoutItemElement extends HTMLElement {
   _splitLayoutItemContext: SplitLayoutItemContext
@@ -34,27 +36,12 @@ export class SplitLayoutItemContext {
     return `data-${this.layout.itemClassName()}`
   }
 
-  /** 初始容器大小 */
-
-  /** 容器最大值限制(一旦确定) */
-
-  /** 内部大小状态，用于拖拽时动态更新 */
-  private readonly internalSize = ref<string>('')
-  private readonly internalMinSize = ref<string>('')
-  private readonly internalMaxSize = ref<string>('')
-
   constructor(props: Required<SplitLayoutItemProps>) {
     this.props = props
     this.layout = SplitLayoutContext.use()
 
-    // 仅在初始化时设置值，不再监听 props 变化（非响应性）
-    this.internalSize.value = PanelSizeNormalizer.normalize(props.size)
-    this.internalMinSize.value = PanelSizeNormalizer.normalize(props.minSize)
-    this.internalMaxSize.value = PanelSizeNormalizer.normalize(props.maxSize)
-
     onMounted(() => {
       this.mount()
-      this.applyConstraintsToSize()
     })
 
     onBeforeUnmount(() => {
@@ -62,25 +49,107 @@ export class SplitLayoutItemContext {
     })
   }
 
-  /** 获取当前大小 */
-  get currentSize(): string {
-    return this.internalSize.value
+  /** 初始化时标准化后的 size 属性 */
+  initSizeParsed = computed(() => parseCssSize(this.props.size || ''))
+
+  /** 容器的尺寸是否已经初始化 */
+  hasInit = computed(() => this.size.value >= 0)
+
+  /** 容器当前大小尺寸，单位 px。-1 表示未初始化 */
+  size = ref(-1)
+
+  /** 容器最大尺寸，单位 px。-1 表示未初始化 */
+  maxSize = computed(() => {
+    const parsed = parseCssSize(this.props.maxSize || '')
+    if (!parsed) {
+      return -1
+    }
+
+    if (parsed.unit === 'px') {
+      return parsed.value
+    }
+
+    return parsed.unit === '%' ? cssSizeToPixels(`${parsed.value}%`, this.layout.containerSize.value) : -1
+  })
+
+  /** 容器最小尺寸，单位 px。-1 表示未初始化 */
+  minSize = computed(() => {
+    const parsed = parseCssSize(this.props.minSize || '')
+    if (!parsed) {
+      return -1
+    }
+
+    if (parsed.unit === 'px') {
+      return parsed.value
+    }
+
+    return parsed.unit === '%' ? cssSizeToPixels(`${parsed.value}%`, this.layout.containerSize.value) : -1
+  })
+
+  /** 是否达到最大尺寸 */
+  isSizeMax = computed(() => this.size.value >= 0 && this.size.value >= this.maxSize.value)
+
+  /** 是否达到最小尺寸 */
+  isSizeMin = computed(() => this.size.value >= 0 && this.size.value <= this.minSize.value)
+
+  /** 尺寸是否达到限制 */
+  isSizeLimit = computed(() => this.isSizeMax.value || this.isSizeMin.value)
+
+  /**
+   * 计算待更新尺寸与基准尺寸的差值，实际更新的尺寸会确保大小在 minSize 和 maxSize 之间
+   * @param size 新的尺寸
+   * @param baseSize 基准尺寸，默认为当前尺寸
+   * @returns 差值，单位 px
+   */
+  getSizeChange(size: number | string, baseSize = this.size.value) {
+    let newSize = 0
+    if (typeof size === 'number') {
+      newSize = size
+    }
+    else if (typeof size === 'string') {
+      const parsed = parseCssSize(size)
+      if (!parsed) {
+        return 0
+      }
+      else if (parsed.unit === 'px') {
+        newSize = parsed.value
+      }
+      else if (parsed.unit === '%') {
+        newSize = cssSizeToPixels(`${parsed.value}%`, this.layout.containerSize.value)
+      }
+    }
+
+    const min = this.minSize.value >= 0 ? this.minSize.value : 0
+    const max = this.maxSize.value >= 0 ? this.maxSize.value : Infinity
+    return clamp(newSize, min, max) - baseSize
   }
 
-  /** 获取当前最小大小 */
-  get currentMinSize(): string {
-    return this.internalMinSize.value
-  }
+  /**
+   * 更新大小，会确保大小在 minSize 和 maxSize 之间
+   * @param size 新的尺寸
+   * @returns 实际的尺寸变动
+   */
+  updateSize(size: number | string) {
+    const sizeChange = this.getSizeChange(size)
+    if (sizeChange === 0) {
+      return 0
+    }
 
-  /** 获取当前最大大小 */
-  get currentMaxSize(): string {
-    return this.internalMaxSize.value
-  }
-
-  /** 更新大小 */
-  updateSize(newSize: string): void {
-    this.internalSize.value = newSize
+    const oldSize = this.size.value
+    this.size.value += sizeChange
     this.layout.notifyResize()
+    return this.size.value - oldSize
+  }
+
+  /** 获取 DOM 元素的尺寸 */
+  getElementSize() {
+    const el = this.itemEl.value
+    if (!el) {
+      return 0
+    }
+
+    const rect = el.getBoundingClientRect()
+    return this.layout.isHorizontal.value ? rect.width : rect.height
   }
 
   mount() {
@@ -89,18 +158,18 @@ export class SplitLayoutItemContext {
       return
     }
 
-    el._splitLayoutItemContext = this
-    this.insertIntoItemList(el)
-    this.scheduleLayoutUpdate()
+    this._insertIntoItemList(el)
+    this.layout.autoAllowcateSpace()
   }
 
   unmount() {
-    this.removeFromItemList()
-    this.scheduleLayoutUpdate()
+    this._removeFromItemList()
+    this.layout.autoAllowcateSpace()
   }
 
   /** 插入到面板列表中 */
-  private insertIntoItemList(el: SplitLayoutItemElement) {
+  private _insertIntoItemList(el: SplitLayoutItemElement) {
+    el._splitLayoutItemContext = this
     const prevItem = findSiblingWithDataset<SplitLayoutItemElement>(el, 'previousSibling', this.datasetKey)
     const targetContext = prevItem?._splitLayoutItemContext
     const index = targetContext ? targetContext.index + 1 : 0
@@ -109,73 +178,19 @@ export class SplitLayoutItemContext {
     this.index = index
 
     // 更新后续元素的索引
-    this.updateSubsequentIndices(index)
+    this._updateSubsequentIndices(index)
   }
 
   /** 从面板列表中移除 */
-  private removeFromItemList() {
+  private _removeFromItemList() {
     this.layout.items.splice(this.index, 1)
-    this.updateSubsequentIndices(this.index)
+    this._updateSubsequentIndices(this.index)
   }
 
   /** 更新后续元素的索引 */
-  private updateSubsequentIndices(startIndex: number) {
+  private _updateSubsequentIndices(startIndex: number) {
     for (let i = startIndex; i < this.layout.items.length; i++) {
       this.layout.items[i].index = i
-    }
-  }
-
-  /** 调度布局更新 */
-  private scheduleLayoutUpdate() {
-    // 延迟触发自动空间分配，确保所有变更都已完成
-    this.layout.scheduleAutoAllocateSpace()
-    // 通知父组件更新
-    this.layout.notifyResize()
-  }
-
-  /** 应用约束条件到初始尺寸 */
-  private applyConstraintsToSize() {
-    if (!this.currentSize || !this.itemEl.value) {
-      return
-    }
-
-    // 延迟执行以确保 DOM 已渲染
-    setTimeout(() => {
-      this.adjustSizeWithConstraints()
-    }, 0)
-  }
-
-  /** 根据约束条件调整尺寸 */
-  private adjustSizeWithConstraints() {
-    const containerEl = this.itemEl.value?.parentElement
-    if (!containerEl) {
-      return
-    }
-
-    const isHorizontal = this.layout.props.direction === 'horizontal'
-    const containerSize = isHorizontal ? containerEl.clientWidth : containerEl.clientHeight
-
-    // 将当前尺寸转换为像素值
-    const currentPixels = cssSizeToPixels(this.currentSize, containerSize)
-    let adjustedPixels = currentPixels
-
-    // 应用最小尺寸约束
-    if (this.currentMinSize) {
-      const minPixels = cssSizeToPixels(this.currentMinSize, containerSize)
-      adjustedPixels = Math.max(adjustedPixels, minPixels)
-    }
-
-    // 应用最大尺寸约束
-    if (this.currentMaxSize) {
-      const maxPixels = cssSizeToPixels(this.currentMaxSize, containerSize)
-      adjustedPixels = Math.min(adjustedPixels, maxPixels)
-    }
-
-    // 如果调整后的尺寸与原尺寸不同，更新当前尺寸
-    if (Math.abs(adjustedPixels - currentPixels) > 1) {
-      const adjustedSize = SizeUtils.fromPixels(adjustedPixels, containerSize, this.currentSize)
-      this.internalSize.value = adjustedSize
-      this.scheduleLayoutUpdate()
     }
   }
 }

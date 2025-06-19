@@ -7,12 +7,11 @@
   @include v("split-layout", var.$split-layout-map);
 
   position: relative;
+  box-sizing: border-box;
   display: flex;
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background-color: #{css-var-value("split-layout", "bg-color")};
-  border-radius: #{css-var-value("split-layout", "border-radius")};
 
   // 垂直分割
   @include cc("split-layout", "vertical") {
@@ -22,27 +21,5 @@
   // 水平分割（默认）
   @include cc("split-layout", "horizontal") {
     flex-direction: row;
-  }
-}
-
-// 禁用状态下的分割线样式
-@include c("split-layout", "disabled") {
-  @include c("split-layout", "resizer") {
-    pointer-events: none;
-    cursor: not-allowed !important;
-  }
-}
-
-// 全局拖拽状态
-@include c("split-layout", "resizing") {
-  user-select: none;
-
-  * {
-    pointer-events: none;
-    user-select: none;
-  }
-
-  @include c("split-layout", "resizer") {
-    pointer-events: auto;
   }
 }

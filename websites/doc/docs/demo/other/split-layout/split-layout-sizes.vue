@@ -11,7 +11,7 @@ import { SplitLayout, SplitLayoutItem, SplitLayoutResizer } from '@v-md/ui'
         </div>
       </SplitLayoutItem>
       <SplitLayoutResizer />
-      <SplitLayoutItem>
+      <SplitLayoutItem auto-fill>
         <div style="display: flex; align-items: center; justify-content: center; height: 100%; padding: 20px; background: #e8f4fd;">
           <h3>自动分配剩余空间</h3>
         </div>
@@ -30,7 +30,7 @@ import { SplitLayout, SplitLayoutItem, SplitLayoutResizer } from '@v-md/ui'
         </div>
       </SplitLayoutItem>
       <SplitLayoutResizer />
-      <SplitLayoutItem>
+      <SplitLayoutItem auto-fill>
         <div style="display: flex; align-items: center; justify-content: center; height: 100%; padding: 20px; background: #fef3c7;">
           <h3>自动分配 1</h3>
         </div>
@@ -42,7 +42,7 @@ import { SplitLayout, SplitLayoutItem, SplitLayoutResizer } from '@v-md/ui'
         </div>
       </SplitLayoutItem>
       <SplitLayoutResizer />
-      <SplitLayoutItem>
+      <SplitLayoutItem auto-fill>
         <div style="display: flex; align-items: center; justify-content: center; height: 100%; padding: 20px; background: #f3e8ff;">
           <h3>自动分配 2</h3>
         </div>

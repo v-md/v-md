@@ -1,17 +1,7 @@
 @use "../../styles/function" as *;
 
 $split-layout-map: (
-  "bg-color": #{css-var-value("color", "bg-content")},
-  "border-color": #{css-var-value("color", "border")},
-  "border-radius": 0,
-  "resizer-bg-color": transparent,
-  "resizer-bg-color-hover": #{css-var-value("color", "hover")},
-  "resizer-bg-color-active": #{css-var-value("color", "active")},
-  "resizer-size": 4px,
-  "resizer-transition": background-color 0.2s,
-  "resizer-cursor-horizontal": col-resize,
-  "resizer-cursor-vertical": row-resize,
-  "panel-min-size": 50px,
-  "item-bg-color": transparent,
-  "item-overflow": hidden,
+  "resizer-bg-color": #{css-var-value("color", "border-light")},
+  "resizer-bg-color-hover": #{css-var-value("color", "border-dark")},
+  "resizer-bg-color-active": #{css-var-value("color", "border-dark")},
 );

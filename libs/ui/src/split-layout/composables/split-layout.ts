@@ -1,15 +1,18 @@
-import type { EmitFn, InjectionKey } from 'vue'
+import type { ComputedRef, EmitFn, InjectionKey } from 'vue'
 import type { NamespaceContext } from '../../config-provider'
 import type { SplitLayoutEmits, SplitLayoutProps } from '../types'
 import type { SplitLayoutItemContext } from './split-layout-item'
 import type { SplitLayoutResizerContext } from './split-layout-resizer'
-import { cssSizeToPixels, parseCssSize } from '@v-md/shared'
+import { camelCase, cssSizeToPixels } from '@v-md/shared'
+import { useElementSize } from '@vueuse/core'
 import {
+  computed,
   inject,
   onBeforeUnmount,
   provide,
   ref,
   shallowReactive,
+  watch,
 } from 'vue'
 import { useNamespace } from '../../config-provider'
 
@@ -41,211 +44,206 @@ export class SplitLayoutContext {
     return this.namespace.c('split-layout', 'resizer', ...names)
   }
 
+  /** 是否水平 */
+  isHorizontal = computed(() => this.props.direction === 'horizontal')
+
   /** 容器 DOM 元素 */
-  readonly containerEl = ref<HTMLElement>()
+  containerEl = ref<HTMLElement>()
+
+  /** 容器 DOM 元素尺寸，< 0 时表示未初始化 */
+  containerSize: ComputedRef<number>
 
   /** 面板列表 */
-  readonly items = shallowReactive<SplitLayoutItemContext[]>([])
+  items = shallowReactive<SplitLayoutItemContext[]>([])
 
   /** 分割线列表 */
-  readonly resizers = shallowReactive<SplitLayoutResizerContext[]>([])
+  resizers = shallowReactive<SplitLayoutResizerContext[]>([])
 
   constructor(props: Required<SplitLayoutProps>, emit: EmitFn<SplitLayoutEmits>) {
     this.props = props
     this.emit = emit
     this.namespace = useNamespace()
 
+    const { width, height } = useElementSize(
+      this.containerEl,
+      { width: -1, height: -1 },
+      { box: 'border-box' },
+    )
+    this.containerSize = computed(() => this.isHorizontal.value ? width.value : height.value)
+
+    // 容器尺寸变化时，自动调整空间分配
+    watch(this.containerSize, (val, oldVal) => {
+      if (oldVal < 0) {
+        // 首次初始化容器时，无需调整尺寸
+        return
+      }
+
+      this._autoResizeSpace(val - oldVal)
+    })
+
     onBeforeUnmount(() => {
-      this._clearAutoAllocateTimer()
+      this._clearResizeNotifyTimer()
+      this._clearAutoAllowcateSpaceTimer()
     })
 
     provide(SPLIT_LAYOUT_PROVIDE_KEY, this)
   }
 
-  private _autoAllocateTimer?: ReturnType<typeof setTimeout>
-
-  /** 清理自动分配定时器 */
-  private _clearAutoAllocateTimer() {
-    if (this._autoAllocateTimer) {
-      clearTimeout(this._autoAllocateTimer)
-      this._autoAllocateTimer = undefined
-    }
+  /** 获取当前所有面板的大小，单位 px */
+  getSizes(): number[] {
+    return this.items.map(item => item.size.value)
   }
 
-  /** 获取当前所有面板的大小 */
-  getSizes(): string[] {
-    return this.items.map(item => item.currentSize)
+  private _resizeNotifyTimer?: ReturnType<typeof setTimeout>
+
+  private _clearResizeNotifyTimer() {
+    if (this._resizeNotifyTimer) {
+      clearTimeout(this._resizeNotifyTimer)
+      this._resizeNotifyTimer = undefined
+    }
   }
 
   /** 通知大小变化 */
   notifyResize() {
-    this.emit('resize', this.getSizes())
-  }
+    this._clearResizeNotifyTimer()
 
-  /** 调度自动分配空间 */
-  scheduleAutoAllocateSpace() {
-    this._clearAutoAllocateTimer()
-    this._autoAllocateTimer = setTimeout(() => {
-      this.autoAllocateSpace()
-      this._autoAllocateTimer = undefined
+    this._resizeNotifyTimer = setTimeout(() => {
+      this.emit('resize', this.getSizes())
+      this._clearResizeNotifyTimer()
     }, 0)
   }
 
-  /** 获取容器信息 */
-  private getContainerInfo() {
-    const containerEl = this.items[0]?.itemEl.value?.parentElement
-    if (!containerEl) {
-      return null
+  private _autoAllowcateSpaceTimer?: ReturnType<typeof setTimeout>
+
+  /** 清理自动分配定时器 */
+  private _clearAutoAllowcateSpaceTimer() {
+    if (this._autoAllowcateSpaceTimer) {
+      clearTimeout(this._autoAllowcateSpaceTimer)
+      this._autoAllowcateSpaceTimer = undefined
     }
-
-    const isHorizontal = this.props.direction === 'horizontal'
-    const containerSize = isHorizontal ? containerEl.clientWidth : containerEl.clientHeight
-
-    if (containerSize <= 0) {
-      return null
-    }
-
-    return { containerEl, containerSize, isHorizontal }
   }
 
-  /** 计算分割线占用的总空间 */
-  private calculateResizerTotalSize(): number {
-    return this.resizers.reduce((total, resizer) => {
-      const { size } = resizer.props
+  /** 容器内元素增减时自动分配空间 */
+  autoAllowcateSpace() {
+    this._clearAutoAllowcateSpaceTimer()
 
-      if (typeof size === 'number') {
-        return total + size
-      }
-
-      if (typeof size === 'string') {
-        const parsed = parseCssSize(size)
-        return total + (parsed?.value || 0)
-      }
-
-      return total
+    this._autoAllowcateSpaceTimer = setTimeout(() => {
+      this._autoAllowcateSpace()
+      this._clearAutoAllowcateSpaceTimer()
+      this.notifyResize()
     }, 0)
   }
 
-  /** 分离固定大小和自动分配的面板 */
-  private categorizeItems() {
-    const autoItems: SplitLayoutItemContext[] = []
-    const fixedItems: SplitLayoutItemContext[] = []
+  private _autoAllowcateSpace() {
+    if (this.items.length === 0 || this.containerSize.value < 0) {
+      return
+    }
 
-    for (const item of this.items) {
-      if (!item.currentSize) {
-        autoItems.push(item)
+    /** 容器总像素 */
+    const containerPixels = this.containerSize.value
+    /** 分割线占用的像素 */
+    const resizerTotalSize = this._calculateResizerPixels()
+    /** 非 item 与 resizer 占用的像素 */
+    const othersPixels = this._calculateOthersPixels()
+    /** 已占有尺寸 */
+    let fixedPixels = 0
+    for (let i = 0; i < this.items.length; i++) {
+      const item = this.items[i]
+
+      if (item.hasInit.value) {
+        fixedPixels += item.size.value
+      }
+      else if (item.initSizeParsed.value) {
+        const { value, unit } = item.initSizeParsed.value
+        const pixels = cssSizeToPixels(`${value}${unit}`, containerPixels)
+        item.updateSize(pixels)
+        fixedPixels += item.size.value
       }
       else {
-        fixedItems.push(item)
+        const pixels = item.getElementSize()
+        item.updateSize(pixels)
+        fixedPixels += item.size.value
       }
     }
 
-    return { autoItems, fixedItems }
-  }
-
-  /** 自动分配空间 */
-  private autoAllocateSpace() {
-    if (this.items.length === 0) {
-      return
-    }
-
-    const { autoItems, fixedItems } = this.categorizeItems()
-    if (autoItems.length === 0) {
-      return
-    }
-
-    // 所有面板都需要自动分配
-    if (fixedItems.length === 0) {
-      this.allocateEqualSpace(autoItems)
-      return
-    }
-
-    const containerInfo = this.getContainerInfo()
-    if (!containerInfo) {
-      this.allocateSpaceWithoutContainer(autoItems, fixedItems)
-      return
-    }
-
-    this.allocateSpaceWithContainer(autoItems, fixedItems, containerInfo)
-  }
-
-  /** 平均分配空间 */
-  private allocateEqualSpace(items: SplitLayoutItemContext[]) {
-    const averagePercentage = 100 / items.length
-
-    items.forEach((item, index) => {
-      const size = index === items.length - 1 ?
-        `${100 - averagePercentage * index}%` : // 最后一个使用剩余空间
-        `${averagePercentage}%`
-      item.updateSize(size)
-    })
-  }
-
-  /** 基于容器尺寸分配空间 */
-  private allocateSpaceWithContainer(
-    autoItems: SplitLayoutItemContext[],
-    fixedItems: SplitLayoutItemContext[],
-    { containerSize }: { containerSize: number },
-  ) {
-    const resizerTotalSize = this.calculateResizerTotalSize()
-
-    // 计算固定面板占用的像素
-    const fixedPixels = fixedItems.reduce((total, item) => {
-      return total + cssSizeToPixels(item.currentSize, containerSize)
-    }, 0)
-
-    // 计算可用空间
-    const availablePixels = Math.max(0, containerSize - fixedPixels - resizerTotalSize)
-
-    // 空间不足时的处理
-    if (availablePixels < autoItems.length * 10) {
-      const minSize = Math.max(1, Math.floor(availablePixels / autoItems.length))
-      autoItems.forEach(item => item.updateSize(`${minSize}px`))
-      return
-    }
-
-    // 平分可用空间
-    const autoSizePixels = availablePixels / autoItems.length
-    autoItems.forEach((item, index) => {
-      const size = index === autoItems.length - 1 ?
-        `${availablePixels - autoSizePixels * index}px` : // 最后一个使用剩余空间
-        `${autoSizePixels}px`
-      item.updateSize(size)
-    })
-  }
-
-  /** 不基于容器尺寸的降级分配 */
-  private allocateSpaceWithoutContainer(
-    autoItems: SplitLayoutItemContext[],
-    fixedItems: SplitLayoutItemContext[],
-  ) {
-    // 计算固定面板占用的百分比
-    const fixedPercentage = fixedItems.reduce((total, item) => {
-      const size = item.currentSize
-      if (size.endsWith('%')) {
-        return total + Number.parseFloat(size)
+    /** 需要自动像素的容器集合 */
+    const autoFillItems = this.items.filter(item => item.props.autoFill)
+    /** 自动分配剩余像素，若剩余空间不足，则视为 0 */
+    let leftPixels = Math.max(0, containerPixels - resizerTotalSize - othersPixels - fixedPixels)
+    while (leftPixels > 0 && autoFillItems.length > 0) {
+      /** 平均分配像素 */
+      const averagePixels = leftPixels / autoFillItems.length
+      for (let i = 0; i < autoFillItems.length; i++) {
+        // 自动平分剩余空间
+        const item = autoFillItems[i]
+        const deltaPixels = item.updateSize(item.size.value + averagePixels)
+        leftPixels -= deltaPixels
+        if (deltaPixels < averagePixels) {
+          // 若分配的像素小于平均像素，说明触发了边界限制，该容器不再参与下一轮分配
+          autoFillItems.splice(i, 1)
+          i--
+        }
       }
-      // 混合单位警告
-      if (size.endsWith('px') || !Number.isNaN(Number.parseFloat(size))) {
-        console.warn('[SplitLayout] Mixed px and auto sizing may cause layout issues. Consider using consistent units.')
-      }
-      return total
-    }, 0)
+    }
+  }
 
-    // 计算剩余空间
-    const remainingPercentage = Math.max(0, Math.min(100, 100 - fixedPercentage))
+  /** 计算分割线占用的像素 */
+  private _calculateResizerPixels(): number {
+    return this.resizers.reduce((total, resizer) => total + resizer.size.value, 0)
+  }
 
-    if (autoItems.length === 0 || remainingPercentage <= 0) {
-      return
+  /** 计算非 item 与 resizer 占用的像素 */
+  private _calculateOthersPixels(): number {
+    if (!this.containerEl.value) {
+      return 0
     }
 
-    // 平分剩余空间
-    const autoPercentage = remainingPercentage / autoItems.length
-    autoItems.forEach((item, index) => {
-      const size = index === autoItems.length - 1 ?
-        `${remainingPercentage - autoPercentage * index}%` : // 最后一个使用剩余空间
-        `${autoPercentage}%`
-      item.updateSize(size)
-    })
+    const children = this.containerEl.value.children
+
+    if (children.length === this.resizers.length + this.items.length) {
+      return 0
+    }
+
+    let total = 0
+    for (let i = 0; i < children.length; i++) {
+      const child = children[i]
+
+      // item 和 resizer 元素被排除
+      if (
+        child instanceof HTMLElement &&
+        (
+          child.dataset[camelCase(this.itemClassName())] !== undefined ||
+          child.dataset[camelCase(this.resizerClassName())] !== undefined
+        )
+      ) {
+        continue
+      }
+
+      const rect = child.getBoundingClientRect()
+      total += (this.isHorizontal.value ? rect.width : rect.height)
+    }
+
+    return total
+  }
+
+  /** 当容器尺寸变化时，自动调整空间分配 */
+  private _autoResizeSpace(delta: number) {
+    const autoAdjustItems = this.items.filter(item => item.props.autoAdjust)
+    let leftPixels = delta
+    while (leftPixels !== 0 && autoAdjustItems.length > 0) {
+      /** 平均分配像素 */
+      const averagePixels = leftPixels / autoAdjustItems.length
+      for (let i = 0; i < autoAdjustItems.length; i++) {
+        // 自动平分剩余空间
+        const item = autoAdjustItems[i]
+        const deltaPixels = item.updateSize(item.size.value + averagePixels)
+        leftPixels -= deltaPixels
+        if (Math.abs(deltaPixels) < Math.abs(averagePixels)) {
+          // 若分配的像素小于平均像素，说明触发了边界限制，该容器不再参与下一轮分配
+          autoAdjustItems.splice(i, 1)
+          i--
+        }
+      }
+    }
   }
 }

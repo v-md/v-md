@@ -9,19 +9,19 @@ $colors-map:  map.deep-merge(
     "warning": #e6a23c,
     "danger": #f56c6c,
     "info": #909399,
-    // hover 颜色
     "hover": #e1e4e8,
-    // 背景颜色
     "bg-content": #fff,
     "bg-panel": #f3f3f3,
     "bg-nav": #e8e8e8,
-    // 文字颜色
     "text-primary": #303133,
     "text-regular": #606266,
     "text-secondary": #909399,
     "text-placeholder": #c0c4cc,
-    // 边框颜色
-    "border": #e4e7ed,
+    "border": #dcdfe6,
+    "border-light": #e4e7ed,
+    "border-lighter": #ebeef5,
+    "border-dark": "#d4d7de",
+    "border-darker": "#cdd0d6",
   ),
   $colors
 );

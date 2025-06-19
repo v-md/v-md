@@ -8,25 +8,25 @@
   flex-grow: 0;
   flex-shrink: 0;
   user-select: none;
-  background-color: #{css-var-value("split-layout", "resizer-bg-color")};
-  transition: #{css-var-value("split-layout", "resizer-transition")};
+  background-color: #{css-var-value("split-layout", "resizer", "bg-color")};
+  transition: background-color 0.2s;
 
   // 悬停状态
   &:hover {
-    background-color: #{css-var-value("split-layout", "resizer-bg-color-hover")};
+    background-color: #{css-var-value("split-layout", "resizer", "bg-color-hover")};
   }
 
   // 激活状态
-  @include cc("split-layout-resizer", "active") {
-    background-color: #{css-var-value("split-layout", "resizer-bg-color-active")};
+  @include cc("split-layout", "resizer", "active") {
+    background-color: #{css-var-value("split-layout", "resizer", "bg-color-active")};
   }
 
   // 禁用状态
-  @include cc("split-layout-resizer", "disabled") {
-    cursor: not-allowed !important;
+  @include cc("split-layout", "resizer", "disabled") {
+    cursor: default !important;
 
     &:hover {
-      background-color: #{css-var-value("split-layout", "resizer-bg-color")};
+      background-color: #{css-var-value("split-layout", "resizer", "bg-color")};
     }
   }
 }
@@ -34,9 +34,8 @@
 // 水平布局下的分割线样式
 @include c("split-layout", "horizontal") {
   @include c("split-layout", "resizer") {
-    width: #{css-var-value("split-layout", "resizer-size")};
     height: 100%;
-    cursor: #{css-var-value("split-layout", "resizer-cursor-horizontal")};
+    cursor: col-resize;
 
     // 增加触控区域
     &::before {
@@ -55,8 +54,7 @@
 @include c("split-layout", "vertical") {
   @include c("split-layout", "resizer") {
     width: 100%;
-    height: #{css-var-value("split-layout", "resizer-size")};
-    cursor: #{css-var-value("split-layout", "resizer-cursor-vertical")};
+    cursor: row-resize;
 
     // 增加触控区域
     &::before {

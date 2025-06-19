@@ -4,7 +4,7 @@ import { ref } from 'vue'
 
 const splitLayoutRef = ref()
 const itemRef = ref()
-const currentSizes = ref<string[]>([])
+const currentSizes = ref<number[]>([])
 
 function getSizes() {
   if (splitLayoutRef.value) {
@@ -56,12 +56,9 @@ setTimeout(getSizes, 100)
       </button>
     </div>
 
-    <div style=" padding: 15px;margin-top: 10px; background: #f9f9f9; border-radius: 4px;">
-      <p style="margin: 0;">
-        <strong>当前面板大小：</strong>
-      </p>
-      <p style="margin: 5px 0; font-family: monospace; color: #666;">
-        {{ currentSizes.length ? currentSizes.join(', ') : '点击"获取当前大小"按钮' }}
+    <div style=" padding: 10px;margin-top: 15px; background: #f0f0f0; border-radius: 4px;">
+      <p style="margin: 0; font-size: 14px; color: #666;">
+        当前面板大小: {{ currentSizes.length ? currentSizes.map(size => `${size}px`).join(' | ') : '加载中...' }}
       </p>
     </div>
   </div>

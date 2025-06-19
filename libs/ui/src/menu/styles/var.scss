@@ -6,7 +6,7 @@ $menu-map:  map.deep-merge(
   (
     "bg-color": #{css-var-value("color", "bg-content")},
     "bg-color-active": #{css-var-value("color", "hover")},
-    "border-color": #{css-var-value("color", "border")},
+    "border-color": #{css-var-value("color", "border-light")},
     "border-radius": 4px,
     "icon-size": 16px,
     "icon-color": #{css-var-value("color", "text-primary")},

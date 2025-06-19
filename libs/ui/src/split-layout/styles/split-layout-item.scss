@@ -7,7 +7,5 @@
   position: relative;
   flex-grow: 0;
   flex-shrink: 0;
-  overflow: #{css-var-value("split-layout", "item-overflow")};
-  background-color: #{css-var-value("split-layout", "item-bg-color")};
-  border-radius: #{css-var-value("split-layout", "border-radius")};
+  overflow: hidden;
 }

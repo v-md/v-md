@@ -3,10 +3,10 @@ import { SplitLayout, SplitLayoutItem, SplitLayoutResizer } from '@v-md/ui'
 import { ref } from 'vue'
 
 const resizeCount = ref(0)
-const currentSizes = ref<string[]>([])
+const currentSizes = ref<number[]>([])
 const isResizing = ref(false)
 
-function handleResize(sizes: string[]) {
+function handleResize(sizes: number[]) {
   resizeCount.value++
   currentSizes.value = [...sizes]
 }
@@ -48,7 +48,7 @@ function handleResizeEnd() {
         调整次数: {{ resizeCount }}
       </p>
       <p style="margin: 5px 0; color: #666;">
-        当前大小: {{ currentSizes.length ? currentSizes.join(', ') : '未调整' }}
+        当前大小: {{ currentSizes.length ? currentSizes.map(size => `${size}px`).join(', ') : '未调整' }}
       </p>
       <p style="margin: 5px 0; color: #666;">
         拖拽状态: <span :style="{ color: isResizing ? '#f56c6c' : '#67c23a' }">

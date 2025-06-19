@@ -22,7 +22,7 @@ export interface SplitLayoutEmits {
    * 大小调整事件
    * @param sizes 新的大小比例数组
    */
-  resize: [sizes: string[]]
+  resize: [sizes: number[]]
 }
 
 export interface SplitLayoutSlots {
@@ -36,5 +36,5 @@ export interface SplitLayoutExpose {
   /**
    * 获取当前所有面板的大小
    */
-  getSizes: () => string[]
+  getSizes: () => number[]
 }

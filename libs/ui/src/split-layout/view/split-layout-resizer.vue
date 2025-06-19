@@ -2,7 +2,6 @@
 import type { SplitLayoutResizerEmits, SplitLayoutResizerExpose, SplitLayoutResizerProps } from '../types'
 import { computed } from 'vue'
 import { SplitLayoutResizerContext } from '../composables'
-import { ResizerSizeNormalizer } from '../composables/utils'
 import { defaultSplitLayoutResizerProps } from '../types'
 
 const props = withDefaults(
@@ -12,16 +11,10 @@ const props = withDefaults(
 
 const emit = defineEmits<SplitLayoutResizerEmits>()
 
-// 标准化分割线大小值
-const normalizedSize = computed(() => ResizerSizeNormalizer.normalize(props.size))
-
 // 创建组件上下文
-const context = new SplitLayoutResizerContext({
-  ...props,
-  size: normalizedSize.value,
-}, emit)
+const context = new SplitLayoutResizerContext(props, emit)
 
-const { resizerEl, isResizing } = context
+const { resizerEl, isResizing, size } = context
 
 function c(...names: string[]) {
   return context.layout.resizerClassName(...names)
@@ -34,11 +27,13 @@ function handleResizeStart(event: MouseEvent | TouchEvent) {
 
 // 计算样式
 const resizerStyle = computed(() => ({
-  flexBasis: normalizedSize.value,
+  flexBasis: `${size.value}px`,
 }))
 
 // 暴露方法
-const expose: SplitLayoutResizerExpose = {}
+const expose: SplitLayoutResizerExpose = {
+  move: offset => context.move(offset),
+}
 
 defineExpose(expose)
 </script>
