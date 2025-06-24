@@ -1,7 +1,12 @@
 @use "../../styles/function" as *;
+@use "sass:map";
 
-$split-layout-map: (
-  "resizer-bg-color": #{css-var-value("color", "border-light")},
-  "resizer-bg-color-hover": #{css-var-value("color", "border-dark")},
-  "resizer-bg-color-active": #{css-var-value("color", "border-dark")},
+$split-layout: () !default;
+$split-layout-map: map.deep-merge(
+  (
+    "resizer-bg-color": #{css-var-value("color", "border-light")},
+    "resizer-bg-color-hover": #{css-var-value("color", "border-dark")},
+    "resizer-bg-color-active": #{css-var-value("color", "border-dark")},
+  ),
+  $split-layout
 );

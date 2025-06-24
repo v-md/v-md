@@ -1,5 +1,5 @@
 import type { Func } from '@v-md/shared'
-import type { Editor } from '../editor/model/editor'
+import type { Editor } from '../editor/models/editor'
 import type { Plugin } from '../plugin'
 
 export interface PluginDefineOptions<
@@ -19,9 +19,8 @@ export interface PluginEvents {
    *
    * 不支持异步返回。
    * @param editor 编辑器对象
-   * @param plugin 当前注册的插件
    */
-  onRegistered?: (editor: Editor, plugin: Plugin) => void
+  onRegistered?: (editor: Editor) => void
 
   /**
    * 插件从编辑器中移除前触发。
@@ -30,7 +29,7 @@ export interface PluginEvents {
    * @param editor 编辑器对象
    * @param plugin 当前移除的插件
    */
-  onRemove?: (editor: Editor, plugin: Plugin) => void
+  onRemove?: (editor: Editor) => void
 }
 
 /** 获取某个插件钩子的参数 */

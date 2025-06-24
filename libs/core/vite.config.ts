@@ -1,6 +1,7 @@
 import type {
   UserConfig,
 } from '../../build/vite'
+import { join } from 'node:path'
 import {
   defineConfig,
   dtsPlugin,
@@ -9,6 +10,8 @@ import {
   vue,
 } from '../../build/vite'
 import { vitestBaseConfig } from '../../build/vitest'
+
+console.log(join(__dirname, '..', 'ui/src/styles'))
 
 /**
  * // https://vitejs.dev/config/
@@ -26,6 +29,11 @@ export default defineConfig(async () => {
       tsconfigPath(),
     ],
     test: vitestBaseConfig({ name: 'core' }),
+    resolve: {
+      alias: {
+        '@v-md/ui/styles': join(__dirname, '..', 'ui/src/styles'),
+      },
+    },
     build: {
       lib: {
         entry: {

@@ -2,7 +2,7 @@ import { EDITOR_MODEL_NAMES } from '../../editor/utils/model-names'
 import { Model } from '../../model'
 import { Slot } from '../../slot'
 
-export class LayoutTop extends Model {
+export class LayoutTopModel extends Model {
   /** 插槽对象 */
   slots = {
     left: new Slot(),

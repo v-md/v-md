@@ -1,0 +1,6 @@
+@use "../../../styles/mixins" as *;
+@use "../../../styles/function" as *;
+
+@include c("layout-main-panel") {
+  background-color: #{css-var-value("layout", "main-panel-bg-color")};
+}

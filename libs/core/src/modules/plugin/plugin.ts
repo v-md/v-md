@@ -1,4 +1,4 @@
-import type { Editor } from '../editor/model/editor'
+import type { Editor } from '../editor/models/editor'
 import type {
   PluginDefineOptions,
   PluginEventParams,
@@ -9,7 +9,7 @@ import { reactive } from 'vue'
 import { EDITOR_ERR_MSG } from '../editor/utils/err-msg'
 
 export function definePlugin<O extends Record<string, any> = Record<string, any>>(options: PluginDefineOptions<O>) {
-  return new Plugin(options)
+  return new Plugin<O>(options)
 }
 
 export class Plugin<O extends Record<string, any> = Record<string, any>> {

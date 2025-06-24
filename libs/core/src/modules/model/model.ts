@@ -1,4 +1,4 @@
-import type { Editor } from '../editor/model/editor'
+import type { Editor } from '../editor/models/editor'
 import { EDITOR_ERR_MSG } from '../editor/utils/err-msg'
 
 export class Model {

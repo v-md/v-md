@@ -1,0 +1,10 @@
+@use "../../../styles/mixins" as *;
+@use "../../../styles/function" as *;
+@use "./var";
+
+@include c("layout") {
+  @include v("layout", var.$layout-map);
+
+  display: flex;
+  flex-direction: column;
+}

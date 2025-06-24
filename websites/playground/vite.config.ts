@@ -1,3 +1,4 @@
+import { join } from 'node:path'
 import { env } from 'node:process'
 import { nodePolyfills } from 'vite-plugin-node-polyfills'
 import tsconfigPaths from 'vite-tsconfig-paths'
@@ -30,6 +31,11 @@ export default defineConfig({
       },
     }),
   ],
+  resolve: {
+    alias: {
+      '@v-md/ui/styles': join(__dirname, '../..', 'libs/ui/src/styles'),
+    },
+  },
   optimizeDeps: {
     exclude: [
       // @v-md/plugin-lang-sass 插件引入时，要解决 sass 的依赖产物问题

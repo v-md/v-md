@@ -1,0 +1,14 @@
+@use "../../../styles/mixins" as *;
+@use "../../../styles/function" as *;
+
+@include c("layout-center") {
+  display: flex;
+  flex-grow: 1;
+  height: 0;
+
+  @include cd("split-layout") {
+    flex-grow: 1;
+    width: 0;
+    overflow-x: auto;
+  }
+}

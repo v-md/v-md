@@ -1,0 +1,23 @@
+@use "../../../styles/mixins" as *;
+@use "../../../styles/function" as *;
+
+@include c("layout-activity") {
+  display: flex;
+  flex-shrink: 0;
+  flex-direction: column;
+  gap: 16px;
+  justify-content: space-between;
+  width: #{css-var-value("layout", "activity-width")};
+  background-color: #{css-var-value("layout", "activity-bg-color")};
+  border-right: 1px solid #{css-var-value("layout", "activity-border-color")};
+}
+
+@include c("layout-activity", "top") {
+  flex-grow: 1;
+  height: 0;
+  overflow-y: auto;
+}
+
+@include c("layout-activity", "bottom") {
+  flex-shrink: 0;
+}

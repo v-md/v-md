@@ -1,4 +1,4 @@
-export const a = 1
+export * from './config-provider'
 export * from './icon'
 export * from './locale'
 export * from './menu'

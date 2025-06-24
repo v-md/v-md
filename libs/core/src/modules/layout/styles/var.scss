@@ -1,0 +1,31 @@
+@use "../../../styles/function" as *;
+@use "sass:map";
+
+$layout: () !default;
+$layout-map: map.deep-merge(
+  (
+    "top-bg-color": #{css-var-value("color", "bg-nav")},
+    "top-border-color": #{css-var-value("color", "border")},
+    "top-height": 36px,
+    "bottom-bg-color": #{css-var-value("color", "bg-nav")},
+    "bottom-border-color": #{css-var-value("color", "border")},
+    "bottom-height": 22px,
+    "activity-bg-color": #{css-var-value("color", "bg-nav")},
+    "activity-border-color": #{css-var-value("color", "border")},
+    "activity-width": 48px,
+    "activity-badge-color": #{css-var-value("color", "primary")},
+    "activity-tab-color-active": #{css-var-value("color", "primary")},
+    "activity-icon-color": #{css-var-value("color", "text-secondary")},
+    "activity-icon-color-hover": #{css-var-value("color", "text-regular")},
+    "activity-icon-color-active": #{css-var-value("color", "text-primary")},
+    "activity-icon-size": 24px,
+    "side-main-bg-color": #{css-var-value("color", "bg-panel")},
+    "side-main-border-color": #{css-var-value("color", "border")},
+    "side-sub-bg-color": #{css-var-value("color", "bg-panel")},
+    "side-sub-border-color": #{css-var-value("color", "border")},
+    "main-content-bg-color": #{css-var-value("color", "bg-content")},
+    "main-panel-bg-color": #{css-var-value("color", "bg-content")},
+    "main-panel-border-color": #{css-var-value("color", "border")},
+  ),
+  $layout
+);

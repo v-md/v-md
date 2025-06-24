@@ -12,6 +12,12 @@
   }
 }
 
+@mixin cd($args...) {
+  & > .#{class-name($args...)} {
+    @content;
+  }
+}
+
 @mixin v($name, $var-map) {
   @each $key, $value in $var-map {
     #{css-var-name($name, $key)}: #{$value};

@@ -1,0 +1,30 @@
+@use "../../../styles/mixins" as *;
+@use "../../../styles/function" as *;
+
+@include c("layout-top") {
+  display: flex;
+  flex-shrink: 0;
+  gap: 16px;
+  align-items: center;
+  justify-content: space-between;
+  height: #{css-var-value("layout", "top-height")};
+  background-color: #{css-var-value("layout", "top-bg-color")};
+  border-bottom: 1px solid #{css-var-value("layout", "top-border-color")};
+}
+
+@include c("layout-top", "left") {
+  display: flex;
+  flex-grow: 1;
+  width: 0;
+}
+
+@include c("layout-top", "right") {
+  display: flex;
+  flex-grow: 1;
+  justify-content: flex-end;
+  width: 0;
+}
+
+@include c("layout-top", "center") {
+  flex-shrink: 0;
+}

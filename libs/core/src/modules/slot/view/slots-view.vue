@@ -1,16 +1,9 @@
 <script setup lang="ts">
-import type { Slot } from '../slot'
-import { onBeforeUnmount } from 'vue'
+import type { Slot } from '../model/slot'
 
-const props = defineProps<{
+defineProps<{
   data: Slot
 }>()
-
-props.data.setup()
-
-onBeforeUnmount(() => {
-  props.data.unmount()
-})
 </script>
 
 <template>
@@ -18,6 +11,3 @@ onBeforeUnmount(() => {
     <component :is="item.renderComponent" v-if="item.renderComponent" />
   </template>
 </template>
-
-<style scoped lang="scss">
-</style>

@@ -2,7 +2,11 @@ import type {
   DynamicImportResolver,
   SequencePositionOptions,
 } from '@v-md/shared'
-import type { App, Component } from 'vue'
+import type {
+  App,
+  Component,
+  HTMLAttributes,
+} from 'vue'
 import type { Model } from '../../model'
 import type {
   Plugin,
@@ -16,27 +20,26 @@ import {
   removeFromSequence,
   resolveDynamicImport,
 } from '@v-md/shared'
-import { Locale } from '@v-md/ui'
+import { ConfigProvider } from '@v-md/ui'
 import {
   createApp,
   defineComponent,
   h,
   provide,
+  ref,
+  shallowRef,
 } from 'vue'
 import { EDITOR_ERR_MSG } from '../utils/err-msg'
-import { editorModelPreset } from '../utils/preset'
-import { PROVIDE_KEY } from '../utils/use'
+import { EDITOR_PROVIDE_KEY } from '../utils/use'
 
 export class Editor {
-  /**
-   * 创建编辑器实例
-   * @param preset 是否按照预设模式创建子模块。默认为 true
-   */
-  constructor(preset: boolean = true) {
-    if (preset) {
-      editorModelPreset(this)
-    }
-  }
+  constructor() {}
+
+  /** 编辑器根元素的 HTML 属性 */
+  attrs = shallowRef<HTMLAttributes>({})
+
+  /** 命名空间 */
+  namespace = ref('vmd')
 
   /** 编辑器应用 Vue APP 实例 */
   vueApp: App | null = null
@@ -56,7 +59,7 @@ export class Editor {
     const editor = this
     const templateGetter: DynamicImportResolver<Component> =
       template ||
-      (() => import('../view/editor.vue').then(res => res.default))
+      (() => import('../../layout').then(res => res.Layout))
 
     return new Promise<Editor>((resolve, reject) => {
       let target: HTMLElement | null = null
@@ -72,14 +75,18 @@ export class Editor {
         return
       }
 
-      resolveDynamicImport(templateGetter).then((EditorApp) => {
+      resolveDynamicImport(templateGetter).then((EditorLayout) => {
         const Comp = defineComponent({
           setup() {
-            provide(PROVIDE_KEY, editor)
+            provide(EDITOR_PROVIDE_KEY, editor)
             resolve(editor)
           },
           render() {
-            return h(EditorApp)
+            return h(ConfigProvider, {
+              namespace: editor.namespace.value,
+            }, {
+              default: () => h(EditorLayout, editor.attrs.value),
+            })
           },
         })
 
@@ -124,7 +131,7 @@ export class Editor {
 
     if (isSuccess) {
       plugin.bind(this)
-      this.triggerSync('onRegistered', this, plugin)
+      this.triggerSync('onRegistered', this)
     }
     return this
   }
@@ -140,7 +147,7 @@ export class Editor {
         logger.warn(EDITOR_ERR_MSG.PLUGIN_NOT_FOUND(name))
       },
       onBeforeRemove: (targetPlugin) => {
-        this.triggerSync('onRemove', this, targetPlugin)
+        this.triggerSync('onRemove', this)
         targetPlugin.unbind()
       },
     })

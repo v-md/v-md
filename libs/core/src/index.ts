@@ -8,7 +8,8 @@ export * from './modules-o/monaco'
 export * from './modules-o/toolbar'
 
 export * from './modules/editor'
-export * from './modules/layout-top'
+export * from './modules/layout'
 export * from './modules/plugin'
+export * from './plugins/basic'
 
 export * from '@v-md/renderer'

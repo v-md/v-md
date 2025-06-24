@@ -1,8 +1,6 @@
 // 仅导出可供外部使用的 API
-export * from './model/editor'
+export * from './models'
 
-export * from './types/editor'
+export * from './types'
 
-export * from './utils/err-msg'
-export * from './utils/model-names'
-export * from './utils/use'
+export * from './utils'

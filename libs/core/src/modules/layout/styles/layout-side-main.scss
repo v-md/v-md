@@ -1,0 +1,10 @@
+@use "../../../styles/mixins" as *;
+@use "../../../styles/function" as *;
+
+@include c("layout-side-main") {
+  background-color: #{css-var-value("layout", "side-main-bg-color")};
+}
+
+@include c("layout-side-main", "border") {
+  color: #{css-var-value("layout", "side-main-border-color")};
+}
