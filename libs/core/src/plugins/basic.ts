@@ -14,8 +14,17 @@ export interface PluginBasicOptions {
    */
   namespace?: string
 
-  /** 编辑器根元素的 HTML 属性 */
+  /**
+   * 编辑器根元素的 HTML 属性
+   * @default {}
+   */
   attrs?: HTMLAttributes
+
+  /**
+   * 默认活动项
+   * @default 'explorer'
+   */
+  defaultActivity?: string
 }
 
 export function pluginBasic(options?: PluginBasicOptions) {
@@ -29,7 +38,18 @@ export function pluginBasic(options?: PluginBasicOptions) {
       editor.addModel(new Locale())
         .addModel(new LayoutTopModel())
         .addModel(new LayoutBottomModel())
-        .addModel(new LayoutActivityModel())
+
+      const layoutActivity = new LayoutActivityModel()
+      layoutActivity.currentActivity.value = plugin.options.defaultActivity || 'explorer'
+      layoutActivity.slots.tab.addItem({
+        name: 'explorer',
+        component: () => import('../modules/activity').then(m => m.ActivityExplorer),
+      }).addItem({
+        name: 'search',
+        component: () => import('../modules/activity').then(m => m.ActivitySearch),
+      })
+
+      editor.addModel(layoutActivity)
     },
   })
   return plugin

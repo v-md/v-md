@@ -3,8 +3,12 @@ import type { IconProps } from '../types/icon'
 import { computed } from 'vue'
 import { useDynamicImport } from '../../common'
 import { useNamespace } from '../../config-provider'
+import { defaultIconProps } from '../types/icon'
 
-const props = defineProps<IconProps>()
+const props = withDefaults(
+  defineProps<IconProps>(),
+  defaultIconProps(),
+)
 
 const { c, v } = useNamespace()
 

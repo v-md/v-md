@@ -2,9 +2,11 @@
 @use "../../../styles/function" as *;
 @use "./var";
 
-@include c("layout") {
+:root {
   @include v("layout", var.$layout-map);
+}
 
+@include c("layout") {
   display: flex;
   flex-direction: column;
 }

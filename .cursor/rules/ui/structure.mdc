@@ -35,7 +35,9 @@ libs/ui/
 component/                  # 组件目录（示例名称）
 ├── assets/               # 组件资源文件（如 SVG 图标）
 ├── composables/         # 组件组合式函数
-│   └── index.ts        # 组合式函数导出
+│   ├── index.ts        # 组合式函数导出
+│   ├── xxx.ts        # 组合式函数实现
+│   └── ...        # 更多组合式函数实现
 ├── styles/              # 组件样式
 │   ├── var.scss        # 组件样式变量
 │   ├── component.scss  # 组件样式实现
@@ -44,7 +46,8 @@ component/                  # 组件目录（示例名称）
 │   ├── index.ts        # 类型定义导出
 │   ├── component.ts    # 组件类型定义（包含 props、emits、slots、model、expose）
 │   └── component-xxx.ts    # 子组件类型定义
-├── view/                # 组件视图
+├── views/                # 组件视图
+│   ├── index.ts        # 组件导出
 │   ├── component.vue   # 组件实现
 │   └── component-xxx.vue   # 子组件实现
 ├── __tests__/          # 组件测试

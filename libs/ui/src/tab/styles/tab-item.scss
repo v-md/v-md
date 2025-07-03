@@ -1,0 +1,24 @@
+@use "../../styles/mixins" as *;
+@use "../../styles/function" as *;
+
+@include c("tab", "item") {
+  flex-shrink: 0;
+  list-style: none;
+  cursor: pointer;
+
+  @include cc("tab", "item", "active") {
+    color: #{css-var-value("tab", "color-active")};
+    background-color: #{css-var-value("tab", "bg-color-active")};
+  }
+
+  @include cc("tab", "item", "disabled") {
+    color: #{css-var-value("tab", "color-disabled")};
+    cursor: not-allowed;
+    background-color: #{css-var-value("tab", "bg-color-disabled")};
+  }
+
+  &:hover {
+    color: #{css-var-value("tab", "color-hover")};
+    background-color: #{css-var-value("tab", "bg-color-hover")};
+  }
+}

@@ -1,4 +1,6 @@
 import type { InferVueDefaults } from '../../common'
+import type { MenuContext } from '../composables'
+import type Menu from '../views/menu.vue'
 
 export interface MenuProps {
   /**
@@ -16,3 +18,13 @@ export function defaultMenuProps() {
     collapseDelay: 300,
   } satisfies InferVueDefaults<MenuProps>
 }
+
+export interface MenuEmits {
+  /**
+   * 初始化事件
+   * @param context 菜单上下文
+   */
+  setup: [context: MenuContext]
+}
+
+export type MenuInstance = InstanceType<typeof Menu>

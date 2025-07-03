@@ -3,12 +3,15 @@ import type { NamespaceContext } from '../../config-provider'
 import type { SplitLayoutEmits, SplitLayoutProps } from '../types'
 import type { SplitLayoutItemContext } from './split-layout-item'
 import type { SplitLayoutResizerContext } from './split-layout-resizer'
-import { camelCase, cssSizeToPixels } from '@v-md/shared'
+import {
+  camelCase,
+  cssSizeToPixels,
+  debounce,
+} from '@v-md/shared'
 import { useElementSize } from '@vueuse/core'
 import {
   computed,
   inject,
-  onBeforeUnmount,
   provide,
   ref,
   shallowReactive,
@@ -74,16 +77,11 @@ export class SplitLayoutContext {
     // 容器尺寸变化时，自动调整空间分配
     watch(this.containerSize, (val, oldVal) => {
       if (oldVal < 0) {
-        // 首次初始化容器时，无需调整尺寸
+        this.autoAllowcateSpace()
         return
       }
 
       this._autoResizeSpace(val - oldVal)
-    })
-
-    onBeforeUnmount(() => {
-      this._clearResizeNotifyTimer()
-      this._clearAutoAllowcateSpaceTimer()
     })
 
     provide(SPLIT_LAYOUT_PROVIDE_KEY, this)
@@ -94,45 +92,15 @@ export class SplitLayoutContext {
     return this.items.map(item => item.size.value)
   }
 
-  private _resizeNotifyTimer?: ReturnType<typeof setTimeout>
-
-  private _clearResizeNotifyTimer() {
-    if (this._resizeNotifyTimer) {
-      clearTimeout(this._resizeNotifyTimer)
-      this._resizeNotifyTimer = undefined
-    }
-  }
-
   /** 通知大小变化 */
-  notifyResize() {
-    this._clearResizeNotifyTimer()
-
-    this._resizeNotifyTimer = setTimeout(() => {
-      this.emit('resize', this.getSizes())
-      this._clearResizeNotifyTimer()
-    }, 0)
-  }
-
-  private _autoAllowcateSpaceTimer?: ReturnType<typeof setTimeout>
-
-  /** 清理自动分配定时器 */
-  private _clearAutoAllowcateSpaceTimer() {
-    if (this._autoAllowcateSpaceTimer) {
-      clearTimeout(this._autoAllowcateSpaceTimer)
-      this._autoAllowcateSpaceTimer = undefined
-    }
-  }
+  notifyResize = debounce(() => {
+    this.emit('resize', this.getSizes())
+  }, 0)
 
   /** 容器内元素增减时自动分配空间 */
-  autoAllowcateSpace() {
-    this._clearAutoAllowcateSpaceTimer()
-
-    this._autoAllowcateSpaceTimer = setTimeout(() => {
-      this._autoAllowcateSpace()
-      this._clearAutoAllowcateSpaceTimer()
-      this.notifyResize()
-    }, 0)
-  }
+  autoAllowcateSpace = debounce(() => {
+    this._autoAllowcateSpace()
+  }, 0)
 
   private _autoAllowcateSpace() {
     if (this.items.length === 0 || this.containerSize.value < 0) {

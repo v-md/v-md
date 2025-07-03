@@ -32,10 +32,7 @@ export class SplitLayoutResizerContext {
   /** 分割线实际宽度，单位 px */
   size = computed(() => {
     const parsed = parseCssSize(this.props.size || '')
-    if (!parsed) {
-      return 0
-    }
-    else if (parsed.unit === 'px') {
+    if (parsed?.unit === 'px') {
       return parsed.value
     }
     return 0
@@ -75,10 +72,12 @@ export class SplitLayoutResizerContext {
     }
 
     this._insertIntoResizerList(el)
+    this.layout.autoAllowcateSpace()
   }
 
   unmount() {
     this._removeFromResizerList()
+    this.layout.autoAllowcateSpace()
     this._clearResizeState()
   }
 

@@ -20,7 +20,6 @@ const props = withDefaults(
 )
 
 defineSlots<MenuItemSlots>()
-
 const { c: className } = useNamespace()
 
 function c(...names: string[]) {

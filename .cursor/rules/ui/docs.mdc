@@ -87,7 +87,7 @@ websites/doc/docs/
 描述基础用法，展示组件的核心功能
 
 :::demo
-../demo/组件分类/组件名/组件名-basic.vue
+../../demo/组件分类/组件名/组件名-basic.vue
 :::
 
 ## 功能1
@@ -95,7 +95,7 @@ websites/doc/docs/
 描述功能1的用途和使用场景
 
 :::demo
-../demo/组件分类/组件名/组件名-功能1.vue
+../../demo/组件分类/组件名/组件名-功能1.vue
 :::
 
 ## 功能2
@@ -103,7 +103,7 @@ websites/doc/docs/
 描述功能2的用途和使用场景
 
 :::demo
-../demo/组件分类/组件名/组件名-功能2.vue
+../../demo/组件分类/组件名/组件名-功能2.vue
 :::
 
 ## API

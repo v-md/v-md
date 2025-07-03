@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { MenuProps } from '../types'
+import type { MenuEmits, MenuProps } from '../types'
 import { useNamespace } from '../../config-provider'
 import { MenuContext } from '../composables'
 import { defaultMenuProps } from '../types'
@@ -9,8 +9,10 @@ const props = withDefaults(
   defaultMenuProps(),
 )
 
+const emit = defineEmits<MenuEmits>()
+
 const { c } = useNamespace()
-MenuContext.setup(props)
+MenuContext.setup(props, emit)
 </script>
 
 <template>

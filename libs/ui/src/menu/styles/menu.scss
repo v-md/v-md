@@ -2,9 +2,11 @@
 @use "../../styles/function" as *;
 @use "./var";
 
-@include c("menu") {
+:root {
   @include v("menu", var.$menu-map);
+}
 
+@include c("menu") {
   box-sizing: border-box;
   padding: #{css-var-value("menu", "padding")};
   margin: 0;

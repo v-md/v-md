@@ -1,4 +1,5 @@
 import type { InferVueDefaults } from '../../common'
+import type SplitLayoutItem from '../views/split-layout-item.vue'
 
 export interface SplitLayoutItemProps {
   /**
@@ -85,3 +86,5 @@ export interface SplitLayoutItemExpose {
    */
   updateSize: (size: number | string) => number
 }
+
+export type SplitLayoutItemInstance = InstanceType<typeof SplitLayoutItem>

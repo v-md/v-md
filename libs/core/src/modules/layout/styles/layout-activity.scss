@@ -12,6 +12,17 @@
   border-right: 1px solid #{css-var-value("layout", "activity-border-color")};
 }
 
+@include c("layout-activity", "slot") {
+  @include c("tab", "item") {
+    padding: #{css-var-value("layout", "activity-tab-item-padding")};
+    font-size: 0;
+  }
+
+  @include c("icon") {
+    font-size: #{css-var-value("layout", "activity-icon-size")};
+  }
+}
+
 @include c("layout-activity", "top") {
   flex-grow: 1;
   height: 0;

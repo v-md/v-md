@@ -1,5 +1,6 @@
 import type { DynamicImportResolver } from '@v-md/shared'
 import type { ImgHTMLAttributes } from 'vue'
+import type { InferVueDefaults } from '../../common'
 
 export interface IconProps {
   /**
@@ -21,3 +22,10 @@ export interface IconProps {
 }
 
 export type IconPropsWithAttrs = IconProps & ImgHTMLAttributes
+
+export function defaultIconProps() {
+  return {
+    type: 'svg',
+    url: '',
+  } satisfies InferVueDefaults<IconProps>
+}

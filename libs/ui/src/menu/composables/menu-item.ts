@@ -19,8 +19,7 @@ const DATASET_KEY = 'vmdMenuItem'
 
 export class MenuItemContext {
   menu: MenuContext
-
-  props: Required<MenuItemProps>
+  readonly props: Required<MenuItemProps>
 
   /** 子组件在组件列表中的索引 */
   index = -1

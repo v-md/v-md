@@ -1,6 +1,7 @@
 import type { LiHTMLAttributes } from 'vue'
 import type { InferVueDefaults } from '../../common'
 import type { IconPropsWithAttrs } from '../../icon'
+import type MenuItem from '../views/menu-item.vue'
 
 export interface MenuItemProps {
   /**
@@ -86,3 +87,5 @@ export interface MenuItemSlots {
   /** 默认插槽，弹出浮动窗中的内容 */
   default: () => any
 }
+
+export type MenuItemInstance = InstanceType<typeof MenuItem>

@@ -1,0 +1,17 @@
+@use "../../styles/function" as *;
+@use "sass:map";
+
+$tab: () !default;
+$tab-map: map.deep-merge(
+  (
+    "color": #{css-var-value("color", "text-secondary")},
+    "color-hover": #{css-var-value("color", "text-primary")},
+    "color-active": #{css-var-value("color", "text-primary")},
+    "color-disabled": #{css-var-value("color", "text-secondary")},
+    "bg-color": transparent,
+    "bg-color-hover": transparent,
+    "bg-color-active": transparent,
+    "bg-color-disabled": transparent,
+  ),
+  $tab
+);

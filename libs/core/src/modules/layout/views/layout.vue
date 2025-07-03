@@ -18,6 +18,6 @@ function c(...names: string[]) {
   </div>
 </template>
 
-<style scoped lang="scss">
+<style lang="scss">
 @use "../styles/layout";
 </style>

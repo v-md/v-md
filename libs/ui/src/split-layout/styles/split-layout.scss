@@ -2,10 +2,12 @@
 @use "../../styles/function" as *;
 @use "./var";
 
+:root {
+  @include v("split-layout", var.$split-layout-map);
+}
+
 // 主容器样式
 @include c("split-layout") {
-  @include v("split-layout", var.$split-layout-map);
-
   position: relative;
   box-sizing: border-box;
   display: flex;
